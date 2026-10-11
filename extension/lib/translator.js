@@ -11,6 +11,10 @@ class ApiError extends FatalTranslationError {
   constructor(message, status, detail) { super(message); this.status = status; this.detail = detail || ''; }
 }
 
+// No reply in time. Retried, since Gemini in particular sometimes stalls on
+// a single request while the next one goes through quickly.
+class TimeoutError extends FatalTranslationError {}
+
 class RateLimitError extends FatalTranslationError {
   constructor(message, retryAfterMs) { super(message); this.retryAfterMs = retryAfterMs; }
 }
@@ -24,6 +28,8 @@ const maxOutputTokens = (text) => Math.min(16000, 1024 + text.length * 3);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const MAX_RETRIES = 3;
 const MAX_RETRY_WAIT_MS = 60000;
+// Long enough for a reply of maxTokens at a slow pace (~200 tokens/s).
+const requestTimeoutMs = (maxTokens) => 30000 + maxTokens * 5;
 
 // Requests to each provider are spaced evenly (60s / perMinute apart) so they
 // stay under the service's per-minute quota (e.g. Gemini's free tier). A
@@ -74,14 +80,17 @@ function getOpenAIText(data) {
     .join('');
 }
 
-async function postJSON(provider, model, url, headers, body) {
+async function postJSON(provider, model, url, headers, body, maxTokens) {
+  const signal = AbortSignal.timeout(requestTimeoutMs(maxTokens));
+  const timedOut = () => new TimeoutError(t('error.timeout', { name: configs[provider].name }));
   let response;
   try {
-    response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body) });
+    response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), signal });
   } catch {
-    throw new FatalTranslationError(t('error.network', { name: configs[provider].name }));
+    throw signal.aborted ? timedOut() : new FatalTranslationError(t('error.network', { name: configs[provider].name }));
   }
   const data = await response.json().catch(() => ({}));
+  if (signal.aborted) throw timedOut();
   if (response.status === 429) throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), retryAfterMs(response, data));
   if (!response.ok) throw new ApiError(friendlyApiError(provider, model, response.status, data.error?.message), response.status, data.error?.message);
   return data;
@@ -89,13 +98,14 @@ async function postJSON(provider, model, url, headers, body) {
 
 // Retries rate-limited requests after the wait the service asks for. A 429
 // without a retry hint (e.g. a daily quota) is retried with backoff, then
-// reported to the user.
+// reported to the user. Requests that time out are retried right away.
 async function callModel(settings, system, user, maxTokens) {
   for (let attempt = 0; ; attempt++) {
     await waitForRateLimit(settings.provider, Number(settings.rateLimits?.[settings.provider]) || 0);
     try {
       return await requestModel(settings, system, user, maxTokens);
     } catch (error) {
+      if (error instanceof TimeoutError && attempt < MAX_RETRIES) continue;
       if (!(error instanceof RateLimitError) || attempt >= MAX_RETRIES) throw error;
       const wait = error.retryAfterMs ?? 5000 * 2 ** attempt;
       if (wait > MAX_RETRY_WAIT_MS) throw error;
@@ -119,6 +129,16 @@ function thinkingConfig(model) {
   if (major >= 3) return { thinkingLevel: 'minimal' };
   if (/^gemini-2\.5-flash/.test(model)) return { thinkingBudget: 0 };
   return null;
+}
+
+// Gemini 3 models are meant to run at the default temperature (1.0); lower
+// values can make them loop, repeating text until the output limit, which
+// stalls a translation for minutes. Older models keep the steadier 0.2.
+function generationConfig(model, maxTokens, fast) {
+  const config = { maxOutputTokens: maxTokens };
+  if (!(Number(model.match(/^gemini-(\d+)/)?.[1]) >= 3)) config.temperature = 0.2;
+  if (fast) config.thinkingConfig = thinkingConfig(model);
+  return config;
 }
 
 const rejectsFastSettings = new Set(); // "provider:model" that returned 400 with them.
@@ -145,15 +165,15 @@ async function sendRequest(provider, model, key, system, user, maxTokens, fast) 
   if (provider === 'openai') {
     const body = { model, instructions: system, input: user };
     if (fast) body.reasoning = { effort: reasoningEffort(model) };
-    const data = await postJSON(provider, model, 'https://api.openai.com/v1/responses', { Authorization: `Bearer ${key}` }, body);
+    const data = await postJSON(provider, model, 'https://api.openai.com/v1/responses', { Authorization: `Bearer ${key}` }, body, maxTokens);
     if (data.incomplete_details?.reason === 'max_output_tokens') throw new TruncatedError(t('error.truncated'));
     text = getOpenAIText(data);
   } else if (provider === 'anthropic') {
-    const data = await postJSON(provider, model, 'https://api.anthropic.com/v1/messages', { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, { model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] });
+    const data = await postJSON(provider, model, 'https://api.anthropic.com/v1/messages', { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, { model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] }, maxTokens);
     if (data.stop_reason === 'max_tokens') throw new TruncatedError(t('error.truncated'));
     text = (data.content || []).filter((part) => part.type === 'text').map((part) => part.text || '').join('');
   } else {
-    const data = await postJSON(provider, model, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { 'x-goog-api-key': key }, { systemInstruction: { parts: [{ text: system }] }, contents: [{ parts: [{ text: user }] }], generationConfig: { temperature: 0.2, ...(fast && { thinkingConfig: thinkingConfig(model) }) } });
+    const data = await postJSON(provider, model, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { 'x-goog-api-key': key }, { systemInstruction: { parts: [{ text: system }] }, contents: [{ parts: [{ text: user }] }], generationConfig: generationConfig(model, maxTokens, fast) }, maxTokens);
     const candidate = data.candidates?.[0];
     if (candidate?.finishReason === 'MAX_TOKENS') throw new TruncatedError(t('error.truncated'));
     // Thought summaries come back as parts marked `thought`; only the answer is kept.
