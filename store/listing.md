@@ -6,7 +6,7 @@ Developer Dashboard の各欄にそのまま貼り付けられるテキストで
 
 ### 英語（English, 既定の言語）
 
-**Name / Summary**: manifest の `name` と `_locales/en/messages.json` の `description` がそのまま使われます（ダッシュボードでは編集できません）。
+**Name / Summary**: `_locales/<言語>/messages.json` の `extName`（manifest の `name`）と `description` がそのまま使われます（ダッシュボードでは編集できません）。
 
 **Description**
 
