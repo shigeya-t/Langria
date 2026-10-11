@@ -48,6 +48,7 @@
       <ul>
         <li>拡張機能は、APIキーと設定を端末内の <code>chrome.storage.local</code> に保存します。Google アカウントには同期されません。</li>
         <li>APIキーの暗号化を有効にすると、キーは暗号化された形（AES-GCM）でだけ保存されます。ロックを解除したあと、復号したキーはブラウザを閉じるまでメモリ上（<code>chrome.storage.session</code>）に保持されます。</li>
+        <li>サービスが1分あたりのリクエスト数の上限を知らせてきた場合（Gemini の無料枠など）、リクエストの間隔を空けるため、その上限の数をブラウザを閉じるまで <code>chrome.storage.session</code> に保持します。</li>
         <li>翻訳結果は保存しません。ページ上に表示し、原文に戻したときやページを離れたときに破棄されます。</li>
         <li>Webアプリは、同じ種類の設定をブラウザの <code>localStorage</code> に保存します。</li>
       </ul>

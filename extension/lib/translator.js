@@ -16,7 +16,7 @@ class ApiError extends FatalTranslationError {
 class TimeoutError extends FatalTranslationError {}
 
 class RateLimitError extends FatalTranslationError {
-  constructor(message, retryAfterMs) { super(message); this.retryAfterMs = retryAfterMs; }
+  constructor(message, retryAfterMs, perMinute) { super(message); this.retryAfterMs = retryAfterMs; this.perMinute = perMinute; }
 }
 
 // The reply stopped at the output limit. A smaller batch can still fit.
@@ -30,7 +30,7 @@ class BlockedError extends Error {}
 const maxOutputTokens = (text) => Math.min(16000, 1024 + text.length * 3);
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 const MAX_RETRY_WAIT_MS = 60000;
 // Long enough for a reply of maxTokens at a slow pace (~200 tokens/s).
 const requestTimeoutMs = (maxTokens) => 30000 + maxTokens * 5;
@@ -52,6 +52,40 @@ async function waitForRateLimit(provider, perMinute) {
 // that failed, so the others do not keep running into the limit meanwhile.
 function pauseProvider(provider, ms) {
   nextSlot[provider] = Math.max(nextSlot[provider], Date.now() + ms);
+}
+
+// Per-minute request limits learned from 429 replies, by "provider:model".
+// Paid plans never send one and stay unlimited; the free tier is paced to its
+// limit after the first. Kept in chrome.storage.session (until the browser
+// closes) because the service worker is stopped when idle.
+let learnedLimits = {};
+const learnedReady = chrome.storage.session.get('learnedLimits').then(({ learnedLimits: stored }) => { learnedLimits = { ...stored, ...learnedLimits }; }, () => {});
+
+function perMinuteLimit(settings) {
+  const limits = [Number(settings.rateLimits?.[settings.provider]) || 0, learnedLimits[`${settings.provider}:${modelFor(settings)}`] || 0].filter(Boolean);
+  return limits.length ? Math.min(...limits) : 0;
+}
+
+function learnLimit(settings, perMinute) {
+  // One under the limit leaves room for the service counting a request that
+  // arrives a little early in the next minute.
+  const id = `${settings.provider}:${modelFor(settings)}`, limit = Math.max(1, perMinute - 1);
+  if (learnedLimits[id] <= limit) return;
+  learnedLimits[id] = limit;
+  chrome.storage.session.set({ learnedLimits }).catch(() => {});
+  console.warn(`MyLingo: ${id} allows ${perMinute} requests per minute; pacing to ${limit}`);
+}
+
+// Gemini names the quota it hit in a QuotaFailure detail (quotaId
+// "GenerateRequestsPerMinute…", quotaValue "15") and in the message
+// ("…_requests, limit: 15"). Token quotas and daily quotas are not paced:
+// only request quotas reset within a minute (the retry hint) count.
+function perMinuteQuota(data, retryAfter) {
+  const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
+  const values = (failure?.violations || []).filter((violation) => /requests/i.test(violation.quotaMetric || '') && /PerMinute/i.test(violation.quotaId || '')).map((violation) => Number(violation.quotaValue));
+  const fromMessage = retryAfter && retryAfter <= 60000 && data.error?.message?.match(/_requests, limit: (\d+)/)?.[1];
+  const limit = Math.min(...values.filter((value) => value > 0), Number(fromMessage) || Infinity);
+  return Number.isFinite(limit) ? limit : null;
 }
 
 // Gemini reports how long to wait in a RetryInfo detail ("23s");
@@ -99,7 +133,10 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
   // Shown in the service worker's console (chrome://extensions > Inspect views).
   console.info(`MyLingo: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
-  if (response.status === 429) throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), retryAfterMs(response, data));
+  if (response.status === 429) {
+    const wait = retryAfterMs(response, data);
+    throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), wait, perMinuteQuota(data, wait));
+  }
   if (!response.ok) throw new ApiError(friendlyApiError(provider, model, response.status, data.error?.message), response.status, data.error?.message);
   return data;
 }
@@ -108,8 +145,9 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
 // without a retry hint (e.g. a daily quota) is retried with backoff, then
 // reported to the user. Requests that time out are retried right away.
 async function callModel(settings, system, user, maxTokens) {
+  await learnedReady;
   for (let attempt = 0; ; attempt++) {
-    await waitForRateLimit(settings.provider, Number(settings.rateLimits?.[settings.provider]) || 0);
+    await waitForRateLimit(settings.provider, perMinuteLimit(settings));
     try {
       return await requestModel(settings, system, user, maxTokens);
     } catch (error) {
@@ -117,6 +155,7 @@ async function callModel(settings, system, user, maxTokens) {
       if (!(error instanceof RateLimitError) || attempt >= MAX_RETRIES) throw error;
       const wait = error.retryAfterMs ?? 5000 * 2 ** attempt;
       if (wait > MAX_RETRY_WAIT_MS) throw error;
+      if (error.perMinute) learnLimit(settings, error.perMinute);
       console.warn(`MyLingo: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
     }
