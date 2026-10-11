@@ -22,6 +22,10 @@ class RateLimitError extends FatalTranslationError {
 // The reply stopped at the output limit. A smaller batch can still fit.
 class TruncatedError extends Error {}
 
+// The service declined the text (e.g. Gemini's safety filters). Splitting the
+// batch narrows it down to the segments it objects to.
+class BlockedError extends Error {}
+
 // Room for the translation, which can be longer than the original.
 const maxOutputTokens = (text) => Math.min(16000, 1024 + text.length * 3);
 
@@ -171,6 +175,7 @@ async function sendRequest(provider, model, key, system, user, maxTokens, fast) 
   } else if (provider === 'anthropic') {
     const data = await postJSON(provider, model, 'https://api.anthropic.com/v1/messages', { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, { model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] }, maxTokens);
     if (data.stop_reason === 'max_tokens') throw new TruncatedError(t('error.truncated'));
+    if (data.stop_reason === 'refusal') throw new BlockedError(t('error.blocked', { name: configs[provider].name, reason: 'refusal' }));
     text = (data.content || []).filter((part) => part.type === 'text').map((part) => part.text || '').join('');
   } else {
     const data = await postJSON(provider, model, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { 'x-goog-api-key': key }, { systemInstruction: { parts: [{ text: system }] }, contents: [{ parts: [{ text: user }] }], generationConfig: generationConfig(model, maxTokens, fast) }, maxTokens);
@@ -178,6 +183,10 @@ async function sendRequest(provider, model, key, system, user, maxTokens, fast) 
     if (candidate?.finishReason === 'MAX_TOKENS') throw new TruncatedError(t('error.truncated'));
     // Thought summaries come back as parts marked `thought`; only the answer is kept.
     text = candidate?.content?.parts?.filter((part) => !part.thought).map((part) => part.text || '').join('');
+    // A blocked prompt or reply comes back without text, with the reason in
+    // promptFeedback or finishReason (SAFETY, PROHIBITED_CONTENT, RECITATION...).
+    const blocked = data.promptFeedback?.blockReason || (candidate?.finishReason !== 'STOP' && candidate?.finishReason);
+    if (!text && blocked) throw new BlockedError(t('error.blocked', { name: configs[provider].name, reason: blocked }));
   }
   if (!text) throw new FatalTranslationError(t('error.empty'));
   return text.trim();
@@ -204,18 +213,28 @@ export function parseSegments(text, count) {
 }
 
 // Translates an array of page segments. If the model returns a malformed or
-// misaligned array, or runs out of room, the batch is split in half and
-// retried so a single bad reply never shifts translations onto the wrong text.
+// misaligned array, runs out of room, or declines the text, the batch is
+// split in half and retried so a single bad reply never shifts translations
+// onto the wrong text.
 export async function translateSegments(settings, segments, target) {
   let parsed = null;
   try {
     const reply = await callModel(settings, segmentsPrompt(settings, target, segments.length), JSON.stringify(segments), maxOutputTokens(segments.join('')));
     parsed = parseSegments(reply, segments.length);
   } catch (error) {
-    if (!(error instanceof TruncatedError)) throw error;
+    if (!(error instanceof TruncatedError || error instanceof BlockedError)) throw error;
   }
   if (parsed) return parsed;
-  if (segments.length === 1) return [await translateText(settings, segments[0], target)];
+  if (segments.length === 1) {
+    // A segment the service refuses stays in the original language rather
+    // than stopping the rest of the page.
+    try {
+      return [await translateText(settings, segments[0], target)];
+    } catch (error) {
+      if (error instanceof BlockedError) return segments;
+      throw error;
+    }
+  }
   const middle = Math.ceil(segments.length / 2);
   const [first, second] = await Promise.all([
     translateSegments(settings, segments.slice(0, middle), target),

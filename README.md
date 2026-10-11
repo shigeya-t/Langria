@@ -99,7 +99,7 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 - Changing the target language or translation mode in the popup after translating restores the original and translates again right away (including text the page copied or re-rendered from the translation)
 - Translates what is on screen first and the rest as you scroll (faster, and uses less of your API quota than sending the whole page at once)
 - Also translates content that appears later, e.g. after "Show more"
-- Limits requests per minute, and on a 429 (rate limit) error retries automatically after the wait the service asks for. A request that gets no reply in time is also retried
+- Limits requests per minute, and on a 429 (rate limit) error retries automatically after the wait the service asks for. A request that gets no reply in time is also retried. Text the service declines to translate (e.g. blocked by Gemini's safety filters) is left in the original language, and the rest of the page is still translated
 - Select text, right-click and choose "Translate … with MyLingo" to see just that part translated in a bubble
 - `Alt + Shift + T` toggles between translation and the original
 - Does not translate input fields, code blocks, or elements marked `translate="no"` / `.notranslate`
