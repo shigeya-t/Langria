@@ -123,7 +123,7 @@ Injects MyLingo's own bundled content script (content.js and lib/i18n.js) into t
 **storage**
 
 ```text
-Stores the user's settings (selected AI service, model names, target language, translation mode, UI language) and the API keys the user enters, locally in chrome.storage.local. When encryption is enabled, only the encrypted keys are stored; unlocked keys are kept in chrome.storage.session until the browser closes.
+Stores the user's settings (selected AI service, model names, target language, translation mode, UI language) and the API keys the user enters, locally in chrome.storage.local. When encryption is enabled, only the encrypted keys are stored; unlocked keys are kept in chrome.storage.session until the browser closes. A per-minute request limit reported by a service (e.g. the Gemini free tier) is also kept there, to space out requests.
 ```
 
 **contextMenus**

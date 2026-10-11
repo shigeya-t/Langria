@@ -165,6 +165,16 @@ function thinkingConfig(model) {
   return null;
 }
 
+// Gemini 3 models are meant to run at the default temperature (1.0); lower
+// values can make them loop, repeating text until the output limit, which
+// stalls a translation for minutes. Older models keep the steadier 0.2.
+function generationConfig(model, maxTokens, fast) {
+  const config = { maxOutputTokens: maxTokens };
+  if (!(Number(model.match(/^gemini-(\d+)/)?.[1]) >= 3)) config.temperature = 0.2;
+  if (fast) config.thinkingConfig = thinkingConfig(model);
+  return config;
+}
+
 const rejectsFastSettings = new Set(); // "provider:model" that returned 400 with them.
 
 // Keeps the HTTP status and the service's own message so the caller can
@@ -193,7 +203,7 @@ async function callProvider(key, model, language, text, fast) {
       .map((part) => part.text || '')
       .join('');
   }
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: systemPrompt(language) }] }, contents: [{ parts: [{ text: wrapSource(text, language) }] }], generationConfig: { temperature: 0.2, ...(fast && { thinkingConfig: thinkingConfig(model) }) } }) });
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: systemPrompt(language) }] }, contents: [{ parts: [{ text: wrapSource(text, language) }] }], generationConfig: generationConfig(model, maxOutputTokens(text), fast) }) });
   const data = await response.json();
   if (!response.ok) throw new ApiError(response.status, data.error?.message);
   const candidate = data.candidates?.[0];

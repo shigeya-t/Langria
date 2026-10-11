@@ -48,6 +48,7 @@
       <ul>
         <li>The extension stores API keys and settings in <code>chrome.storage.local</code> on your device. They are not synced to your Google account.</li>
         <li>If you turn on API key encryption, the keys are stored only in encrypted form (AES-GCM). After you unlock them, the decrypted keys are kept in memory (<code>chrome.storage.session</code>) until the browser closes.</li>
+        <li>When a service reports a per-minute request limit (for example, the Gemini free tier), the extension keeps that number in <code>chrome.storage.session</code> until the browser closes, to space out its requests.</li>
         <li>Translated text is not stored. It is shown on the page and discarded when you show the original again or leave the page.</li>
         <li>The web app stores the same kinds of settings in the browser’s <code>localStorage</code>.</li>
       </ul>
