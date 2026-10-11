@@ -87,13 +87,17 @@ function getOpenAIText(data) {
 async function postJSON(provider, model, url, headers, body, maxTokens) {
   const signal = AbortSignal.timeout(requestTimeoutMs(maxTokens));
   const timedOut = () => new TimeoutError(t('error.timeout', { name: configs[provider].name }));
+  const started = Date.now();
   let response;
   try {
     response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), signal });
-  } catch {
+  } catch (error) {
+    console.warn(`MyLingo: ${provider} request failed after ${Date.now() - started} ms`, error);
     throw signal.aborted ? timedOut() : new FatalTranslationError(t('error.network', { name: configs[provider].name }));
   }
   const data = await response.json().catch(() => ({}));
+  // Shown in the service worker's console (chrome://extensions > Inspect views).
+  console.info(`MyLingo: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
   if (response.status === 429) throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), retryAfterMs(response, data));
   if (!response.ok) throw new ApiError(friendlyApiError(provider, model, response.status, data.error?.message), response.status, data.error?.message);
@@ -109,10 +113,11 @@ async function callModel(settings, system, user, maxTokens) {
     try {
       return await requestModel(settings, system, user, maxTokens);
     } catch (error) {
-      if (error instanceof TimeoutError && attempt < MAX_RETRIES) continue;
+      if (error instanceof TimeoutError && attempt < MAX_RETRIES) { console.warn('MyLingo: timed out, retrying'); continue; }
       if (!(error instanceof RateLimitError) || attempt >= MAX_RETRIES) throw error;
       const wait = error.retryAfterMs ?? 5000 * 2 ** attempt;
       if (wait > MAX_RETRY_WAIT_MS) throw error;
+      console.warn(`MyLingo: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
     }
   }
@@ -225,13 +230,14 @@ export async function translateSegments(settings, segments, target) {
     if (!(error instanceof TruncatedError || error instanceof BlockedError)) throw error;
   }
   if (parsed) return parsed;
+  console.warn(`MyLingo: no usable reply for ${segments.length} segment(s), splitting`);
   if (segments.length === 1) {
     // A segment the service refuses stays in the original language rather
     // than stopping the rest of the page.
     try {
       return [await translateText(settings, segments[0], target)];
     } catch (error) {
-      if (error instanceof BlockedError) return segments;
+      if (error instanceof BlockedError) { console.warn('MyLingo: left untranslated:', segments[0]); return segments; }
       throw error;
     }
   }
