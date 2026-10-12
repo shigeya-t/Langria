@@ -29,7 +29,7 @@ MyLingo は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `extension/lib/version.js` | git フックが生成するコミットハッシュ。git管理外で、なくても動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
 | `store/` | Chrome ウェブストアの掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`） |
-| `docs/` | GitHub Pages（`main` の `/docs`）で公開する。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）、`privacy/` はプライバシーポリシー（英語・日本語） |
+| `docs/` | GitHub Pages（`main` の `/docs`）で公開する。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）、`privacy/` はプライバシーポリシー（英語・日本語）。公開されるのは `docs/` の中だけなので、ファビコン（`favicon.svg` / `favicon-32.png` / `apple-touch-icon.png`）は `extension/icons/` から、スクリーンショット（`images/`）は `store/images/` と `assets/` からコピーしている。元を変えたらこちらも差し替える |
 
 ### 共用ファイルの決まり
 

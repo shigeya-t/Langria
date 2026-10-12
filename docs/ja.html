@@ -4,19 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyLingo – AI Webページ翻訳</title>
-    <meta name="description" content="ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。" />
+    <meta name="description" content="ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。Chrome拡張機能とWebアプリがあります。" />
     <link rel="alternate" hreflang="en" href="./" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="stylesheet" href="privacy/privacy.css" />
   </head>
   <body>
     <main>
       <header>
-        <span class="brand">MyLingo</span>
+        <span class="brand"><img class="brand-mark" src="favicon.svg" alt="" />MyLingo</span>
         <nav><a href="./" lang="en">English</a> | 日本語</nav>
       </header>
 
       <h1>MyLingo – AI Webページ翻訳</h1>
-      <p>表示中のWebページや選択した文章を、選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳する Chrome 拡張機能です。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。</p>
+      <p>表示中のWebページや選択した文章を、選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Chrome 拡張機能と、入力・貼り付けた文章を翻訳するシンプルなWebアプリがあります。</p>
+
+      <figure class="shot">
+        <img src="images/ja-1-page.png" width="1280" height="800" alt="英語の記事をその場で日本語に翻訳し、MyLingo のポップアップを開いた画面" />
+      </figure>
 
       <div class="summary">
         <ul>
@@ -26,12 +33,38 @@
         </ul>
       </div>
 
-      <h2>使い方</h2>
+      <h2>Chrome拡張機能</h2>
+      <p>表示中のWebページを翻訳します。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。</p>
       <ol>
         <li>拡張機能の設定画面で、OpenAI・Anthropic・Google Gemini のいずれかのAPIキーを入力します。</li>
         <li>ツールバーのアイコンを開いて「このページを翻訳」を押します。画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。</li>
         <li>「原文に戻す」または Alt+Shift+T で原文に戻せます。一部だけ訳したいときは、文章を選んで右クリックし「MyLingo で「…」を翻訳」を選びます。</li>
       </ol>
+
+      <div class="shots">
+        <figure class="shot">
+          <img src="images/ja-2-selection.png" width="1280" height="800" loading="lazy" alt="選択した文章の訳文を吹き出しで表示した画面" />
+          <figcaption>右クリックメニューから、選択した部分だけを翻訳できます。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/ja-3-layout.png" width="1280" height="800" loading="lazy" alt="原文と翻訳後のページを並べた画面" />
+          <figcaption>文章だけを差し替え、レイアウトは変わりません。</figcaption>
+        </figure>
+      </div>
+
+      <h2>Webアプリ</h2>
+      <p>入力・貼り付けた文章を翻訳するツールです。原文の言語は自動で判別し、入力の手を止めると少し後に翻訳します。</p>
+
+      <figure class="shot">
+        <img src="images/ja-web-app.png" width="1280" height="755" loading="lazy" alt="MyLingo のWebアプリで英語の文章を日本語に翻訳した画面" />
+      </figure>
+
+      <ul>
+        <li>使えるサービス・翻訳先の言語・翻訳モードは拡張機能と同じです。</li>
+        <li>入れ替えボタンで左右の文章と翻訳先の言語を入れ替えられ、返信を書くときに便利です。</li>
+        <li>ライトモードとダークモードに対応しています。</li>
+        <li>ビルド不要の静的サイトです。リポジトリのフォルダを（<code>python3 -m http.server</code> などで）配信し、ブラウザで開くだけで使えます。詳しくは <a href="https://github.com/shigeya-t/MyLingo/blob/main/README.ja.md#サーバーについて">README</a> をご覧ください。</li>
+      </ul>
 
       <h2>主な機能</h2>
       <ul>
