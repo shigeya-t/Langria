@@ -1,10 +1,12 @@
-# MyLingo
+# Langria
 
 [English](README.md) | 日本語
 
+旧名は MyLingo です。
+
 ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。Webアプリと、表示中のWebページを翻訳するChrome拡張機能があります。
 
-![MyLingo の画面](assets/mylingo-screenshot-ja.png)
+![Langria の画面](assets/langria-screenshot-ja.png)
 
 ## 特長
 
@@ -88,7 +90,7 @@ git config core.hooksPath .githooks && .githooks/write-version
 
 `extension/` フォルダには、表示中のWebページをまるごと翻訳するChrome拡張機能が入っています。Webアプリと同じく ChatGPT / Claude / Gemini を切り替えて使えます。
 
-<img src="assets/extension-popup-ja.png" alt="MyLingo Chrome拡張機能のポップアップ画面" width="340">
+<img src="assets/extension-popup-ja.png" alt="Langria Chrome拡張機能のポップアップ画面" width="340">
 
 ### 主な機能
 
@@ -100,7 +102,7 @@ git config core.hooksPath .githooks && .githooks/write-version
 - 表示中の部分から順に翻訳し、スクロールに合わせて続きを順次翻訳（ページ全体を一度に送らないので速く、APIの消費も少ない）
 - 「もっと見る」などで後から表示された内容も自動で翻訳
 - 1分あたりのリクエスト数を制限でき、429（利用上限）エラー時はサービスが指定する待ち時間の後に自動で再試行。応答が時間内に返らないリクエストも再試行。サービスが翻訳を拒否した文（Gemini の安全フィルターなど）は原文のまま残し、ページの残りの翻訳は続ける
-- テキストを選択して右クリック →「MyLingo で翻訳」で、選択部分だけを吹き出しに翻訳表示
+- テキストを選択して右クリック →「Langria で翻訳」で、選択部分だけを吹き出しに翻訳表示
 - `Alt + Shift + T` で翻訳 / 原文に戻す を切り替え
 - 入力欄・コードブロック・`translate="no"` / `.notranslate` の要素は翻訳しない
 
@@ -108,13 +110,13 @@ git config core.hooksPath .githooks && .githooks/write-version
 
 1. Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をオンにします。
 2. 「パッケージ化されていない拡張機能を読み込む」を押し、このリポジトリの `extension` フォルダを選択します。
-3. ツールバーの MyLingo アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
+3. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
 
 拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。
 
 Chrome ウェブストアには公開で登録する予定です（手順は [store/README.md](store/README.md)）。ストアからインストールした場合、上の1・2は不要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/MyLingo/privacy/ja.html>）にあります。
 
-リポジトリを更新（pull・ブランチの切り替えなど）したら、`chrome://extensions` で MyLingo の再読み込みボタン（↻）を押してください。ポップアップや設定画面は開くたびに新しいファイルを読み込みますが、翻訳を行うバックグラウンド（Service Worker）は再読み込みするまで古いコードのまま動くため、食い違いでエラーになることがあります。再読み込みするとAPIキーの暗号化のロックも掛かり直します。
+リポジトリを更新（pull・ブランチの切り替えなど）したら、`chrome://extensions` で Langria の再読み込みボタン（↻）を押してください。ポップアップや設定画面は開くたびに新しいファイルを読み込みますが、翻訳を行うバックグラウンド（Service Worker）は再読み込みするまで古いコードのまま動くため、食い違いでエラーになることがあります。再読み込みするとAPIキーの暗号化のロックも掛かり直します。
 
 ### Gemini の無料枠について
 

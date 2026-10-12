@@ -12,14 +12,14 @@ const translationModes = {
   technical: 'Phrase the translation using precise technical terminology, as it would appear in technical documentation, keeping domain-specific terms accurate and consistent.'
 };
 
-const { targets: targetLanguages, custom: customTarget } = MyLingoLanguages;
-const { t, languageLabel } = MyLingoI18n;
-MyLingoI18n.setLanguage(localStorage.getItem('lingo-ui-language'));
+const { targets: targetLanguages, custom: customTarget } = LangriaLanguages;
+const { t, languageLabel } = LangriaI18n;
+LangriaI18n.setLanguage(localStorage.getItem('lingo-ui-language'));
 
 let provider = localStorage.getItem('lingo-provider') || 'openai';
 // Until a target is chosen it follows the UI language (see renderLanguage).
-let target = localStorage.getItem('lingo-target') || MyLingoI18n.defaultTarget();
-if (target !== customTarget && !targetLanguages[target]) target = MyLingoI18n.defaultTarget();
+let target = localStorage.getItem('lingo-target') || LangriaI18n.defaultTarget();
+if (target !== customTarget && !targetLanguages[target]) target = LangriaI18n.defaultTarget();
 let mode = localStorage.getItem('lingo-mode') || 'faithful';
 let timer;
 let latestRequest = 0; // Replies to older requests are dropped so they cannot overwrite newer text.
@@ -279,7 +279,7 @@ function storeVault(next) { vault = next; localStorage.setItem(vaultStorageKey, 
 async function saveApiKey(id, value) {
   if (!vault) { localStorage.setItem(configs[id].key, value); return; }
   const keys = { ...unlocked.keys, [id]: value };
-  storeVault(await MyLingoVault.reseal(vault, unlocked.key, keys));
+  storeVault(await LangriaVault.reseal(vault, unlocked.key, keys));
   unlocked.keys = keys;
 }
 
@@ -304,14 +304,14 @@ async function unlockFromPane({ quiet = false } = {}) {
   if (button) button.disabled = true;
   if (error) error.textContent = '';
   try {
-    unlocked = await MyLingoVault.unlock(vault, pane?.querySelector('.unlock-input')?.value);
+    unlocked = await LangriaVault.unlock(vault, pane?.querySelector('.unlock-input')?.value);
     toast(t('unlocked'));
     vaultPanel.render();
     afterVaultChange();
   } catch (caught) {
     // A passkey prompt started without a click may be refused or dismissed;
     // the button is right there, so stay quiet about it.
-    if (error && !(quiet && caught?.name === 'NotAllowedError')) error.textContent = MyLingoVault.friendlyError(caught);
+    if (error && !(quiet && caught?.name === 'NotAllowedError')) error.textContent = LangriaVault.friendlyError(caught);
   } finally {
     unlocking = false;
     if (button?.isConnected) button.disabled = false;
@@ -323,19 +323,19 @@ function afterVaultChange() {
   if (!vaultLocked() && source.value.trim()) scheduleTranslation();
 }
 
-const vaultPanel = MyLingoVault.mountPanel($('#vaultPanel'), {
+const vaultPanel = LangriaVault.mountPanel($('#vaultPanel'), {
   state: () => ({ method: vault?.method || null, unlocked: Boolean(unlocked) }),
   async protect(method, passphrase) {
     // Include a key typed into the form but not saved yet.
     const keys = { ...(unlocked?.keys || plainKeys()), ...($('#apiKey').value.trim() && { [provider]: $('#apiKey').value.trim() }) };
-    const created = await MyLingoVault.create(method, keys, passphrase);
+    const created = await LangriaVault.create(method, keys, passphrase);
     storeVault(created.vault);
     unlocked = { keys, key: created.key };
     Object.values(configs).forEach((config) => localStorage.removeItem(config.key));
     afterVaultChange();
   },
   async unlock(passphrase) {
-    unlocked = await MyLingoVault.unlock(vault, passphrase);
+    unlocked = await LangriaVault.unlock(vault, passphrase);
     afterVaultChange();
   },
   lock() { unlocked = null; afterVaultChange(); },
@@ -349,7 +349,7 @@ const vaultPanel = MyLingoVault.mountPanel($('#vaultPanel'), {
 });
 
 function refreshInputInfo() {
-  $('#characterCount').textContent = t('web.characters', { count: source.value.length.toLocaleString(MyLingoI18n.language) });
+  $('#characterCount').textContent = t('web.characters', { count: source.value.length.toLocaleString(LangriaI18n.language) });
   setLanguages(source.value.trim());
 }
 
@@ -428,8 +428,8 @@ $('#customTarget').addEventListener('input', () => { localStorage.setItem('lingo
 
 // Redraws the text that is not marked with data-i18n.
 function renderLanguage() {
-  MyLingoI18n.apply();
-  if (!localStorage.getItem('lingo-target')) target = MyLingoI18n.defaultTarget();
+  LangriaI18n.apply();
+  if (!localStorage.getItem('lingo-target')) target = LangriaI18n.defaultTarget();
   $('#targetSelect').innerHTML = Object.keys(targetLanguages).map((value) => `<option value="${value}">${languageLabel(value)}</option>`).join('') + `<option value="${customTarget}">${t('target.other')}</option>`;
   renderTarget();
   refreshInputInfo();
@@ -438,9 +438,9 @@ function renderLanguage() {
   fillSettings();
   vaultPanel.render();
 }
-MyLingoI18n.mountSwitch($('#langSwitch'), (language) => { localStorage.setItem('lingo-ui-language', language); renderLanguage(); });
+LangriaI18n.mountSwitch($('#langSwitch'), (language) => { localStorage.setItem('lingo-ui-language', language); renderLanguage(); });
 
 setProvider(provider);
 renderLanguage();
 initTheme();
-$('#commitHash').textContent = globalThis.MYLINGO_COMMIT || '';
+$('#commitHash').textContent = globalThis.LANGRIA_COMMIT || '';

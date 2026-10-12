@@ -1,6 +1,6 @@
 # Chrome ウェブストアでの公開手順
 
-MyLingo の拡張機能を Chrome ウェブストアに**公開（Public）**で登録するための手順です。掲載欄に貼り付けるテキストは [listing.md](listing.md) にまとめてあります。
+Langria の拡張機能を Chrome ウェブストアに**公開（Public）**で登録するための手順です。掲載欄に貼り付けるテキストは [listing.md](listing.md) にまとめてあります。
 
 | ファイル | 内容 |
 | --- | --- |
@@ -33,7 +33,7 @@ MyLingo の拡張機能を Chrome ウェブストアに**公開（Public）**で
 
 ```sh
 scripts/package-extension.sh
-# → dist/mylingo-extension-1.0.0.zip
+# → dist/langria-extension-1.0.0.zip
 ```
 
 - `extension/` をコピーし、`lib/version.js`（コミットハッシュ）を書き込んでから zip にします。設定画面の下に、公開した版のコミットが表示されます。
@@ -42,7 +42,7 @@ scripts/package-extension.sh
 
 ## 4. ダッシュボードで登録する
 
-1. **New item** → `dist/mylingo-extension-1.0.0.zip` をアップロードする。
+1. **New item** → `dist/langria-extension-1.0.0.zip` をアップロードする。
 2. **Store listing** タブ: [listing.md](listing.md) の「ストアの掲載情報」を英語で入力し、画像を `images/` からアップロードする。右上の言語メニューで **Japanese** を追加し、日本語の説明文と `ja-` で始まる画像を入れる。
 3. **Privacy** タブ: listing.md の「プライバシーへの取り組み」をそのまま入力する（単一用途、権限ごとの理由、リモートコードなし、データ使用、プライバシーポリシーのURL）。
 4. **Distribution** タブ: **Free**、**Visibility: Public**、**All regions**。

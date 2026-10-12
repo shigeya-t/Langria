@@ -1,7 +1,7 @@
 import { translationModes, targetLanguages, customTarget, targetLanguageName, loadSettings, modelFor, requestUnlock, unlockVault, missingKeyMessage, contentScripts } from './lib/providers.js';
 
 const $ = (selector) => document.querySelector(selector);
-const t = (key, params) => MyLingoI18n.t(key, params);
+const t = (key, params) => LangriaI18n.t(key, params);
 let tabId = null;
 let pageState = null;
 
@@ -92,12 +92,12 @@ async function connectToTab() {
 
 async function init() {
   const settings = await loadSettings();
-  MyLingoI18n.apply();
+  LangriaI18n.apply();
   $('#actionButton').textContent = t('popup.translate');
   // Everything here comes from storage and the tab, so reloading redraws it in the new language.
-  MyLingoI18n.mountSwitch($('#langSwitch'), async (language) => { await chrome.storage.local.set({ uiLanguage: language }); location.reload(); });
+  LangriaI18n.mountSwitch($('#langSwitch'), async (language) => { await chrome.storage.local.set({ uiLanguage: language }); location.reload(); });
   fillSelect($('#modeSelect'), Object.keys(translationModes).map((key) => [key, t(`mode.${key}`)]), settings.mode);
-  fillSelect($('#targetSelect'), [...Object.keys(targetLanguages).map((key) => [key, MyLingoI18n.languageLabel(key)]), [customTarget, t('target.other')]], settings.target);
+  fillSelect($('#targetSelect'), [...Object.keys(targetLanguages).map((key) => [key, LangriaI18n.languageLabel(key)]), [customTarget, t('target.other')]], settings.target);
   $('#customTarget').value = settings.customTarget;
   $('#customTarget').hidden = settings.target !== customTarget;
   renderProvider(settings);
@@ -145,7 +145,7 @@ async function init() {
         try {
           await unlockVault(passphrase);
         } catch (error) {
-          showStatus(MyLingoVault.friendlyError(error), 'error');
+          showStatus(LangriaVault.friendlyError(error), 'error');
           $('#unlockPassphrase').select();
           return;
         }

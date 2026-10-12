@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "short_name": "MyLingo",
-  "version": "1.0.3",
+  "short_name": "Langria",
+  "version": "1.0.4",
   "description": "__MSG_description__",
   "default_locale": "en",
   "icons": {

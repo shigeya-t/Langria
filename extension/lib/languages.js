@@ -2,9 +2,9 @@
 // language names given to the model; values are the labels shown in the
 // dropdowns, per UI language. `custom` is the "Other" choice, whose name the
 // user types in.
-// A classic script that sets `MyLingoLanguages`, so the web app can load it
+// A classic script that sets `LangriaLanguages`, so the web app can load it
 // with a plain <script> tag and the extension's modules can import it.
-globalThis.MyLingoLanguages = {
+globalThis.LangriaLanguages = {
   targets: {
     English: { en: 'English', ja: '英語' },
     Japanese: { en: 'Japanese', ja: '日本語' },

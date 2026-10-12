@@ -1,6 +1,6 @@
 {
-  "extName": { "message": "MyLingo – AI Webページ翻訳" },
+  "extName": { "message": "Langria – AI Webページ翻訳" },
   "description": { "message": "ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。" },
-  "actionTitle": { "message": "MyLingo でページを翻訳" },
+  "actionTitle": { "message": "Langria でページを翻訳" },
   "toggleCommand": { "message": "ページの翻訳 / 原文に戻す を切り替え" }
 }

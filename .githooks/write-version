@@ -3,4 +3,4 @@
 # the extension can show which version is running. The file is gitignored.
 root=$(git rev-parse --show-toplevel) || exit 0
 hash=$(git rev-parse --short HEAD 2>/dev/null) || exit 0
-printf "globalThis.MYLINGO_COMMIT = '%s';\n" "$hash" > "$root/extension/lib/version.js"
+printf "globalThis.LANGRIA_COMMIT = '%s';\n" "$hash" > "$root/extension/lib/version.js"

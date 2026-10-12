@@ -1,10 +1,12 @@
-# MyLingo
+# Langria
 
 English | [日本語](README.ja.md)
 
+Formerly called MyLingo.
+
 A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes as a web app and as a Chrome extension that translates the page you are viewing.
 
-![MyLingo screenshot](assets/mylingo-screenshot.png)
+![Langria screenshot](assets/langria-screenshot.png)
 
 ## Features
 
@@ -88,7 +90,7 @@ git config core.hooksPath .githooks && .githooks/write-version
 
 The `extension/` folder contains a Chrome extension that translates the whole page you are viewing. Like the web app, it lets you switch between ChatGPT / Claude / Gemini.
 
-<img src="assets/extension-popup.png" alt="MyLingo Chrome extension popup" width="340">
+<img src="assets/extension-popup.png" alt="Langria Chrome extension popup" width="340">
 
 ### Features
 
@@ -100,7 +102,7 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 - Translates what is on screen first and the rest as you scroll (faster, and uses less of your API quota than sending the whole page at once)
 - Also translates content that appears later, e.g. after "Show more"
 - Limits requests per minute, and on a 429 (rate limit) error retries automatically after the wait the service asks for. A request that gets no reply in time is also retried. Text the service declines to translate (e.g. blocked by Gemini's safety filters) is left in the original language, and the rest of the page is still translated
-- Select text, right-click and choose "Translate … with MyLingo" to see just that part translated in a bubble
+- Select text, right-click and choose "Translate … with Langria" to see just that part translated in a bubble
 - `Alt + Shift + T` toggles between translation and the original
 - Does not translate input fields, code blocks, or elements marked `translate="no"` / `.notranslate`
 
@@ -108,13 +110,13 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 
 1. Open `chrome://extensions` in Chrome and turn on "Developer mode" at the top right.
 2. Click "Load unpacked" and select this repository's `extension` folder.
-3. Open the settings page from the MyLingo toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
+3. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
 
 The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app.
 
 The extension is being registered on the Chrome Web Store as a public item (see [store/README.md](store/README.md), in Japanese, for the steps). If you install it from the store, skip steps 1 and 2. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/MyLingo/privacy/>).
 
-After updating the repository (pull, switching branches, etc.), press MyLingo's reload button (↻) in `chrome://extensions`. The popup and settings page load the new files each time they open, but the background service worker that does the translating keeps running the old code until it is reloaded, and the mismatch can cause errors. Reloading also locks encrypted API keys again.
+After updating the repository (pull, switching branches, etc.), press Langria's reload button (↻) in `chrome://extensions`. The popup and settings page load the new files each time they open, but the background service worker that does the translating keeps running the old code until it is reloaded, and the mismatch can cause errors. Reloading also locks encrypted API keys again.
 
 ### About Gemini's free tier
 
