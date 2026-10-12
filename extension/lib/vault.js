@@ -63,11 +63,9 @@
     return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   }
 
-  // Keeps the old name: the info string is part of the key, so changing it
-  // would lock out vaults created before the rename.
   async function prfKey(secret) {
     const base = await crypto.subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey']);
-    return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(32), info: encoder.encode('MyLingo API keys v1') }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(32), info: encoder.encode('Langria API keys v1') }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   }
 
   const prfUnsupported = () => new VaultError(t('vault.prfUnsupported'));

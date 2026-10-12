@@ -1,7 +1,7 @@
 // UI text in English and Japanese, shared by the web app, the extension's
 // pages, its service worker and its content script. Japanese is used when the
 // browser's language is Japanese, English otherwise, unless the user picked
-// one with the language switch (stored by each caller: `lingo-ui-language` in
+// one with the language switch (stored by each caller: `langria-ui-language` in
 // the web app's localStorage, `uiLanguage` in the extension's storage).
 // A classic script that sets `LangriaI18n`, like vault.js and languages.js.
 (() => {

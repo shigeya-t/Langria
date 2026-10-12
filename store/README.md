@@ -23,9 +23,9 @@ Langria の拡張機能を Chrome ウェブストアに**公開（Public）**で
 2. GitHub のリポジトリで **Settings → Pages** を開き、**Source: Deploy from a branch**、**Branch: `main` / `/docs`** を選んで保存する。
    - `/docs` を選ぶと `docs/` の中だけが公開されます。Webアプリ（リポジトリ直下の `index.html`）は公開されません。
 3. 数分後に次のURLが開けることを確認する。
-   - 紹介ページ: <https://shigeya-t.github.io/MyLingo/>（日本語: <https://shigeya-t.github.io/MyLingo/ja.html>）
-   - プライバシーポリシー: <https://shigeya-t.github.io/MyLingo/privacy/>（日本語: <https://shigeya-t.github.io/MyLingo/privacy/ja.html>）
-4. （Official URL を設定する場合）[Google Search Console](https://search.google.com/search-console) で **URL プレフィックス** に `https://shigeya-t.github.io/MyLingo/` を入力し、**HTML ファイル** の方法で確認する。
+   - 紹介ページ: <https://shigeya-t.github.io/Langria/>（日本語: <https://shigeya-t.github.io/Langria/ja.html>）
+   - プライバシーポリシー: <https://shigeya-t.github.io/Langria/privacy/>（日本語: <https://shigeya-t.github.io/Langria/privacy/ja.html>）
+4. （Official URL を設定する場合）[Google Search Console](https://search.google.com/search-console) で **URL プレフィックス** に `https://shigeya-t.github.io/Langria/` を入力し、**HTML ファイル** の方法で確認する。
    - ダウンロードした `google….html` を `docs/` に置いて `main` にマージし、公開されてから「確認」を押す。
    - デベロッパー登録と同じ Google アカウントで確認すると、ダッシュボードの **Official URL** で選べるようになります。
 

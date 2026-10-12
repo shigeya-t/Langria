@@ -41,7 +41,7 @@ An API key for at least one of OpenAI, Anthropic or Google Gemini (Google AI Stu
 
 Langria is an independent project and is not affiliated with or endorsed by OpenAI, Anthropic or Google.
 
-Source code: https://github.com/shigeya-t/MyLingo
+Source code: https://github.com/shigeya-t/Langria
 ```
 
 ### 日本語（Japanese）
@@ -79,7 +79,7 @@ OpenAI・Anthropic・Google Gemini（Google AI Studio）のいずれかのAPIキ
 
 Langria は個人による独立したプロジェクトであり、OpenAI・Anthropic・Google とは提携しておらず、これらの企業による承認を受けたものではありません。
 
-ソースコード: https://github.com/shigeya-t/MyLingo
+ソースコード: https://github.com/shigeya-t/Langria
 ```
 
 ### カテゴリ・言語など
@@ -88,9 +88,9 @@ Langria は個人による独立したプロジェクトであり、OpenAI・Ant
 | --- | --- |
 | Category | Productivity → Tools（仕事効率化 → ツール） |
 | Language | English（既定）、日本語を追加 |
-| Official URL | `https://shigeya-t.github.io/MyLingo/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
-| Homepage URL | `https://shigeya-t.github.io/MyLingo/`（日本語の掲載では `https://shigeya-t.github.io/MyLingo/ja.html`） |
-| Support URL | `https://github.com/shigeya-t/MyLingo/issues` |
+| Official URL | `https://shigeya-t.github.io/Langria/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
+| Homepage URL | `https://shigeya-t.github.io/Langria/`（日本語の掲載では `https://shigeya-t.github.io/Langria/ja.html`） |
+| Support URL | `https://github.com/shigeya-t/Langria/issues` |
 | Mature content | なし |
 
 ### 画像（`store/images/`）
@@ -163,7 +163,7 @@ Sends the text to be translated, with the user's own API key, directly to the AI
 ### Privacy policy URL
 
 ```text
-https://shigeya-t.github.io/MyLingo/privacy/
+https://shigeya-t.github.io/Langria/privacy/
 ```
 
 ## 配布（Distribution）

@@ -39,13 +39,13 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 
 - UIの文言はすべて `i18n.js` の `messages.en` / `messages.ja` に置き、コードからは `LangriaI18n.t('key', { name })` で参照します。新しい文言は**両方の言語に**追加してください。
 - HTML の固定の文言は `data-i18n`（テキスト）、`data-i18n-attr="placeholder:key;aria-label:key"`（属性）、`data-i18n-html`（`i18n.js` 内の信頼できるマークアップ）で指定し、`LangriaI18n.apply()` で埋めます。HTML に直接書く文言は英語にします。
-- 表示言語は、スイッチで選んだ値（Web: `localStorage` の `lingo-ui-language`、拡張機能: `chrome.storage.local` の `uiLanguage`）、なければブラウザの言語（日本語なら `ja`、それ以外は `en`）です。拡張機能では `loadSettings()` が `LangriaI18n.setLanguage()` を呼びます。
+- 表示言語は、スイッチで選んだ値（Web: `localStorage` の `langria-ui-language`、拡張機能: `chrome.storage.local` の `uiLanguage`）、なければブラウザの言語（日本語なら `ja`、それ以外は `en`）です。拡張機能では `loadSettings()` が `LangriaI18n.setLanguage()` を呼びます。
 - 切り替えたときは再描画します（Web: `renderLanguage()`、ポップアップ: 再読み込み、設定画面: 入力中の値を残して再描画、Service Worker: 右クリックメニューとツールバーのタイトルを作り直す）。表示中の文言を後から切り替えられるよう、状態はキーで持つようにしてください（例: `app.js` の `statusKey`）。
 - `content.js` は `lib/i18n.js` と一緒に注入します（`providers.js` の `contentScripts`）。`i18n.js` は二重に読み込まれても最初のものを残します。
 
 ### 翻訳先の言語
 
-- 設定値は言語の英語名（`'English'`、`'Simplified Chinese'` など）で、そのままプロンプトに入ります。表示名は `languages.js` に英語・日本語の両方を書き、`LangriaI18n.languageLabel()` で取り出します。未選択のとき（Web: `lingo-target` がない、拡張機能: `target` が空）は `LangriaI18n.defaultTarget()`（表示言語が日本語なら `'Japanese'`、それ以外は `'English'`）を使います。`'other'` のときは利用者が入力した言語名（Web: `localStorage` の `lingo-target-custom`、拡張機能: `customTarget`）を使います。
+- 設定値は言語の英語名（`'English'`、`'Simplified Chinese'` など）で、そのままプロンプトに入ります。表示名は `languages.js` に英語・日本語の両方を書き、`LangriaI18n.languageLabel()` で取り出します。未選択のとき（Web: `langria-target` がない、拡張機能: `target` が空）は `LangriaI18n.defaultTarget()`（表示言語が日本語なら `'Japanese'`、それ以外は `'English'`）を使います。`'other'` のときは利用者が入力した言語名（Web: `localStorage` の `langria-target-custom`、拡張機能: `customTarget`）を使います。
 - 拡張機能の旧形式の保存値（`'en'` / `'ja'` / `'auto'`）は、`loadSettings()` で新しい形式に読み替えます。保存形式を変えるときは、同じように移行処理を入れてください。
 
 ## 動かし方
@@ -87,7 +87,6 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 拡張機能のページへのアクセス権は `activeTab` だけです。広い `host_permissions` は追加しないでください。
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
 - 権限・送信先・保存するデータを変えたら、`store/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。審査ではコードの動作との一致を見られます。
-- 旧名は MyLingo です。保存データのキー（`lingo-*`）、パスキーの鍵導出に使う文字列（`vault.js` の `'MyLingo API keys v1'`）は、変えると保存済みの設定やAPIキーを読めなくなるので旧名のまま残しています。GitHub のリポジトリ名と GitHub Pages のURL（`shigeya-t.github.io/MyLingo/`）も旧名のままです。
 - ストアに出す版を作るときは `extension/manifest.json` の `version` を上げます。
 
 ## Git

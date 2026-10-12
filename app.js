@@ -1,7 +1,7 @@
 const configs = {
-  openai: { name: 'ChatGPT', model: 'gpt-6-luna', key: 'lingo-openai-key', modelKey: 'lingo-openai-model' },
-  anthropic: { name: 'Claude', model: 'claude-haiku-5-5', key: 'lingo-anthropic-key', modelKey: 'lingo-anthropic-model' },
-  gemini: { name: 'Gemini', model: 'gemini-3.5-flash-lite', key: 'lingo-gemini-key', modelKey: 'lingo-gemini-model' }
+  openai: { name: 'ChatGPT', model: 'gpt-6-luna', key: 'langria-openai-key', modelKey: 'langria-openai-model' },
+  anthropic: { name: 'Claude', model: 'claude-haiku-5-5', key: 'langria-anthropic-key', modelKey: 'langria-anthropic-model' },
+  gemini: { name: 'Gemini', model: 'gemini-3.5-flash-lite', key: 'langria-gemini-key', modelKey: 'langria-gemini-model' }
 };
 
 const translationModes = {
@@ -14,13 +14,13 @@ const translationModes = {
 
 const { targets: targetLanguages, custom: customTarget } = LangriaLanguages;
 const { t, languageLabel } = LangriaI18n;
-LangriaI18n.setLanguage(localStorage.getItem('lingo-ui-language'));
+LangriaI18n.setLanguage(localStorage.getItem('langria-ui-language'));
 
-let provider = localStorage.getItem('lingo-provider') || 'openai';
+let provider = localStorage.getItem('langria-provider') || 'openai';
 // Until a target is chosen it follows the UI language (see renderLanguage).
-let target = localStorage.getItem('lingo-target') || LangriaI18n.defaultTarget();
+let target = localStorage.getItem('langria-target') || LangriaI18n.defaultTarget();
 if (target !== customTarget && !targetLanguages[target]) target = LangriaI18n.defaultTarget();
-let mode = localStorage.getItem('lingo-mode') || 'faithful';
+let mode = localStorage.getItem('langria-mode') || 'faithful';
 let timer;
 let latestRequest = 0; // Replies to older requests are dropped so they cannot overwrite newer text.
 let lastResult = null; // The translation on screen, or null while none is shown (empty, pending, error).
@@ -35,7 +35,7 @@ function applyTheme(theme) {
 }
 
 function initTheme() {
-  const stored = localStorage.getItem('lingo-theme');
+  const stored = localStorage.getItem('langria-theme');
   applyTheme(stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 }
 
@@ -59,7 +59,7 @@ function setLanguages(text) {
 
 function setTarget(next) {
   target = next;
-  localStorage.setItem('lingo-target', target);
+  localStorage.setItem('langria-target', target);
   renderTarget();
 }
 
@@ -81,7 +81,7 @@ function currentModel() {
 
 function setProvider(next) {
   provider = next;
-  localStorage.setItem('lingo-provider', provider);
+  localStorage.setItem('langria-provider', provider);
   document.querySelectorAll('.provider').forEach((button) => {
     const active = button.dataset.provider === provider;
     button.classList.toggle('active', active);
@@ -265,9 +265,9 @@ async function requestTranslation(text) {
   }
 }
 
-// With encryption on, the keys live only in `lingo-vault` (see
+// With encryption on, the keys live only in `langria-vault` (see
 // extension/lib/vault.js) and, once unlocked, in memory until the page closes.
-const vaultStorageKey = 'lingo-vault';
+const vaultStorageKey = 'langria-vault';
 let vault = JSON.parse(localStorage.getItem(vaultStorageKey) || 'null');
 let unlocked = null; // { keys, key } while unlocked.
 
@@ -415,21 +415,21 @@ $('#saveSettings').addEventListener('click', async () => {
   localStorage.setItem(config.modelKey, $('#modelInput').value.trim() || config.model);
   $('#modelLabel').textContent = currentModel(); closeSettings(); toast(t('web.savedProvider', { name: config.name })); if (source.value.trim()) scheduleTranslation();
 });
-$('#themeToggle').addEventListener('click', () => { const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; localStorage.setItem('lingo-theme', next); applyTheme(next); });
-$('#modeSelect').addEventListener('change', () => { mode = $('#modeSelect').value; localStorage.setItem('lingo-mode', mode); if (source.value.trim()) scheduleTranslation(); });
+$('#themeToggle').addEventListener('click', () => { const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; localStorage.setItem('langria-theme', next); applyTheme(next); });
+$('#modeSelect').addEventListener('change', () => { mode = $('#modeSelect').value; localStorage.setItem('langria-mode', mode); if (source.value.trim()) scheduleTranslation(); });
 $('#modeSelect').value = mode;
-$('#customTarget').value = localStorage.getItem('lingo-target-custom') || '';
+$('#customTarget').value = localStorage.getItem('langria-target-custom') || '';
 $('#targetSelect').addEventListener('change', () => {
   setTarget($('#targetSelect').value);
   if (target === customTarget && !$('#customTarget').value.trim()) { $('#customTarget').focus(); return; }
   if (source.value.trim()) scheduleTranslation();
 });
-$('#customTarget').addEventListener('input', () => { localStorage.setItem('lingo-target-custom', $('#customTarget').value.trim()); if (source.value.trim()) scheduleTranslation(); });
+$('#customTarget').addEventListener('input', () => { localStorage.setItem('langria-target-custom', $('#customTarget').value.trim()); if (source.value.trim()) scheduleTranslation(); });
 
 // Redraws the text that is not marked with data-i18n.
 function renderLanguage() {
   LangriaI18n.apply();
-  if (!localStorage.getItem('lingo-target')) target = LangriaI18n.defaultTarget();
+  if (!localStorage.getItem('langria-target')) target = LangriaI18n.defaultTarget();
   $('#targetSelect').innerHTML = Object.keys(targetLanguages).map((value) => `<option value="${value}">${languageLabel(value)}</option>`).join('') + `<option value="${customTarget}">${t('target.other')}</option>`;
   renderTarget();
   refreshInputInfo();
@@ -438,7 +438,7 @@ function renderLanguage() {
   fillSettings();
   vaultPanel.render();
 }
-LangriaI18n.mountSwitch($('#langSwitch'), (language) => { localStorage.setItem('lingo-ui-language', language); renderLanguage(); });
+LangriaI18n.mountSwitch($('#langSwitch'), (language) => { localStorage.setItem('langria-ui-language', language); renderLanguage(); });
 
 setProvider(provider);
 renderLanguage();
