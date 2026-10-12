@@ -11,37 +11,37 @@ Developer Dashboard の各欄にそのまま貼り付けられるテキストで
 **Description**
 
 ```text
-MyLingo translates the web page you are viewing — or just the text you select — into the language you want, using the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Pages keep their layout, and you can switch back to the original in one click.
+Langria translates the web page you are viewing — or just the text you select — into the language you want, using the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Pages keep their layout, and you can switch back to the original in one click.
 
-MyLingo uses your own API key, and your text goes straight from your browser to that service. A free Gemini API key from Google AI Studio is enough to get started.
+Langria uses your own API key, and your text goes straight from your browser to that service. A free Gemini API key from Google AI Studio is enough to get started.
 
 HOW IT WORKS
 • Click the toolbar icon and press "Translate this page". Only the text is replaced; the layout stays the same.
 • What is on screen is translated first, and the rest as you scroll, so long pages start quickly and use less of your API quota.
 • Content that appears later (for example after "Show more") is translated too.
 • Press "Show original" or Alt+Shift+T to switch back at any time.
-• Select text, right-click and choose "Translate … with MyLingo" to see just that part in a small bubble.
+• Select text, right-click and choose "Translate … with Langria" to see just that part in a small bubble.
 
 FEATURES
 • Switch between ChatGPT, Claude and Gemini, and set the model for each.
 • Translate into English, Japanese, Chinese, Korean, Spanish, French, German and many more — or type any language under "Other".
 • Five translation modes: Faithful, Natural, Business, Casual & social, Technical.
-• Works well on free API plans: when a service says "too many requests", MyLingo waits, tries again and spaces out later requests for you. You can also set a per-minute limit yourself.
+• Works well on free API plans: when a service says "too many requests", Langria waits, tries again and spaces out later requests for you. You can also set a per-minute limit yourself.
 • Input fields, code blocks and elements marked translate="no" are left untouched.
 • The interface is available in English and Japanese.
 
 PRIVACY
-• No MyLingo server: the developer never sees your text or your keys.
+• No Langria server: the developer never sees your text or your keys.
 • API keys and settings are stored only in this browser. You can encrypt your API keys with a passkey (Touch ID, etc.) or a passphrase.
-• MyLingo can read a tab only after you ask it to translate that tab.
+• Langria can read a tab only after you ask it to translate that tab.
 • No analytics, no tracking, no ads.
 
 REQUIREMENTS
 An API key for at least one of OpenAI, Anthropic or Google Gemini (Google AI Studio). API usage is billed by each service according to its pricing; Gemini offers a free tier.
 
-MyLingo is an independent project and is not affiliated with or endorsed by OpenAI, Anthropic or Google.
+Langria is an independent project and is not affiliated with or endorsed by OpenAI, Anthropic or Google.
 
-Source code: https://github.com/shigeya-t/MyLingo
+Source code: https://github.com/shigeya-t/Langria
 ```
 
 ### 日本語（Japanese）
@@ -49,7 +49,7 @@ Source code: https://github.com/shigeya-t/MyLingo
 **Description**
 
 ```text
-MyLingo は、表示中のWebページや選択した文章を、選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳する拡張機能です。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。
+Langria は、表示中のWebページや選択した文章を、選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳する拡張機能です。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。
 
 ご自身のAPIキーを使い、文章はブラウザから各サービスへ直接送られます。Google AI Studio で取得できる無料の Gemini APIキーがあれば、すぐに試せます。
 
@@ -58,7 +58,7 @@ MyLingo は、表示中のWebページや選択した文章を、選んだAIサ�
 ・画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。長いページでもすぐに読み始められ、APIの使用量も抑えられます。
 ・「もっと見る」などで後から表示された部分も翻訳します。
 ・「原文に戻す」または Alt+Shift+T で、いつでも原文に戻せます。
-・文章を選んで右クリックし「MyLingo で「…」を翻訳」を選ぶと、その部分の訳文を吹き出しで表示します。
+・文章を選んで右クリックし「Langria で「…」を翻訳」を選ぶと、その部分の訳文を吹き出しで表示します。
 
 主な機能
 ・ChatGPT / Claude / Gemini を切り替えられます。モデルもサービスごとに設定できます。
@@ -69,7 +69,7 @@ MyLingo は、表示中のWebページや選択した文章を、選んだAIサ�
 ・画面の表示は日本語と英語に対応しています。
 
 プライバシー
-・MyLingo 独自のサーバーはありません。開発者が翻訳する文章やAPIキーを見ることはありません。
+・Langria 独自のサーバーはありません。開発者が翻訳する文章やAPIキーを見ることはありません。
 ・APIキーと設定は、このブラウザの中にだけ保存されます。APIキーはパスキー（Touch ID など）またはパスフレーズで暗号化できます。
 ・翻訳を指示したタブ以外のページは読み取りません。
 ・アクセス解析・トラッキング・広告はありません。
@@ -77,9 +77,9 @@ MyLingo は、表示中のWebページや選択した文章を、選んだAIサ�
 必要なもの
 OpenAI・Anthropic・Google Gemini（Google AI Studio）のいずれかのAPIキー。APIの利用料金は各サービスの料金体系に従って請求されます（Gemini には無料枠があります）。
 
-MyLingo は個人による独立したプロジェクトであり、OpenAI・Anthropic・Google とは提携しておらず、これらの企業による承認を受けたものではありません。
+Langria は個人による独立したプロジェクトであり、OpenAI・Anthropic・Google とは提携しておらず、これらの企業による承認を受けたものではありません。
 
-ソースコード: https://github.com/shigeya-t/MyLingo
+ソースコード: https://github.com/shigeya-t/Langria
 ```
 
 ### カテゴリ・言語など
@@ -88,9 +88,9 @@ MyLingo は個人による独立したプロジェクトであり、OpenAI・Ant
 | --- | --- |
 | Category | Productivity → Tools（仕事効率化 → ツール） |
 | Language | English（既定）、日本語を追加 |
-| Official URL | `https://shigeya-t.github.io/MyLingo/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
-| Homepage URL | `https://shigeya-t.github.io/MyLingo/`（日本語の掲載では `https://shigeya-t.github.io/MyLingo/ja.html`） |
-| Support URL | `https://github.com/shigeya-t/MyLingo/issues` |
+| Official URL | `https://shigeya-t.github.io/Langria/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
+| Homepage URL | `https://shigeya-t.github.io/Langria/`（日本語の掲載では `https://shigeya-t.github.io/Langria/ja.html`） |
+| Support URL | `https://github.com/shigeya-t/Langria/issues` |
 | Mature content | なし |
 
 ### 画像（`store/images/`）
@@ -115,13 +115,13 @@ Translates the web page the user is viewing, or text the user selects, into the 
 **activeTab**
 
 ```text
-Lets MyLingo read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No broad host access to websites is requested.
+Lets Langria read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No broad host access to websites is requested.
 ```
 
 **scripting**
 
 ```text
-Injects MyLingo's own bundled content script (content.js and lib/i18n.js) into the tab the user chose to translate, to extract its text, replace it with the translation, and restore the original. No remote code is injected.
+Injects Langria's own bundled content script (content.js and lib/i18n.js) into the tab the user chose to translate, to extract its text, replace it with the translation, and restore the original. No remote code is injected.
 ```
 
 **storage**
@@ -133,13 +133,13 @@ Stores the user's settings (selected AI service, model names, target language, t
 **contextMenus**
 
 ```text
-Adds "Translate this page with MyLingo" and "Translate “<selected text>” with MyLingo" to the right-click menu.
+Adds "Translate this page with Langria" and "Translate “<selected text>” with Langria" to the right-click menu.
 ```
 
 **Host permissions（api.openai.com / api.anthropic.com / generativelanguage.googleapis.com）**
 
 ```text
-Sends the text to be translated, with the user's own API key, directly to the AI service the user selected (OpenAI, Anthropic or Google Gemini). These are the only hosts MyLingo contacts; it has no server of its own.
+Sends the text to be translated, with the user's own API key, directly to the AI service the user selected (OpenAI, Anthropic or Google Gemini). These are the only hosts Langria contacts; it has no server of its own.
 ```
 
 ### Remote code（リモートコード）
@@ -163,7 +163,7 @@ Sends the text to be translated, with the user's own API key, directly to the AI
 ### Privacy policy URL
 
 ```text
-https://shigeya-t.github.io/MyLingo/privacy/
+https://shigeya-t.github.io/Langria/privacy/
 ```
 
 ## 配布（Distribution）
@@ -177,9 +177,9 @@ https://shigeya-t.github.io/MyLingo/privacy/
 ## 審査担当者へのメモ（Test instructions、任意）
 
 ```text
-MyLingo needs the user's own API key for OpenAI, Anthropic or Google Gemini. To test:
+Langria needs the user's own API key for OpenAI, Anthropic or Google Gemini. To test:
 1. Open the extension's options page (toolbar icon → gear) and enter an API key for one service, then Save.
 2. On any article page, click the toolbar icon, choose that service and press "Translate this page".
-3. Select some text, right-click and choose "Translate … with MyLingo" to see the selection bubble.
+3. Select some text, right-click and choose "Translate … with Langria" to see the selection bubble.
 A free Gemini API key from Google AI Studio (https://aistudio.google.com/apikey) is enough for testing.
 ```

@@ -102,7 +102,7 @@ const png = async (file) => `data:image/png;base64,${(await readFile(file)).toSt
 async function main() {
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
-  const shots = await mkdtemp(join(tmpdir(), 'mylingo-shots-'));
+  const shots = await mkdtemp(join(tmpdir(), 'langria-shots-'));
 
   const server = createServer((req, res) => {
     const lang = new URL(req.url, 'http://x').searchParams.get('lang') || 'en';
@@ -114,7 +114,7 @@ async function main() {
 
   // A copy with broad host permissions so the test can inject the content
   // script without a user gesture (activeTab). The packaged manifest is unchanged.
-  const ext = await mkdtemp(join(tmpdir(), 'mylingo-ext-'));
+  const ext = await mkdtemp(join(tmpdir(), 'langria-ext-'));
   await cp(join(root, 'extension'), ext, { recursive: true });
   const manifest = JSON.parse(await readFile(join(ext, 'manifest.json'), 'utf8'));
   manifest.host_permissions.push('<all_urls>');
@@ -133,7 +133,7 @@ async function main() {
     await popup.close();
   };
 
-  const userData = await mkdtemp(join(tmpdir(), 'mylingo-profile-'));
+  const userData = await mkdtemp(join(tmpdir(), 'langria-profile-'));
   const context = await chromium.launchPersistentContext(userData, {
     headless: false,
     colorScheme: 'light',
@@ -188,7 +188,7 @@ async function main() {
       await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['lib/i18n.js', 'content.js'] });
       await chrome.tabs.sendMessage(tab.id, { type: 'translateSelection', text });
     }, { url: pageUrl, text: selected });
-    await page.waitForFunction(() => document.querySelector('mylingo-bubble')?.shadowRoot.querySelector('.copy')?.offsetParent);
+    await page.waitForFunction(() => document.querySelector('langria-bubble')?.shadowRoot.querySelector('.copy')?.offsetParent);
     await page.waitForTimeout(300);
     await page.screenshot({ path: shot('bubble') });
     await page.evaluate(() => window.scrollTo(0, 0));
@@ -234,7 +234,7 @@ async function main() {
     await composer.screenshot({ path: join(out, file), omitBackground: transparent });
   };
   const frame = (src, extra = '') => `<div class="window ${extra}"><div class="chrome"><i></i><i></i><i></i><span class="url"></span></div><img src="${src}"></div>`;
-  const brand = `<img class="mark" src="${icon}" alt="">MyLingo`;
+  const brand = `<img class="mark" src="${icon}" alt="">Langria`;
 
   await render(128, 128, `<img src="${icon}" style="width:96px;height:96px;margin:16px;display:block">`, 'store-icon-128.png', true);
 
@@ -254,7 +254,7 @@ async function main() {
     await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.start[0]}</h1><p>${c.start[1]}</p></div>
       <div class="steps">${step(0, key)}${step(1, popupStart)}${step(2, afterNarrow)}</div></div>`, `${locale}-5-start.png`);
 
-    await render(440, 280, `<div class="tile" ${lang}><img class="tile-mark" src="${icon}" alt=""><div><div class="name">MyLingo</div><p>${c.taglineShort}</p></div></div>`, `${locale}-promo-small-440x280.png`);
+    await render(440, 280, `<div class="tile" ${lang}><img class="tile-mark" src="${icon}" alt=""><div><div class="name">Langria</div><p>${c.taglineShort}</p></div></div>`, `${locale}-promo-small-440x280.png`);
     await render(1400, 560, `<div class="marquee" ${lang}><div><div class="brand big">${brand}</div><h1>${c.tagline}</h1><p>${c.taglineSub}</p></div>
       <div class="stage">${frame(after, 'hero')}<img class="popup" src="${popup}"></div></div>`, `${locale}-promo-marquee-1400x560.png`);
   }

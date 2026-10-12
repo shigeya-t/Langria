@@ -12,12 +12,12 @@ let menuSetup = Promise.resolve();
 function setUpMenus() {
   menuSetup = menuSetup.then(async () => {
     await loadSettings();
-    const { t } = MyLingoI18n;
+    const { t } = LangriaI18n;
     await chrome.contextMenus.removeAll();
-    chrome.contextMenus.create({ id: 'mylingo-selection', title: t('ext.menuSelection'), contexts: ['selection'] });
-    chrome.contextMenus.create({ id: 'mylingo-page', title: t('ext.menuPage'), contexts: ['page'] });
+    chrome.contextMenus.create({ id: 'langria-selection', title: t('ext.menuSelection'), contexts: ['selection'] });
+    chrome.contextMenus.create({ id: 'langria-page', title: t('ext.menuPage'), contexts: ['page'] });
     await chrome.action.setTitle({ title: t('ext.actionTitle') });
-  }).catch((error) => console.warn('MyLingo: could not set up the menus', error));
+  }).catch((error) => console.warn('Langria: could not set up the menus', error));
 }
 
 chrome.runtime.onInstalled.addListener(setUpMenus);
@@ -27,18 +27,18 @@ chrome.storage.onChanged.addListener((changes, area) => { if (area === 'local' &
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!tab?.id) return;
   try {
-    if (info.menuItemId === 'mylingo-selection') {
+    if (info.menuItemId === 'langria-selection') {
       const message = { type: 'translateSelection', text: info.selectionText };
       if ((await loadSettings()).locked) { await requestUnlock(tab.id, message, info.frameId ?? 0); return; }
       await injectContentScript(tab.id, [info.frameId ?? 0]);
       await chrome.tabs.sendMessage(tab.id, message, { frameId: info.frameId ?? 0 });
-    } else if (info.menuItemId === 'mylingo-page') {
+    } else if (info.menuItemId === 'langria-page') {
       if ((await loadSettings()).locked) { await requestUnlock(tab.id, { type: 'translatePage' }); return; }
       await injectContentScript(tab.id);
       await chrome.tabs.sendMessage(tab.id, { type: 'translatePage' });
     }
   } catch (error) {
-    console.warn('MyLingo: cannot run on this page', error);
+    console.warn('Langria: cannot run on this page', error);
   }
 });
 
@@ -54,7 +54,7 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
     }
     await chrome.tabs.sendMessage(tab.id, { type: 'toggle' });
   } catch (error) {
-    console.warn('MyLingo: cannot run on this page', error);
+    console.warn('Langria: cannot run on this page', error);
   }
 });
 
@@ -65,7 +65,7 @@ async function handleMessage(message, sender) {
   }
   if (message.type === 'translateText') {
     const target = targetLanguageName(settings);
-    if (!target) throw new Error(MyLingoI18n.t('ext.missingTarget'));
+    if (!target) throw new Error(LangriaI18n.t('ext.missingTarget'));
     return { translation: await translateText(settings, message.text, target) };
   }
   if (message.type === 'getSettings') return { settings: { provider: settings.provider, mode: settings.mode, target: targetLanguageName(settings) } };
@@ -82,6 +82,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!['translateSegments', 'translateText', 'getSettings', 'status'].includes(message?.type)) return false;
   handleMessage(message, sender)
     .then(sendResponse)
-    .catch((error) => sendResponse({ error: error.message || MyLingoI18n.t('error.unexpected') }));
+    .catch((error) => sendResponse({ error: error.message || LangriaI18n.t('error.unexpected') }));
   return true;
 });

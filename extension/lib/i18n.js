@@ -1,13 +1,13 @@
 // UI text in English and Japanese, shared by the web app, the extension's
 // pages, its service worker and its content script. Japanese is used when the
 // browser's language is Japanese, English otherwise, unless the user picked
-// one with the language switch (stored by each caller: `lingo-ui-language` in
+// one with the language switch (stored by each caller: `langria-ui-language` in
 // the web app's localStorage, `uiLanguage` in the extension's storage).
-// A classic script that sets `MyLingoI18n`, like vault.js and languages.js.
+// A classic script that sets `LangriaI18n`, like vault.js and languages.js.
 (() => {
   // The extension injects this with content.js every time; keep the first
   // copy, whose language content.js has already set.
-  if (globalThis.MyLingoI18n) return;
+  if (globalThis.LangriaI18n) return;
   const messages = {
     en: {
       'lang.switch': 'Display language',
@@ -93,18 +93,18 @@
       'error.emptyWeb': 'No translation came back: the model did not reply with text. Check the model name in Settings.',
       'error.empty': 'No translation came back. Check the model name in Settings.',
       'error.truncated': 'The translation was cut off at the model\'s output limit. Translate a shorter passage at a time.',
-      'error.locked': 'API keys are locked. Unlock them in MyLingo settings.',
+      'error.locked': 'API keys are locked. Unlock them in Langria settings.',
       'error.missingKey': 'No {name} API key is set. Enter it in Settings.',
       'error.missingKeyVault': 'Your encrypted API keys do not include a {name} key. Unlock them in Settings and enter it.',
 
       // Extension
-      'ext.actionTitle': 'Translate the page with MyLingo',
-      'ext.menuSelection': 'Translate “%s” with MyLingo',
-      'ext.menuPage': 'Translate this page with MyLingo',
-      'ext.missingTarget': 'No target language entered. Open MyLingo in the toolbar and type a language name under “Other”.',
+      'ext.actionTitle': 'Translate the page with Langria',
+      'ext.menuSelection': 'Translate “%s” with Langria',
+      'ext.menuPage': 'Translate this page with Langria',
+      'ext.missingTarget': 'No target language entered. Open Langria in the toolbar and type a language name under “Other”.',
       'ext.missingTargetPopup': 'No target language entered. Type a language name under “Other” in the popup.',
       'ext.startFailed': 'Could not start translating.',
-      'ext.bubble': 'MyLingo translation',
+      'ext.bubble': 'Langria translation',
       'ext.close': 'Close',
       'ext.copy': 'Copy',
       'popup.aiService': 'AI service',
@@ -125,13 +125,13 @@
       'popup.starting': 'Starting translation…',
       'popup.startFailed': 'Could not start translating. Reload the page and try again.',
       'popup.shortcut': 'Alt+Shift+T toggles',
-      'options.pageTitle': 'MyLingo Settings',
+      'options.pageTitle': 'Langria Settings',
       'options.description': 'Enter the API key and model for each AI service. Keys are stored only in this browser’s extension storage (<code>chrome.storage.local</code>).',
       'options.rateLimit': 'Max requests per minute',
       'options.rateHint': '0 = unlimited',
       'options.saved': 'Settings saved',
       'options.securityNote': 'When translating, the page text and your API key go straight from the extension to each AI service’s API, not through any server. Password fields, text inputs and code blocks are not translated.',
-      'unlock.pageTitle': 'Unlock MyLingo',
+      'unlock.pageTitle': 'Unlock Langria',
       'unlock.message': 'API keys are locked. Translation continues once you unlock them.',
       'unlock.button': 'Unlock',
       'unlock.passkey': 'Unlock with a passkey (Touch ID, etc.)',
@@ -148,7 +148,7 @@
       'vault.noPrf': 'This browser does not support encrypting with a passkey (PRF).',
       'vault.noBiometrics': 'Touch ID or other biometrics are not available on this device.',
       'vault.prfUnsupported': 'This browser or authenticator does not support encrypting with a passkey (PRF). Encrypt with a passphrase instead.',
-      'vault.userName': 'MyLingo API keys',
+      'vault.userName': 'Langria API keys',
       'vault.tooShort': 'Use a passphrase of at least {min} characters.',
       'vault.wrongPasskey': 'Could not decrypt. Use the same passkey you encrypted with.',
       'vault.wrongPassphrase': 'Wrong passphrase.',
@@ -268,17 +268,17 @@
       'error.emptyWeb': '翻訳結果を取得できませんでした。モデルからテキスト形式の応答が返らなかったため、設定のモデル名を確認してください。',
       'error.empty': '翻訳結果を取得できませんでした。設定のモデル名を確認してください。',
       'error.truncated': 'モデルの出力上限に達したため、翻訳が途中で切れました。原文を短く分けて翻訳してください。',
-      'error.locked': 'APIキーがロックされています。MyLingo の設定画面でロックを解除してください。',
+      'error.locked': 'APIキーがロックされています。Langria の設定画面でロックを解除してください。',
       'error.missingKey': '{name} のAPIキーが未設定です。設定画面から入力してください。',
       'error.missingKeyVault': '暗号化して保存したAPIキーに {name} のキーが含まれていません。設定画面でロックを解除してから入力してください。',
 
-      'ext.actionTitle': 'MyLingo でページを翻訳',
-      'ext.menuSelection': 'MyLingo で「%s」を翻訳',
-      'ext.menuPage': 'MyLingo でこのページを翻訳',
-      'ext.missingTarget': '翻訳先の言語が未入力です。ツールバーの MyLingo で「その他」の言語名を入力してください。',
+      'ext.actionTitle': 'Langria でページを翻訳',
+      'ext.menuSelection': 'Langria で「%s」を翻訳',
+      'ext.menuPage': 'Langria でこのページを翻訳',
+      'ext.missingTarget': '翻訳先の言語が未入力です。ツールバーの Langria で「その他」の言語名を入力してください。',
       'ext.missingTargetPopup': '翻訳先の言語が未入力です。ポップアップの「その他」に言語名を入力してください。',
       'ext.startFailed': '翻訳を開始できませんでした。',
-      'ext.bubble': 'MyLingo 翻訳',
+      'ext.bubble': 'Langria 翻訳',
       'ext.close': '閉じる',
       'ext.copy': 'コピー',
       'popup.aiService': 'AIサービス',
@@ -299,13 +299,13 @@
       'popup.starting': '翻訳を開始しています…',
       'popup.startFailed': '翻訳を開始できませんでした。ページを再読み込みしてからもう一度お試しください。',
       'popup.shortcut': 'Alt+Shift+T で切替',
-      'options.pageTitle': 'MyLingo 設定',
+      'options.pageTitle': 'Langria 設定',
       'options.description': '各AIサービスのAPIキーとモデル名を入力してください。キーはこのブラウザの拡張機能ストレージ（<code>chrome.storage.local</code>）にのみ保存されます。',
       'options.rateLimit': '1分あたりの最大リクエスト数',
       'options.rateHint': '0 = 制限なし',
       'options.saved': '設定を保存しました',
       'options.securityNote': '翻訳時は、ページのテキストとAPIキーが拡張機能から各AIサービスのAPIへ直接送信されます。サーバーを経由しません。パスワード入力欄・テキスト入力欄・コードブロックは翻訳の対象外です。',
-      'unlock.pageTitle': 'MyLingo ロック解除',
+      'unlock.pageTitle': 'Langria ロック解除',
       'unlock.message': 'APIキーがロックされています。解除すると翻訳を続けます。',
       'unlock.button': 'ロックを解除',
       'unlock.passkey': 'パスキー（Touch ID など）で解除',
@@ -321,7 +321,7 @@
       'vault.noPrf': 'このブラウザはパスキーによる暗号化（PRF）に対応していません。',
       'vault.noBiometrics': 'この端末では Touch ID などの生体認証を使えません。',
       'vault.prfUnsupported': 'このブラウザまたは認証器は、パスキーによる暗号化（PRF）に対応していません。パスフレーズで暗号化してください。',
-      'vault.userName': 'MyLingo APIキー',
+      'vault.userName': 'Langria APIキー',
       'vault.tooShort': 'パスフレーズは{min}文字以上にしてください。',
       'vault.wrongPasskey': '復号できませんでした。暗号化したときと同じパスキーで認証してください。',
       'vault.wrongPassphrase': 'パスフレーズが違います。',
@@ -382,9 +382,9 @@
     return text.replace(/\{(\w+)\}/g, (match, name) => (name in params ? params[name] : match));
   }
 
-  // Label of a MyLingoLanguages target in the UI language.
+  // Label of a LangriaLanguages target in the UI language.
   function languageLabel(target) {
-    const labels = globalThis.MyLingoLanguages?.targets[target];
+    const labels = globalThis.LangriaLanguages?.targets[target];
     return labels?.[current] || labels?.en || target;
   }
 
@@ -429,5 +429,5 @@
     return { render };
   }
 
-  globalThis.MyLingoI18n = { t, setLanguage, languageLabel, defaultTarget, apply, mountSwitch, get language() { return current; } };
+  globalThis.LangriaI18n = { t, setLanguage, languageLabel, defaultTarget, apply, mountSwitch, get language() { return current; } };
 })();

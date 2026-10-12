@@ -17,7 +17,7 @@ export const translationModes = {
 import './languages.js';
 import './i18n.js';
 
-export const { targets: targetLanguages, custom: customTarget } = globalThis.MyLingoLanguages;
+export const { targets: targetLanguages, custom: customTarget } = globalThis.LangriaLanguages;
 // Values saved by earlier versions, which offered only these (and 'auto').
 const legacyTargets = { en: 'English', ja: 'Japanese', auto: '' };
 
@@ -26,20 +26,20 @@ export function targetLanguageName(settings) {
   return settings.target === customTarget ? (settings.customTarget || '').trim() : settings.target;
 }
 
-// `target` left empty means MyLingoI18n.defaultTarget(), which follows the UI language.
+// `target` left empty means LangriaI18n.defaultTarget(), which follows the UI language.
 export const defaults = { provider: 'openai', mode: 'faithful', target: '', customTarget: '', apiKeys: {}, models: {}, rateLimits: {}, rateLimitsVersion: 0, uiLanguage: '' };
 
 // With encryption on, chrome.storage.local holds only the encrypted `vault`
 // (see lib/vault.js); the options page puts the decrypted keys in
 // chrome.storage.session, which stays in memory until the browser closes.
-// Also switches MyLingoI18n to the UI language picked with the switch
+// Also switches LangriaI18n to the UI language picked with the switch
 // (`uiLanguage`, empty to follow the browser).
 export async function loadSettings() {
   const { vault, ...stored } = await chrome.storage.local.get([...Object.keys(defaults), 'vault']);
   const settings = { ...defaults, ...stored };
-  MyLingoI18n.setLanguage(settings.uiLanguage);
+  LangriaI18n.setLanguage(settings.uiLanguage);
   settings.target = legacyTargets[settings.target] ?? settings.target;
-  if (settings.target !== customTarget && !targetLanguages[settings.target]) settings.target = MyLingoI18n.defaultTarget();
+  if (settings.target !== customTarget && !targetLanguages[settings.target]) settings.target = LangriaI18n.defaultTarget();
   if (vault) {
     const { apiKeys } = await chrome.storage.session.get('apiKeys');
     settings.apiKeys = apiKeys || {};
@@ -71,7 +71,7 @@ export async function requestUnlock(tabId, message, frameId = 0) {
 
 const PENDING_TTL = 10 * 60 * 1000;
 
-// Injected on demand; content.js uses MyLingoI18n.
+// Injected on demand; content.js uses LangriaI18n.
 export const contentScripts = ['lib/i18n.js', 'content.js'];
 
 export async function runPending() {
@@ -86,17 +86,17 @@ export async function runPending() {
 }
 
 // Decrypts the keys into chrome.storage.session. Pages that call this load
-// lib/vault.js, which defines MyLingoVault.
+// lib/vault.js, which defines LangriaVault.
 export async function unlockVault(passphrase) {
   const { vault } = await chrome.storage.local.get('vault');
-  const { keys } = await MyLingoVault.unlock(vault, passphrase);
+  const { keys } = await LangriaVault.unlock(vault, passphrase);
   await chrome.storage.session.set({ apiKeys: keys });
   return keys;
 }
 
 export function missingKeyMessage(settings) {
   const name = configs[settings.provider].name;
-  return MyLingoI18n.t(settings.lockMethod ? 'error.missingKeyVault' : 'error.missingKey', { name });
+  return LangriaI18n.t(settings.lockMethod ? 'error.missingKeyVault' : 'error.missingKey', { name });
 }
 
 export function modelFor(settings, provider = settings.provider) {

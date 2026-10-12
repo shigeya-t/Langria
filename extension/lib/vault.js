@@ -1,13 +1,13 @@
 // Encrypts the API keys at rest with a key derived from a passkey (the
 // WebAuthn PRF extension, e.g. Touch ID) or from a passphrase, and renders the
 // settings panel that manages it. Shared by the web app and the extension's
-// options page, so it is a classic script that sets `MyLingoVault`.
+// options page, so it is a classic script that sets `LangriaVault`.
 (() => {
   const encoder = new TextEncoder();
   const PBKDF2_ITERATIONS = 600000;
   const MIN_PASSPHRASE = 8;
   // Looked up when used: the extension's modules load i18n.js after this script.
-  const t = (key, params) => globalThis.MyLingoI18n.t(key, params);
+  const t = (key, params) => globalThis.LangriaI18n.t(key, params);
   const methodName = (method) => t(method === 'passkey' ? 'vault.methodPasskey' : 'vault.methodPassphrase');
 
   const random = (length) => crypto.getRandomValues(new Uint8Array(length));
@@ -65,7 +65,7 @@
 
   async function prfKey(secret) {
     const base = await crypto.subtle.importKey('raw', secret, 'HKDF', false, ['deriveKey']);
-    return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(32), info: encoder.encode('MyLingo API keys v1') }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    return crypto.subtle.deriveKey({ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(32), info: encoder.encode('Langria API keys v1') }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
   }
 
   const prfUnsupported = () => new VaultError(t('vault.prfUnsupported'));
@@ -88,7 +88,7 @@
   async function createPasskey() {
     const prfSalt = random(32);
     const credential = await navigator.credentials.create({ publicKey: {
-      rp: { name: 'MyLingo' },
+      rp: { name: 'Langria' },
       user: { id: random(16), name: t('vault.userName'), displayName: t('vault.userName') },
       challenge: random(32),
       pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
@@ -253,5 +253,5 @@
     return { render };
   }
 
-  globalThis.MyLingoVault = { create, unlock, reseal, mountPanel, friendlyError };
+  globalThis.LangriaVault = { create, unlock, reseal, mountPanel, friendlyError };
 })();

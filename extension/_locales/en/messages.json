@@ -1,6 +1,6 @@
 {
-  "extName": { "message": "MyLingo – AI Web Page Translator" },
+  "extName": { "message": "Langria – AI Web Page Translator" },
   "description": { "message": "Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key." },
-  "actionTitle": { "message": "Translate the page with MyLingo" },
+  "actionTitle": { "message": "Translate the page with Langria" },
   "toggleCommand": { "message": "Translate the page / show the original" }
 }

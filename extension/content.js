@@ -1,7 +1,7 @@
 // Injected on demand (popup, shortcut, context menu). The guard keeps repeated
 // injections into the same page from registering duplicate listeners.
-if (!window.__myLingoLoaded) {
-  window.__myLingoLoaded = true;
+if (!window.__langriaLoaded) {
+  window.__langriaLoaded = true;
 
   const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'TEXTAREA', 'INPUT', 'SELECT', 'OPTION', 'CODE', 'PRE', 'KBD', 'SAMP', 'VAR', 'SVG', 'MATH', 'CANVAS', 'IFRAME']);
   const BATCH_CHARS = 2500;
@@ -37,9 +37,9 @@ if (!window.__myLingoLoaded) {
 
   // UI text follows the language picked in the extension (lib/i18n.js is
   // injected before this script).
-  const { t } = MyLingoI18n;
-  const languageReady = chrome.storage.local.get('uiLanguage').then(({ uiLanguage }) => MyLingoI18n.setLanguage(uiLanguage), () => {});
-  chrome.storage.onChanged.addListener((changes, area) => { if (area === 'local' && changes.uiLanguage) MyLingoI18n.setLanguage(changes.uiLanguage.newValue); });
+  const { t } = LangriaI18n;
+  const languageReady = chrome.storage.local.get('uiLanguage').then(({ uiLanguage }) => LangriaI18n.setLanguage(uiLanguage), () => {});
+  chrome.storage.onChanged.addListener((changes, area) => { if (area === 'local' && changes.uiLanguage) LangriaI18n.setLanguage(changes.uiLanguage.newValue); });
 
   const isOwnUi = (element) => bubbleHost && (element === bubbleHost || bubbleHost.contains(element));
 
@@ -323,7 +323,7 @@ if (!window.__myLingoLoaded) {
 
   function showBubble(text, { loading = false, error = false } = {}) {
     if (!bubbleHost) {
-      bubbleHost = document.createElement('mylingo-bubble');
+      bubbleHost = document.createElement('langria-bubble');
       const shadow = bubbleHost.attachShadow({ mode: 'open' });
       shadow.innerHTML = `
         <style>
@@ -337,7 +337,7 @@ if (!window.__myLingoLoaded) {
           @media (prefers-color-scheme: light) { .card { background: #fff; color: #161a17; border-color: #dde2d9; box-shadow: 0 18px 50px rgba(0,0,0,.15); } .head, button { color: #69726c; } button:hover { color: #161a17; } .brand i { background: #5f8a1a; } .copy { border-color: #dde2d9; } .body.loading { color: #69726c; } .body.error { color: #c62828; } }
         </style>
         <div class="card" role="dialog">
-          <div class="head"><span class="brand"><i></i>MyLingo</span><button class="close">×</button></div>
+          <div class="head"><span class="brand"><i></i>Langria</span><button class="close">×</button></div>
           <div class="body"></div>
           <div class="actions"><button class="copy"></button></div>
         </div>`;

@@ -1,7 +1,7 @@
 import { configs, loadSettings } from './lib/providers.js';
 
 const $ = (selector) => document.querySelector(selector);
-const t = (key, params) => MyLingoI18n.t(key, params);
+const t = (key, params) => LangriaI18n.t(key, params);
 const orbs = { openai: '✦', anthropic: 'A', gemini: '✧' };
 
 // `keepTyped` keeps values typed but not saved yet, for redrawing in another UI language.
@@ -72,7 +72,7 @@ function typedKeys() { return Object.fromEntries(Object.keys(configs).map((id) =
 
 async function saveApiKeys(keys) {
   if (!vault) { plain = keys; await chrome.storage.local.set({ apiKeys: keys }); return; }
-  vault = await MyLingoVault.reseal(vault, unlocked.key, keys);
+  vault = await LangriaVault.reseal(vault, unlocked.key, keys);
   unlocked.keys = keys;
   await chrome.storage.local.set({ vault });
   await chrome.storage.session.set({ apiKeys: keys });
@@ -86,12 +86,12 @@ async function refresh() {
   vaultPanel.render();
 }
 
-const vaultPanel = MyLingoVault.mountPanel($('#vaultPanel'), {
+const vaultPanel = LangriaVault.mountPanel($('#vaultPanel'), {
   state: () => ({ method: vault?.method || null, unlocked: Boolean(unlocked), sessionUnlocked }),
   async protect(method, passphrase) {
     // Include keys typed into the form but not saved yet.
     const keys = typedKeys();
-    const created = await MyLingoVault.create(method, keys, passphrase);
+    const created = await LangriaVault.create(method, keys, passphrase);
     await chrome.storage.local.set({ vault: created.vault });
     await chrome.storage.local.remove('apiKeys');
     await chrome.storage.session.set({ apiKeys: keys });
@@ -99,7 +99,7 @@ const vaultPanel = MyLingoVault.mountPanel($('#vaultPanel'), {
     await refresh();
   },
   async unlock(passphrase) {
-    unlocked = await MyLingoVault.unlock(vault, passphrase);
+    unlocked = await LangriaVault.unlock(vault, passphrase);
     await chrome.storage.session.set({ apiKeys: unlocked.keys });
     await refresh();
   },
@@ -123,13 +123,13 @@ const vaultPanel = MyLingoVault.mountPanel($('#vaultPanel'), {
   }
 });
 
-$('#commitHash').textContent = globalThis.MYLINGO_COMMIT || '';
+$('#commitHash').textContent = globalThis.LANGRIA_COMMIT || '';
 
-const languageSwitch = MyLingoI18n.mountSwitch($('#langSwitch'), async (language) => {
+const languageSwitch = LangriaI18n.mountSwitch($('#langSwitch'), async (language) => {
   await chrome.storage.local.set({ uiLanguage: language });
-  MyLingoI18n.apply();
+  LangriaI18n.apply();
   renderFields(await loadSettings(), { keepTyped: true });
   vaultPanel.render();
 });
 
-loadSettings().then(() => { MyLingoI18n.apply(); languageSwitch.render(); refresh(); });
+loadSettings().then(() => { LangriaI18n.apply(); languageSwitch.render(); refresh(); });

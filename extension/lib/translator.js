@@ -1,6 +1,6 @@
 import { configs, translationModes, modelFor, missingKeyMessage } from './providers.js';
 
-const t = (key, params) => MyLingoI18n.t(key, params);
+const t = (key, params) => LangriaI18n.t(key, params);
 
 // Errors that retrying with a smaller batch cannot fix (bad key, quota, network...).
 export class FatalTranslationError extends Error {}
@@ -73,7 +73,7 @@ function learnLimit(settings, perMinute) {
   if (learnedLimits[id] <= limit) return;
   learnedLimits[id] = limit;
   chrome.storage.session.set({ learnedLimits }).catch(() => {});
-  console.warn(`MyLingo: ${id} allows ${perMinute} requests per minute; pacing to ${limit}`);
+  console.warn(`Langria: ${id} allows ${perMinute} requests per minute; pacing to ${limit}`);
 }
 
 // Gemini names the quota it hit in a QuotaFailure detail (quotaId
@@ -126,12 +126,12 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
   try {
     response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: JSON.stringify(body), signal });
   } catch (error) {
-    console.warn(`MyLingo: ${provider} request failed after ${Date.now() - started} ms`, error);
+    console.warn(`Langria: ${provider} request failed after ${Date.now() - started} ms`, error);
     throw signal.aborted ? timedOut() : new FatalTranslationError(t('error.network', { name: configs[provider].name }));
   }
   const data = await response.json().catch(() => ({}));
   // Shown in the service worker's console (chrome://extensions > Inspect views).
-  console.info(`MyLingo: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
+  console.info(`Langria: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
   if (response.status === 429) {
     const wait = retryAfterMs(response, data);
@@ -151,12 +151,12 @@ async function callModel(settings, system, user, maxTokens) {
     try {
       return await requestModel(settings, system, user, maxTokens);
     } catch (error) {
-      if (error instanceof TimeoutError && attempt < MAX_RETRIES) { console.warn('MyLingo: timed out, retrying'); continue; }
+      if (error instanceof TimeoutError && attempt < MAX_RETRIES) { console.warn('Langria: timed out, retrying'); continue; }
       if (!(error instanceof RateLimitError) || attempt >= MAX_RETRIES) throw error;
       const wait = error.retryAfterMs ?? 5000 * 2 ** attempt;
       if (wait > MAX_RETRY_WAIT_MS) throw error;
       if (error.perMinute) learnLimit(settings, error.perMinute);
-      console.warn(`MyLingo: rate limited, retrying in ${wait} ms`);
+      console.warn(`Langria: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
     }
   }
@@ -285,19 +285,19 @@ export async function translateSegments(settings, segments, target, retried = fa
     // on their own batch, away from the text that misled the model.
     const wrong = retried ? [] : parsed.flatMap((translation, index) => (wrongLanguage(segments[index], translation, target) ? [index] : []));
     if (!wrong.length) return parsed;
-    console.warn(`MyLingo: ${wrong.length} segment(s) not in ${target}, retrying`);
+    console.warn(`Langria: ${wrong.length} segment(s) not in ${target}, retrying`);
     const again = await translateSegments(settings, wrong.map((index) => segments[index]), target, true);
     wrong.forEach((index, i) => { parsed[index] = again[i]; });
     return parsed;
   }
-  console.warn(`MyLingo: no usable reply for ${segments.length} segment(s), splitting`);
+  console.warn(`Langria: no usable reply for ${segments.length} segment(s), splitting`);
   if (segments.length === 1) {
     // A segment the service refuses stays in the original language rather
     // than stopping the rest of the page.
     try {
       return [await translateText(settings, segments[0], target)];
     } catch (error) {
-      if (error instanceof BlockedError) { console.warn('MyLingo: left untranslated:', segments[0]); return segments; }
+      if (error instanceof BlockedError) { console.warn('Langria: left untranslated:', segments[0]); return segments; }
       throw error;
     }
   }
