@@ -4,19 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyLingo – AI Web Page Translator</title>
-    <meta name="description" content="Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key." />
+    <meta name="description" content="Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key. Available as a Chrome extension and a web app." />
     <link rel="alternate" hreflang="ja" href="ja.html" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="stylesheet" href="privacy/privacy.css" />
   </head>
   <body>
     <main>
       <header>
-        <span class="brand">MyLingo</span>
+        <span class="brand"><img class="brand-mark" src="favicon.svg" alt="" />MyLingo</span>
         <nav>English | <a href="ja.html" lang="ja">日本語</a></nav>
       </header>
 
       <h1>MyLingo – AI Web Page Translator</h1>
-      <p>A Chrome extension that translates the web page you are viewing — or just the text you select — into the language you want, using the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Pages keep their layout, and you can switch back to the original in one click.</p>
+      <p>Translate the web page you are viewing — or just the text you select — into the language you want, using the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). MyLingo comes as a Chrome extension and as a simple web app for translating text you type or paste.</p>
+
+      <figure class="shot">
+        <img src="images/en-1-page.png" width="1280" height="800" alt="A Japanese article translated into English in place, with the MyLingo popup open" />
+      </figure>
 
       <div class="summary">
         <ul>
@@ -26,12 +33,38 @@
         </ul>
       </div>
 
-      <h2>How it works</h2>
+      <h2>Chrome extension</h2>
+      <p>Translates the page you are viewing. Pages keep their layout, and you can switch back to the original in one click.</p>
       <ol>
         <li>Enter an API key for OpenAI, Anthropic or Google Gemini on the extension’s settings page.</li>
         <li>Click the toolbar icon and press “Translate this page”. What is on screen is translated first, and the rest as you scroll.</li>
         <li>Press “Show original” or Alt+Shift+T to switch back. To translate just a part, select text, right-click and choose “Translate … with MyLingo”.</li>
       </ol>
+
+      <div class="shots">
+        <figure class="shot">
+          <img src="images/en-2-selection.png" width="1280" height="800" loading="lazy" alt="Selected text translated in a bubble" />
+          <figcaption>Translate just a selection from the right-click menu.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/en-3-layout.png" width="1280" height="800" loading="lazy" alt="The original and translated page side by side" />
+          <figcaption>Only the text changes; the layout stays the same.</figcaption>
+        </figure>
+      </div>
+
+      <h2>Web app</h2>
+      <p>A translation tool for text you type or paste. The source language is detected automatically, and the text is translated shortly after you stop typing.</p>
+
+      <figure class="shot">
+        <img src="images/en-web-app.png" width="1280" height="755" loading="lazy" alt="The MyLingo web app translating Japanese text into English" />
+      </figure>
+
+      <ul>
+        <li>The same services, target languages and translation modes as the extension.</li>
+        <li>A swap button exchanges the two panes and the target language, handy for writing replies.</li>
+        <li>Light and dark mode.</li>
+        <li>A static site with no build step: serve the repository folder (for example with <code>python3 -m http.server</code>) and open it in your browser. See the <a href="https://github.com/shigeya-t/MyLingo#about-the-server">README</a> for details.</li>
+      </ul>
 
       <h2>Features</h2>
       <ul>
