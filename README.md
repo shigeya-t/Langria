@@ -158,7 +158,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── AGENTS.md    # Development notes for AI coding agents
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
-├── docs/privacy/ # Privacy policy (published with GitHub Pages)
+├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── store/       # Chrome Web Store listing text, images and publishing steps
 ├── scripts/     # package-extension.sh: builds the zip to upload to the store
 └── extension/   # Chrome extension (page translation)

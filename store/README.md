@@ -7,7 +7,7 @@ MyLingo の拡張機能を Chrome ウェブストアに**公開（Public）**で
 | `listing.md` | 説明文（英語・日本語）、権限の理由、データ使用の申告など、ダッシュボードに貼り付けるテキスト |
 | `images/` | ストア用の画像（スクリーンショット 1280×800、プロモーションタイル、ストアアイコン） |
 | `capture.mjs` | `images/` を作り直すスクリプト（Playwright を使用） |
-| `../docs/privacy/` | プライバシーポリシー（GitHub Pages で公開） |
+| `../docs/` | 紹介ページ（`index.html` / `ja.html`、Official URL・Homepage URL に使う）とプライバシーポリシー（`privacy/`）。GitHub Pages で公開 |
 | `../scripts/package-extension.sh` | アップロードする zip を作るスクリプト |
 
 ## 1. 初回だけ必要な準備
@@ -17,14 +17,17 @@ MyLingo の拡張機能を Chrome ウェブストアに**公開（Public）**で
 3. **Account** タブで連絡先メールアドレスを設定し、届いたメールで確認する。
 4. **トレーダー申告**: 個人の非営利の配布なら「非トレーダー」を選ぶ（トレーダーの場合は住所・電話番号などがストアに表示されます）。
 
-## 2. プライバシーポリシーを GitHub Pages で公開する
+## 2. 紹介ページとプライバシーポリシーを GitHub Pages で公開する
 
 1. この変更を `main` にマージする。
 2. GitHub のリポジトリで **Settings → Pages** を開き、**Source: Deploy from a branch**、**Branch: `main` / `/docs`** を選んで保存する。
    - `/docs` を選ぶと `docs/` の中だけが公開されます。Webアプリ（リポジトリ直下の `index.html`）は公開されません。
 3. 数分後に次のURLが開けることを確認する。
-   - 英語: <https://shigeya-t.github.io/MyLingo/privacy/>
-   - 日本語: <https://shigeya-t.github.io/MyLingo/privacy/ja.html>
+   - 紹介ページ: <https://shigeya-t.github.io/MyLingo/>（日本語: <https://shigeya-t.github.io/MyLingo/ja.html>）
+   - プライバシーポリシー: <https://shigeya-t.github.io/MyLingo/privacy/>（日本語: <https://shigeya-t.github.io/MyLingo/privacy/ja.html>）
+4. （Official URL を設定する場合）[Google Search Console](https://search.google.com/search-console) で **URL プレフィックス** に `https://shigeya-t.github.io/MyLingo/` を入力し、**HTML ファイル** の方法で確認する。
+   - ダウンロードした `google….html` を `docs/` に置いて `main` にマージし、公開されてから「確認」を押す。
+   - デベロッパー登録と同じ Google アカウントで確認すると、ダッシュボードの **Official URL** で選べるようになります。
 
 ## 3. アップロードする zip を作る
 

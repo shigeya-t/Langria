@@ -51,9 +51,12 @@ const copy = {
     bubble: ['Translate just a selection', 'Right-click selected text for a quick translation in a bubble.'],
     compare: ['Same layout, new language', 'Only the text changes. Switch back to the original at any time (Alt+Shift+T).'],
     options: ['Your keys stay in your browser', 'Requests go straight to the AI service. Encrypt keys with a passkey or passphrase.'],
+    start: ['Start in three steps', 'All you need is an API key. A free Gemini key from Google AI Studio is enough.'],
+    steps: ['Add your API key in Settings', 'Press “Translate this page”', 'Read it in your language'],
     before: 'Original', after: 'Translated',
-    tagline: 'Page translation with ChatGPT, Claude or Gemini',
-    taglineShort: 'Translate pages with the AI you choose'
+    tagline: 'Translate any page with the AI you choose',
+    taglineSub: 'Works with ChatGPT, Claude and Gemini, using your own API key.',
+    taglineShort: 'Translate any page with the AI you choose'
   },
   ja: {
     pageLang: 'en', target: 'Japanese', ui: 'ja',
@@ -62,9 +65,12 @@ const copy = {
     bubble: ['選択した部分だけを翻訳', '文字を選んで右クリックすると、吹き出しで訳文を表示します。'],
     compare: ['レイアウトはそのまま', '文章だけを差し替えます。いつでも原文に戻せます（Alt+Shift+T）。'],
     options: ['APIキーはブラウザの中だけに', 'サーバーを経由せず各AIサービスへ直接送信。パスキーやパスフレーズで暗号化できます。'],
+    start: ['3ステップで使い始められます', '必要なのはAPIキーだけ。Google AI Studio の無料の Gemini APIキーでも使えます。'],
+    steps: ['設定画面でAPIキーを入力', '「このページを翻訳」を押す', '好きな言語で読む'],
     before: '原文', after: '翻訳後',
-    tagline: 'ChatGPT・Claude・Gemini でWebページを翻訳',
-    taglineShort: '選んだAIでWebページを翻訳'
+    tagline: '表示中のページを、<br>選んだAIで翻訳',
+    taglineSub: 'ChatGPT・Claude・Gemini に対応。ご自身のAPIキーで使えます。',
+    taglineShort: '選んだAIで<br>Webページを翻訳'
   }
 };
 
@@ -114,6 +120,19 @@ async function main() {
   manifest.host_permissions.push('<all_urls>');
   await writeFile(join(ext, 'manifest.json'), JSON.stringify(manifest));
 
+  // The popup, pointed at the demo tab (opened as a tab, it would otherwise see itself).
+  const popupShot = async (page, pageUrl, file) => {
+    const tabId = await sw.evaluate(async (url) => (await chrome.tabs.query({ url }))[0].id, pageUrl);
+    const popup = await context.newPage();
+    await popup.addInitScript((id) => { chrome.tabs.query = async () => [{ id, url: location.href }]; }, tabId);
+    await popup.setViewportSize({ width: 372, height: 600 });
+    await popup.goto(`chrome-extension://${extId}/popup.html`);
+    await popup.waitForFunction(() => !document.querySelector('#actionButton').disabled);
+    await popup.waitForTimeout(400);
+    await popup.locator('body').screenshot({ path: file });
+    await popup.close();
+  };
+
   const userData = await mkdtemp(join(tmpdir(), 'mylingo-profile-'));
   const context = await chromium.launchPersistentContext(userData, {
     headless: false,
@@ -131,8 +150,10 @@ async function main() {
     const translate = (text) => lookup.get(text.trim()) ?? text;
     globalThis.fetch = async (_url, init) => {
       const user = JSON.parse(init.body).messages[0].content;
-      const source = user.match(/^<source>\n([\s\S]*)\n<\/source>$/);
-      const text = source ? translate(source[1]) : JSON.stringify(JSON.parse(user).map(translate));
+      // The user message is "Translate into X:" followed by either a <source> block or a JSON array of segments.
+      const body = user.slice(user.indexOf('\n') + 1);
+      const source = body.match(/^<source>\n([\s\S]*)\n<\/source>$/);
+      const text = source ? translate(source[1]) : JSON.stringify(JSON.parse(body).map(translate));
       await new Promise((resolve) => setTimeout(resolve, 150));
       return new Response(JSON.stringify({ content: [{ type: 'text', text }] }), { headers: { 'Content-Type': 'application/json' } });
     };
@@ -150,6 +171,7 @@ async function main() {
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(500);
     await page.screenshot({ path: shot('before') });
+    await popupShot(page, pageUrl, shot('popup-start'));
 
     // Selection bubble on the original page.
     // Scrolled so the bubble opens below the selection, as it usually does.
@@ -181,17 +203,10 @@ async function main() {
     await page.waitForFunction((title) => document.querySelector('h1').textContent === title, article.title[c.pageLang === 'en' ? 1 : 0]);
     await page.waitForTimeout(800);
     await page.screenshot({ path: shot('after') });
+    await page.setViewportSize({ width: 460, height: 560 });
+    await page.screenshot({ path: shot('after-narrow') });
 
-    // The popup, pointed at the demo tab (opened as a tab, it would otherwise see itself).
-    const tabId = await sw.evaluate(async (url) => (await chrome.tabs.query({ url }))[0].id, pageUrl);
-    const popup = await context.newPage();
-    await popup.addInitScript((id) => { chrome.tabs.query = async () => [{ id, url: location.href }]; }, tabId);
-    await popup.setViewportSize({ width: 372, height: 600 });
-    await popup.goto(`chrome-extension://${extId}/popup.html`);
-    await popup.waitForFunction(() => !document.querySelector('#actionButton').disabled);
-    await popup.waitForTimeout(400);
-    await popup.locator('body').screenshot({ path: shot('popup') });
-    await popup.close();
+    await popupShot(page, pageUrl, shot('popup'));
 
     const options = await context.newPage();
     await options.setViewportSize({ width: 1200, height: 750 });
@@ -199,13 +214,19 @@ async function main() {
     await options.addStyleTag({ content: 'html { scrollbar-width:none; }' });
     await options.waitForTimeout(600);
     await options.screenshot({ path: shot('options') });
+    // Just the heading and the card of the service in use, at popup width.
+    await options.setViewportSize({ width: 400, height: 520 });
+    await options.addStyleTag({ content: '.vault, .provider-card:not(:has(#key-anthropic)) { display:none; }' });
+    await options.waitForTimeout(200);
+    await options.screenshot({ path: shot('key') });
     await options.close();
     await page.close();
   }
 
   // Compose the store images.
   const composer = await context.newPage();
-  const icon = await png(join(root, 'extension', 'icons', 'icon-128.png'));
+  // The SVG, not icon-128.png, which has transparent padding around the artwork.
+  const icon = `data:image/svg+xml;base64,${(await readFile(join(root, 'extension', 'icons', 'icon.svg'))).toString('base64')}`;
   const render = async (width, height, body, file, transparent = false) => {
     await composer.setViewportSize({ width, height });
     await composer.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body style="width:${width}px;height:${height}px">${body}</body></html>`);
@@ -214,24 +235,27 @@ async function main() {
   };
   const frame = (src, extra = '') => `<div class="window ${extra}"><div class="chrome"><i></i><i></i><i></i><span class="url"></span></div><img src="${src}"></div>`;
   const brand = `<img class="mark" src="${icon}" alt="">MyLingo`;
-  const chips = '<div class="chips"><span><b class="o">✦</b>ChatGPT</span><span><b class="a">A</b>Claude</span><span><b class="g">✧</b>Gemini</span></div>';
 
   await render(128, 128, `<img src="${icon}" style="width:96px;height:96px;margin:16px;display:block">`, 'store-icon-128.png', true);
 
   for (const [locale, c] of Object.entries(copy)) {
     const s = async (name) => png(join(shots, `${locale}-${name}.png`));
-    const [before, after, bubble, popup, options] = await Promise.all(['before', 'after', 'bubble', 'popup', 'options'].map(s));
+    const [before, after, bubble, popup, options, popupStart, key, afterNarrow] = await Promise.all(['before', 'after', 'bubble', 'popup', 'options', 'popup-start', 'key', 'after-narrow'].map(s));
     const lang = `lang="${locale}"`;
 
-    await render(1280, 800, `<div class="slide" ${lang}><div class="caption"><div class="brand">${brand}</div><h1>${c.hero[0]}<br><em>${c.hero[1]}</em></h1><p>${c.heroSub}</p>${chips}</div>
+    await render(1280, 800, `<div class="slide" ${lang}><div class="caption"><div class="brand">${brand}</div><h1>${c.hero[0]}<br><em>${c.hero[1]}</em></h1><p>${c.heroSub}</p></div>
       <div class="stage">${frame(after, 'hero')}<img class="popup" src="${popup}"></div></div>`, `${locale}-1-page.png`);
     await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.bubble[0]}</h1><p>${c.bubble[1]}</p></div>${frame(bubble, 'center')}</div>`, `${locale}-2-selection.png`);
     await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.compare[0]}</h1><p>${c.compare[1]}</p></div>
       <div class="pair"><figure>${frame(before)}<figcaption>${c.before}</figcaption></figure><figure>${frame(after)}<figcaption>${c.after}</figcaption></figure></div></div>`, `${locale}-3-layout.png`);
     await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.options[0]}</h1><p>${c.options[1]}</p></div>${frame(options, 'center')}</div>`, `${locale}-4-settings.png`);
 
-    await render(440, 280, `<div class="tile" ${lang}><div class="brand big">${brand}</div><p>${c.taglineShort}</p>${chips}</div>`, `${locale}-promo-small-440x280.png`);
-    await render(1400, 560, `<div class="marquee" ${lang}><div><div class="brand big">${brand}</div><h1>${c.tagline}</h1>${chips}</div>
+    const step = (n, img) => `<figure><figcaption><b>${n + 1}</b>${c.steps[n]}</figcaption><div class="shot"><img src="${img}"></div></figure>`;
+    await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.start[0]}</h1><p>${c.start[1]}</p></div>
+      <div class="steps">${step(0, key)}${step(1, popupStart)}${step(2, afterNarrow)}</div></div>`, `${locale}-5-start.png`);
+
+    await render(440, 280, `<div class="tile" ${lang}><img class="tile-mark" src="${icon}" alt=""><div><div class="name">MyLingo</div><p>${c.taglineShort}</p></div></div>`, `${locale}-promo-small-440x280.png`);
+    await render(1400, 560, `<div class="marquee" ${lang}><div><div class="brand big">${brand}</div><h1>${c.tagline}</h1><p>${c.taglineSub}</p></div>
       <div class="stage">${frame(after, 'hero')}<img class="popup" src="${popup}"></div></div>`, `${locale}-promo-marquee-1400x560.png`);
   }
 
@@ -249,8 +273,6 @@ const css = `
   .mark { width:32px; height:32px; border-radius:8px; box-shadow:0 0 0 1px #2a3233; } .big .mark { width:48px; height:48px; border-radius:11px; }
   h1 { margin:0; font-weight:800; letter-spacing:-.01em; } em { font-style:normal; color:#c8f859; }
   .caption p, .tile p { color:#cbd1cd; margin:0; }
-  .chips { display:flex; gap:10px; flex-wrap:wrap; } .chips span { display:flex; align-items:center; gap:8px; padding:8px 14px 8px 8px; border:1px solid #2a3233; border-radius:99px; background:#171c1d; font-weight:700; font-size:15px; }
-  .chips b { width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:13px; color:#101516; } .o{background:#e7eee7}.a{background:#dfb594;font-size:11px!important}.g{background:linear-gradient(135deg,#80c7ff,#d6aaff)}
   .window { border-radius:12px; overflow:hidden; background:#fff; border:1px solid #2a3233; box-shadow:0 30px 80px rgba(0,0,0,.5); }
   .window img { display:block; width:100%; } .chrome { height:30px; background:#202627; display:flex; align-items:center; gap:7px; padding:0 12px; }
   .chrome i { width:10px; height:10px; border-radius:50%; background:#3a4344; } .chrome .url { flex:1; height:16px; margin-left:14px; border-radius:99px; background:#2a3233; max-width:420px; }
@@ -263,10 +285,16 @@ const css = `
   .window.center { width:960px; margin:40px auto 0; }
   .pair { display:flex; gap:28px; justify-content:center; margin-top:64px; } .pair figure { margin:0; width:590px; display:flex; flex-direction:column; align-items:center; gap:14px; }
   .pair figcaption { font-weight:700; font-size:17px; color:#c8f859; }
-  .tile { display:flex; flex-direction:column; justify-content:center; gap:16px; padding:0 36px; } .tile p { font-size:20px; font-weight:700; color:#edf0ea; line-height:1.4; }
-  .tile .chips span { font-size:13px; padding:6px 12px 6px 6px; } .tile .chips b { width:18px; height:18px; font-size:11px; }
+  .tile { display:flex; align-items:center; gap:28px; padding:0 36px; background:radial-gradient(420px 300px at 100% 100%, #3a5214 0%, transparent 70%), radial-gradient(300px 220px at 0% 0%, #1f2a12 0%, transparent 70%), #111516; }
+  .tile-mark { width:120px; height:120px; flex:none; border-radius:28px; box-shadow:0 0 0 1px #2a3233, 0 16px 40px rgba(0,0,0,.5); }
+  .tile .name { font-weight:800; font-size:40px; line-height:1.1; margin-bottom:10px; } .tile p { font-size:22px; font-weight:700; color:#c8f859; line-height:1.35; }
+  .steps { display:flex; gap:28px; justify-content:center; margin-top:44px; } .steps figure { margin:0; width:360px; display:flex; flex-direction:column; gap:16px; }
+  .steps figcaption { display:flex; align-items:center; gap:12px; font-weight:700; font-size:19px; min-height:34px; }
+  .steps figcaption b { width:34px; height:34px; flex:none; border-radius:50%; display:grid; place-items:center; background:#c8f859; color:#111516; font-size:18px; }
+  .steps .shot { height:440px; border-radius:12px; overflow:hidden; border:1px solid #2a3233; background:#f5f6f2; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+  .steps .shot img { display:block; width:100%; }
   .marquee > div:first-child { position:absolute; left:72px; top:0; bottom:0; width:500px; display:flex; flex-direction:column; justify-content:center; gap:24px; }
-  .marquee h1 { font-size:38px; line-height:1.3; } .marquee .stage { position:absolute; left:740px; top:70px; width:760px; } .marquee .stage .hero { width:760px; }
+  .marquee h1 { font-size:44px; line-height:1.25; } .marquee p { margin:0; font-size:19px; line-height:1.6; color:#cbd1cd; } .marquee .stage { position:absolute; left:740px; top:70px; width:760px; } .marquee .stage .hero { width:760px; }
   .marquee .stage .popup { width:250px; right:auto; left:-60px; top:170px; }
 `;
 
