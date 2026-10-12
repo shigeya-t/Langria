@@ -158,7 +158,7 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 ├── AGENTS.md    # AIコーディングエージェント向けの開発メモ
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
-├── docs/privacy/ # プライバシーポリシー（GitHub Pages で公開）
+├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順
 ├── scripts/     # package-extension.sh: ストアにアップロードする zip を作る
 └── extension/   # Chrome拡張機能（Webページ翻訳）

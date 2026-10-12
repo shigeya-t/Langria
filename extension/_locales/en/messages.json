@@ -1,6 +1,6 @@
 {
-  "extName": { "message": "MyLingo LLM Web Page Translator (Any to Any)" },
-  "description": { "message": "Translate the page you are viewing into English, Japanese or any language you like, switching between ChatGPT, Claude and Gemini." },
+  "extName": { "message": "MyLingo – AI Web Page Translator" },
+  "description": { "message": "Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key." },
   "actionTitle": { "message": "Translate the page with MyLingo" },
   "toggleCommand": { "message": "Translate the page / show the original" }
 }

@@ -1,6 +1,6 @@
 {
-  "extName": { "message": "MyLingo LLM Webページ翻訳" },
-  "description": { "message": "ChatGPT・Claude・Gemini を切り替えて、表示中のWebページを英語・日本語などお好みの言語に翻訳します。" },
+  "extName": { "message": "MyLingo – AI Webページ翻訳" },
+  "description": { "message": "ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。" },
   "actionTitle": { "message": "MyLingo でページを翻訳" },
   "toggleCommand": { "message": "ページの翻訳 / 原文に戻す を切り替え" }
 }
