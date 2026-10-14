@@ -25,7 +25,7 @@
         <section class="edition">
           <h2>Chrome拡張機能</h2>
           <p>表示中のWebページや選択した文章を、その場で翻訳します。</p>
-          <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome に追加</a>
+          <a class="button secondary" href="#extension">インストール方法</a>
         </section>
         <section class="edition">
           <h2>Webアプリ</h2>
@@ -48,8 +48,16 @@
 
       <h2 id="extension">Chrome拡張機能</h2>
       <p>表示中のWebページを翻訳します。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。</p>
+
+      <h3 id="install">インストール</h3>
+      <p>次のどちらかの方法でインストールします。</p>
+      <ul>
+        <li><strong>Chrome ウェブストアから</strong>: <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストアの Langria のページ</a>を開き、「Chrome に追加」を押します。更新は自動で入ります。</li>
+        <li><strong>このリポジトリから自分用に</strong>: <a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>をダウンロード（または clone）し、<code>chrome://extensions</code> を開いて右上の「デベロッパーモード」をオンにし、「パッケージ化されていない拡張機能を読み込む」でリポジトリの <code>extension</code> フォルダを選びます。自動では更新されないので、新しいコードを取り込んだら <code>chrome://extensions</code> で Langria の再読み込みボタン（↻）を押してください。詳しくは <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#リポジトリから読み込む開発用">README</a> をご覧ください。</li>
+      </ul>
+
+      <h3>使い方</h3>
       <ol>
-        <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a>から Langria をインストールします。</li>
         <li>拡張機能の設定画面で、OpenAI・Anthropic・Google Gemini のいずれかのAPIキーを入力します。</li>
         <li>ツールバーのアイコンを開いて「このページを翻訳」を押します。画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。</li>
         <li>「原文に戻す」または Alt+Shift+T で原文に戻せます。一部だけ訳したいときは、文章を選んで右クリックし「Langria で「…」を翻訳」を選びます。</li>
