@@ -27,9 +27,10 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `extension/icons/` | `icon.svg` がアイコン・ロゴの元データ（Webアプリのファビコンとヘッダーも参照する。**Webアプリと共用**）。PNG はこの SVG から書き出す。`icon-128.png` だけはストアの規定に合わせ、96×96 の絵の周りに 16px の透明な余白を付ける |
 | `extension/_locales/` | manifest の説明文など（Chrome の言語に従う） |
 | `extension/lib/version.js` | git フックが生成するコミットハッシュ。git管理外で、なくても動く |
+| `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。`main` への push で動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
 | `store/` | Chrome ウェブストアの掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`） |
-| `docs/` | GitHub Pages（`main` の `/docs`）で公開する。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）、`privacy/` はプライバシーポリシー（英語・日本語）。公開されるのは `docs/` の中だけなので、ファビコン（`favicon.svg` / `favicon-32.png` / `apple-touch-icon.png`）は `extension/icons/` から、スクリーンショット（`images/`）は `store/images/` と `assets/` からコピーしている。元を変えたらこちらも差し替える |
+| `docs/` | GitHub Pages のサイトの直下に置かれる（Webアプリは `app/`、上の `build-pages.sh` を参照）。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）で、Webアプリ（`app/`）への入口も兼ねる。`privacy/` はプライバシーポリシー（英語・日本語）。紹介ページから参照できるのは `docs/` の中と `app/` だけなので、ファビコン（`favicon.svg` / `favicon-32.png` / `apple-touch-icon.png`）は `extension/icons/` から、スクリーンショット（`images/`）は `store/images/` と `assets/` からコピーしている。元を変えたらこちらも差し替える |
 
 ### 共用ファイルの決まり
 
@@ -87,6 +88,7 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 拡張機能のページへのアクセス権は `activeTab` だけです。広い `host_permissions` は追加しないでください。
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
 - 権限・送信先・保存するデータを変えたら、`store/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。審査ではコードの動作との一致を見られます。
+- Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。
 - ストアに出す版を作るときは `extension/manifest.json` の `version` を上げます。
 
 ## Git

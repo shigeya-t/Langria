@@ -4,7 +4,12 @@
 
 旧名は MyLingo です。
 
-ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。Webアプリと、表示中のWebページを翻訳するChrome拡張機能があります。
+ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の2つがあります。
+
+- **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
+- **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
+
+紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
 ![Langria の画面](assets/langria-screenshot-ja.png)
 
@@ -24,6 +29,12 @@ ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウ
 ## サーバーについて
 
 アプリ本体にバックエンドサーバーは必要ありません。HTML、CSS、JavaScriptだけで動く静的サイトで、翻訳時はブラウザが各AIサービスのAPIへ直接アクセスします。
+
+### 公開版
+
+Webアプリは GitHub Pages で <https://shigeya-t.github.io/Langria/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`main` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。
+
+公開版で保存した設定は `https://shigeya-t.github.io` の `localStorage` に入り、同じアカウントのほかの GitHub Pages のサイトと共有されます。APIキーを守るため、パスキーかパスフレーズで暗号化する（[APIキーの暗号化](#apiキーの暗号化)）か、自分のサーバーに置いて使ってください。
 
 ### 必要なファイル
 
@@ -161,8 +172,9 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
+├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順
-├── scripts/     # package-extension.sh: ストアにアップロードする zip を作る
+├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る
 └── extension/   # Chrome拡張機能（Webページ翻訳）
     ├── manifest.json
     ├── background.js    # API呼び出し・右クリックメニュー・ショートカット

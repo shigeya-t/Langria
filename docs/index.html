@@ -19,7 +19,20 @@
       </header>
 
       <h1>Langria – AI Web Page Translator</h1>
-      <p>Translate the web page you are viewing — or just the text you select — into the language you want, using the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Langria comes as a Chrome extension and as a simple web app for translating text you type or paste.</p>
+      <p>Translate with the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Langria comes in two forms:</p>
+
+      <div class="editions">
+        <section class="edition">
+          <h2>Chrome extension</h2>
+          <p>Translates the web page you are viewing, or just the text you select, in place.</p>
+          <a class="button secondary" href="#extension">How to install</a>
+        </section>
+        <section class="edition">
+          <h2>Web app</h2>
+          <p>Translates text you type or paste. Runs in any browser, nothing to install.</p>
+          <a class="button" href="app/">Try the web app</a>
+        </section>
+      </div>
 
       <figure class="shot">
         <img src="images/en-1-page.png" width="1280" height="800" alt="A Japanese article translated into English in place, with the Langria popup open" />
@@ -33,9 +46,10 @@
         </ul>
       </div>
 
-      <h2>Chrome extension</h2>
+      <h2 id="extension">Chrome extension</h2>
       <p>Translates the page you are viewing. Pages keep their layout, and you can switch back to the original in one click.</p>
       <ol>
+        <li>Install the extension. It is not yet on the Chrome Web Store, so load the <code>extension</code> folder of the repository from <code>chrome://extensions</code> (see the <a href="https://github.com/shigeya-t/Langria#installation">README</a>).</li>
         <li>Enter an API key for OpenAI, Anthropic or Google Gemini on the extension’s settings page.</li>
         <li>Click the toolbar icon and press “Translate this page”. What is on screen is translated first, and the rest as you scroll.</li>
         <li>Press “Show original” or Alt+Shift+T to switch back. To translate just a part, select text, right-click and choose “Translate … with Langria”.</li>
@@ -52,8 +66,8 @@
         </figure>
       </div>
 
-      <h2>Web app</h2>
-      <p>A translation tool for text you type or paste. The source language is detected automatically, and the text is translated shortly after you stop typing.</p>
+      <h2 id="web-app">Web app</h2>
+      <p>A translation tool for text you type or paste. The source language is detected automatically, and the text is translated shortly after you stop typing. Open <a href="app/">the web app</a>, enter your API key under Settings (the gear icon) and start typing.</p>
 
       <figure class="shot">
         <img src="images/en-web-app.png" width="1280" height="755" loading="lazy" alt="The Langria web app translating Japanese text into English" />
@@ -63,7 +77,7 @@
         <li>The same services, target languages and translation modes as the extension.</li>
         <li>A swap button exchanges the two panes and the target language, handy for writing replies.</li>
         <li>Light and dark mode.</li>
-        <li>A static site with no build step: serve the repository folder (for example with <code>python3 -m http.server</code>) and open it in your browser. See the <a href="https://github.com/shigeya-t/Langria#about-the-server">README</a> for details.</li>
+        <li>Your API key is stored only in your browser. The web app is a static site, so you can also host it yourself; see the <a href="https://github.com/shigeya-t/Langria#about-the-server">README</a>.</li>
       </ul>
 
       <h2>Features</h2>
@@ -77,6 +91,7 @@
 
       <h2>Links</h2>
       <ul>
+        <li><a href="app/">Web app</a></li>
         <li><a href="privacy/">Privacy policy</a></li>
         <li><a href="https://github.com/shigeya-t/Langria">Source code</a></li>
         <li><a href="https://github.com/shigeya-t/Langria/issues">Support and feedback</a></li>

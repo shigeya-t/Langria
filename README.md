@@ -4,7 +4,12 @@ English | [日本語](README.ja.md)
 
 Formerly called MyLingo.
 
-A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes as a web app and as a Chrome extension that translates the page you are viewing.
+A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in two forms:
+
+- **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
+- **Chrome extension**: translates the web page you are viewing, or the text you select (see [Chrome extension](#chrome-extension-page-translation)).
+
+Project page: <https://shigeya-t.github.io/Langria/>
 
 ![Langria screenshot](assets/langria-screenshot.png)
 
@@ -24,6 +29,12 @@ A simple browser translation tool that lets you switch between ChatGPT, Claude a
 ## About the server
 
 The app needs no backend server. It is a static site made of HTML, CSS and JavaScript, and the browser calls each AI service's API directly when translating.
+
+### Published version
+
+The web app is published with GitHub Pages at <https://shigeya-t.github.io/Langria/app/>, next to the project page and privacy policy in `docs/`. On every push to `main`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions").
+
+Settings saved in the published version are stored in `localStorage` for `https://shigeya-t.github.io`, which is shared with any other GitHub Pages site under the same account. To keep API keys safe there, encrypt them with a passkey or passphrase (see [Encrypting API keys](#encrypting-api-keys)), or host the app yourself.
 
 ### Required files
 
@@ -161,8 +172,9 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
+├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
 ├── store/       # Chrome Web Store listing text, images and publishing steps
-├── scripts/     # package-extension.sh: builds the zip to upload to the store
+├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site
 └── extension/   # Chrome extension (page translation)
     ├── manifest.json
     ├── background.js    # API calls, context menu, shortcut
