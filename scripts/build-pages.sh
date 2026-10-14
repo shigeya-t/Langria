@@ -15,8 +15,8 @@ app="$out/app"
 mkdir -p "$app/extension/lib" "$app/extension/icons"
 cp styles.css app.js "$app/"
 # Show the demo notice, which stays hidden when the app is served from the repository.
-sed 's/<p class="demo-notice" \(.*\) hidden>/<p class="demo-notice" \1>/' index.html > "$app/index.html"
-grep -q 'class="demo-notice" data-i18n-html="web.demoNotice">' "$app/index.html" || { echo "build-pages: demo notice not found in index.html" >&2; exit 1; }
+sed 's/<div class="demo-notice" id="demoNotice" hidden>/<div class="demo-notice" id="demoNotice">/' index.html > "$app/index.html"
+grep -q '<div class="demo-notice" id="demoNotice">' "$app/index.html" || { echo "build-pages: demo notice not found in index.html" >&2; exit 1; }
 cp extension/lib/i18n.js extension/lib/vault.js extension/lib/languages.js "$app/extension/lib/"
 cp extension/icons/icon.svg "$app/extension/icons/"
 printf "globalThis.LANGRIA_COMMIT = '%s';\n" "$(git rev-parse --short HEAD)" > "$app/extension/lib/version.js"

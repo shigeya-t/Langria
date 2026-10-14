@@ -27,7 +27,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `extension/icons/` | `icon.svg` がアイコン・ロゴの元データ（Webアプリのファビコンとヘッダーも参照する。**Webアプリと共用**）。PNG はこの SVG から書き出す。`icon-128.png` だけはストアの規定に合わせ、96×96 の絵の周りに 16px の透明な余白を付ける |
 | `extension/_locales/` | manifest の説明文など（Chrome の言語に従う） |
 | `extension/lib/version.js` | git フックが生成するコミットハッシュ。git管理外で、なくても動く |
-| `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `.demo-notice`（デモ用の注意書き）の `hidden` を外す。`master` への push で動く |
+| `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `#demoNotice`（デモ用の注意書き。× で閉じると `localStorage` の `langria-demo-notice-closed` に記録）の `hidden` を外す。`master` への push で動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
 | `store/` | Chrome ウェブストア（公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>）の掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`） |
 | `docs/` | GitHub Pages のサイトの直下に置かれる（Webアプリは `app/`、上の `build-pages.sh` を参照）。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）で、Webアプリ（`app/`）への入口も兼ねる。`privacy/` はプライバシーポリシー（英語・日本語）。紹介ページから参照できるのは `docs/` の中と `app/` だけなので、ファビコン（`favicon.svg` / `favicon-32.png` / `apple-touch-icon.png`）は `extension/icons/` から、スクリーンショット（`images/`）は `store/images/` と `assets/` からコピーしている。元を変えたらこちらも差し替える |

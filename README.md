@@ -32,7 +32,7 @@ The app needs no backend server. It is a static site made of HTML, CSS and JavaS
 
 ### Published version
 
-The web app is published with GitHub Pages at <https://shigeya-t.github.io/Langria/app/>, next to the project page and privacy policy in `docs/`. On every push to `master`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions"). The published copy shows a notice at the top saying it is a demo you can set up for yourself from this repository; the notice stays hidden when you serve the repository yourself.
+The web app is published with GitHub Pages at <https://shigeya-t.github.io/Langria/app/>, next to the project page and privacy policy in `docs/`. On every push to `master`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions"). The published copy shows a notice at the top saying it is a demo you can set up for yourself from this repository (close it with × and it stays closed in that browser); the notice stays hidden when you serve the repository yourself.
 
 Settings saved in the published version are stored in `localStorage` for `https://shigeya-t.github.io`, which is shared with any other GitHub Pages site under the same account. To keep API keys safe there, encrypt them with a passkey or passphrase (see [Encrypting API keys](#encrypting-api-keys)), or host the app yourself.
 
