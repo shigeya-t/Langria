@@ -415,6 +415,9 @@ $('#saveSettings').addEventListener('click', async () => {
   localStorage.setItem(config.modelKey, $('#modelInput').value.trim() || config.model);
   $('#modelLabel').textContent = currentModel(); closeSettings(); toast(t('web.savedProvider', { name: config.name })); if (source.value.trim()) scheduleTranslation();
 });
+// The demo notice is only unhidden on the GitHub Pages build; once closed it stays closed in this browser.
+if (localStorage.getItem('langria-demo-notice-closed')) $('#demoNotice').hidden = true;
+$('#closeDemoNotice').addEventListener('click', () => { $('#demoNotice').hidden = true; localStorage.setItem('langria-demo-notice-closed', '1'); });
 $('#themeToggle').addEventListener('click', () => { const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; localStorage.setItem('langria-theme', next); applyTheme(next); });
 $('#modeSelect').addEventListener('change', () => { mode = $('#modeSelect').value; localStorage.setItem('langria-mode', mode); if (source.value.trim()) scheduleTranslation(); });
 $('#modeSelect').value = mode;

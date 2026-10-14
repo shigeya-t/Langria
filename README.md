@@ -4,7 +4,12 @@ English | [日本語](README.ja.md)
 
 Formerly called MyLingo.
 
-A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes as a web app and as a Chrome extension that translates the page you are viewing.
+A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in two forms:
+
+- **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
+- **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
+
+Project page: <https://shigeya-t.github.io/Langria/>
 
 ![Langria screenshot](assets/langria-screenshot.png)
 
@@ -24,6 +29,12 @@ A simple browser translation tool that lets you switch between ChatGPT, Claude a
 ## About the server
 
 The app needs no backend server. It is a static site made of HTML, CSS and JavaScript, and the browser calls each AI service's API directly when translating.
+
+### Published version
+
+The web app is published with GitHub Pages at <https://shigeya-t.github.io/Langria/app/>, next to the project page and privacy policy in `docs/`. On every push to `master`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions"). The published copy shows a notice at the top saying it is a demo you can set up for yourself from this repository (close it with × and it stays closed in that browser); the notice stays hidden when you serve the repository yourself.
+
+Settings saved in the published version are stored in `localStorage` for `https://shigeya-t.github.io`, which is shared with any other GitHub Pages site under the same account. To keep API keys safe there, encrypt them with a passkey or passphrase (see [Encrypting API keys](#encrypting-api-keys)), or host the app yourself.
 
 ### Required files
 
@@ -108,13 +119,14 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 
 ### Installation
 
-1. Open `chrome://extensions` in Chrome and turn on "Developer mode" at the top right.
-2. Click "Load unpacked" and select this repository's `extension` folder.
-3. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
+1. Install Langria from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa).
+2. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
 
-The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app.
+The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/Langria/privacy/>).
 
-The extension is being registered on the Chrome Web Store as a public item (see [store/README.md](store/README.md), in Japanese, for the steps). If you install it from the store, skip steps 1 and 2. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/Langria/privacy/>).
+#### Loading from the repository (development)
+
+To try the latest code in this repository instead of the store version, open `chrome://extensions` in Chrome, turn on "Developer mode" at the top right, click "Load unpacked" and select this repository's `extension` folder. Then enter your API keys as in step 2 above.
 
 After updating the repository (pull, switching branches, etc.), press Langria's reload button (↻) in `chrome://extensions`. The popup and settings page load the new files each time they open, but the background service worker that does the translating keeps running the old code until it is reloaded, and the mismatch can cause errors. Reloading also locks encrypted API keys again.
 
@@ -161,8 +173,9 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
+├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
 ├── store/       # Chrome Web Store listing text, images and publishing steps
-├── scripts/     # package-extension.sh: builds the zip to upload to the store
+├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site
 └── extension/   # Chrome extension (page translation)
     ├── manifest.json
     ├── background.js    # API calls, context menu, shortcut

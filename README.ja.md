@@ -4,7 +4,12 @@
 
 旧名は MyLingo です。
 
-ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。Webアプリと、表示中のWebページを翻訳するChrome拡張機能があります。
+ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の2つがあります。
+
+- **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
+- **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
+
+紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
 ![Langria の画面](assets/langria-screenshot-ja.png)
 
@@ -24,6 +29,12 @@ ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウ
 ## サーバーについて
 
 アプリ本体にバックエンドサーバーは必要ありません。HTML、CSS、JavaScriptだけで動く静的サイトで、翻訳時はブラウザが各AIサービスのAPIへ直接アクセスします。
+
+### 公開版
+
+Webアプリは GitHub Pages で <https://shigeya-t.github.io/Langria/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`master` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。公開版では上部に「デモ用で、このリポジトリから自分用にセットアップできる」という注意書きを出します（× で閉じると、そのブラウザでは以後表示しません）。リポジトリを自分で配信した場合は表示されません。
+
+公開版で保存した設定は `https://shigeya-t.github.io` の `localStorage` に入り、同じアカウントのほかの GitHub Pages のサイトと共有されます。APIキーを守るため、パスキーかパスフレーズで暗号化する（[APIキーの暗号化](#apiキーの暗号化)）か、自分のサーバーに置いて使ってください。
 
 ### 必要なファイル
 
@@ -108,13 +119,14 @@ git config core.hooksPath .githooks && .githooks/write-version
 
 ### インストール
 
-1. Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をオンにします。
-2. 「パッケージ化されていない拡張機能を読み込む」を押し、このリポジトリの `extension` フォルダを選択します。
-3. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
+1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)から Langria をインストールします。
+2. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
 
-拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。
+拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/Langria/privacy/ja.html>）にあります。
 
-Chrome ウェブストアには公開で登録する予定です（手順は [store/README.md](store/README.md)）。ストアからインストールした場合、上の1・2は不要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/Langria/privacy/ja.html>）にあります。
+#### リポジトリから読み込む（開発用）
+
+ストア版ではなくこのリポジトリの最新のコードを試すときは、Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をオンにして「パッケージ化されていない拡張機能を読み込む」を押し、このリポジトリの `extension` フォルダを選択します。APIキーは上の2と同じように入力します。
 
 リポジトリを更新（pull・ブランチの切り替えなど）したら、`chrome://extensions` で Langria の再読み込みボタン（↻）を押してください。ポップアップや設定画面は開くたびに新しいファイルを読み込みますが、翻訳を行うバックグラウンド（Service Worker）は再読み込みするまで古いコードのまま動くため、食い違いでエラーになることがあります。再読み込みするとAPIキーの暗号化のロックも掛かり直します。
 
@@ -161,8 +173,9 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
+├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順
-├── scripts/     # package-extension.sh: ストアにアップロードする zip を作る
+├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る
 └── extension/   # Chrome拡張機能（Webページ翻訳）
     ├── manifest.json
     ├── background.js    # API呼び出し・右クリックメニュー・ショートカット

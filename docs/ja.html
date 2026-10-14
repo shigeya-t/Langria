@@ -19,7 +19,20 @@
       </header>
 
       <h1>Langria – AI Webページ翻訳</h1>
-      <p>表示中のWebページや選択した文章を、選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Chrome 拡張機能と、入力・貼り付けた文章を翻訳するシンプルなWebアプリがあります。</p>
+      <p>選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Langria には次の2つがあります。</p>
+
+      <div class="editions">
+        <section class="edition">
+          <h2>Chrome拡張機能</h2>
+          <p>表示中のWebページや選択した文章を、その場で翻訳します。</p>
+          <a class="button secondary" href="#extension">インストール方法</a>
+        </section>
+        <section class="edition">
+          <h2>Webアプリ</h2>
+          <p>入力・貼り付けた文章を翻訳します。インストール不要で、ブラウザですぐ使えます。</p>
+          <a class="button" href="app/">Webアプリを試す</a>
+        </section>
+      </div>
 
       <figure class="shot">
         <img src="images/ja-1-page.png" width="1280" height="800" alt="英語の記事をその場で日本語に翻訳し、Langria のポップアップを開いた画面" />
@@ -33,13 +46,28 @@
         </ul>
       </div>
 
-      <h2>Chrome拡張機能</h2>
+      <h2 id="extension">Chrome拡張機能</h2>
       <p>表示中のWebページを翻訳します。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。</p>
+
+      <h3 id="install">インストール</h3>
+      <p>次のどちらかの方法でインストールします。</p>
+      <ul>
+        <li><strong>Chrome ウェブストアから</strong>: <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストアの Langria のページ</a>を開き、「Chrome に追加」を押します。更新は自動で入ります。</li>
+        <li><strong>このリポジトリから自分用に</strong>: <a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>をダウンロード（または clone）し、<code>chrome://extensions</code> を開いて右上の「デベロッパーモード」をオンにし、「パッケージ化されていない拡張機能を読み込む」でリポジトリの <code>extension</code> フォルダを選びます。自動では更新されないので、新しいコードを取り込んだら <code>chrome://extensions</code> で Langria の再読み込みボタン（↻）を押してください。詳しくは <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#リポジトリから読み込む開発用">README</a> をご覧ください。</li>
+      </ul>
+
+      <h3>使い方</h3>
       <ol>
         <li>拡張機能の設定画面で、OpenAI・Anthropic・Google Gemini のいずれかのAPIキーを入力します。</li>
         <li>ツールバーのアイコンを開いて「このページを翻訳」を押します。画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。</li>
         <li>「原文に戻す」または Alt+Shift+T で原文に戻せます。一部だけ訳したいときは、文章を選んで右クリックし「Langria で「…」を翻訳」を選びます。</li>
       </ol>
+
+      <h3>動画で見る</h3>
+      <figure class="video">
+        <div class="video-frame"><iframe src="https://www.youtube.com/embed/QAtpeT2-2Os" title="Langria Chrome拡張機能のデモ" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <figcaption>再生できないときは <a href="https://www.youtube.com/watch?v=QAtpeT2-2Os">YouTube で見る</a></figcaption>
+      </figure>
 
       <div class="shots">
         <figure class="shot">
@@ -52,8 +80,8 @@
         </figure>
       </div>
 
-      <h2>Webアプリ</h2>
-      <p>入力・貼り付けた文章を翻訳するツールです。原文の言語は自動で判別し、入力の手を止めると少し後に翻訳します。</p>
+      <h2 id="web-app">Webアプリ</h2>
+      <p>入力・貼り付けた文章を翻訳するツールです。原文の言語は自動で判別し、入力の手を止めると少し後に翻訳します。<a href="app/">Webアプリ</a>を開き、設定（歯車アイコン）でAPIキーを入力すれば使い始められます。</p>
 
       <figure class="shot">
         <img src="images/ja-web-app.png" width="1280" height="755" loading="lazy" alt="Langria のWebアプリで英語の文章を日本語に翻訳した画面" />
@@ -63,7 +91,7 @@
         <li>使えるサービス・翻訳先の言語・翻訳モードは拡張機能と同じです。</li>
         <li>入れ替えボタンで左右の文章と翻訳先の言語を入れ替えられ、返信を書くときに便利です。</li>
         <li>ライトモードとダークモードに対応しています。</li>
-        <li>ビルド不要の静的サイトです。リポジトリのフォルダを（<code>python3 -m http.server</code> などで）配信し、ブラウザで開くだけで使えます。詳しくは <a href="https://github.com/shigeya-t/Langria/blob/main/README.ja.md#サーバーについて">README</a> をご覧ください。</li>
+        <li>APIキーはブラウザの中にだけ保存されます。静的サイトなので、自分のサーバーに置いて使うこともできます（<a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#サーバーについて">README</a> を参照）。</li>
       </ul>
 
       <h2>主な機能</h2>
@@ -77,6 +105,8 @@
 
       <h2>リンク</h2>
       <ul>
+        <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a></li>
+        <li><a href="app/">Webアプリ</a></li>
         <li><a href="privacy/ja.html">プライバシーポリシー</a></li>
         <li><a href="https://github.com/shigeya-t/Langria">ソースコード</a></li>
         <li><a href="https://github.com/shigeya-t/Langria/issues">サポート・ご意見</a></li>

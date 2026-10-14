@@ -2,6 +2,8 @@
 
 Langria の拡張機能を Chrome ウェブストアに**公開（Public）**で登録するための手順です。掲載欄に貼り付けるテキストは [listing.md](listing.md) にまとめてあります。
 
+公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>
+
 | ファイル | 内容 |
 | --- | --- |
 | `listing.md` | 説明文（英語・日本語）、権限の理由、データ使用の申告など、ダッシュボードに貼り付けるテキスト |
@@ -19,14 +21,17 @@ Langria の拡張機能を Chrome ウェブストアに**公開（Public）**で
 
 ## 2. 紹介ページとプライバシーポリシーを GitHub Pages で公開する
 
-1. この変更を `main` にマージする。
-2. GitHub のリポジトリで **Settings → Pages** を開き、**Source: Deploy from a branch**、**Branch: `main` / `/docs`** を選んで保存する。
-   - `/docs` を選ぶと `docs/` の中だけが公開されます。Webアプリ（リポジトリ直下の `index.html`）は公開されません。
+1. この変更を `master` にマージする。
+2. GitHub のリポジトリで **Settings → Pages** を開き、**Source: GitHub Actions** を選ぶ。
+   - `master` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` でサイトを組み立てて公開します。`docs/` の中がサイトの直下に、Webアプリが `app/` に置かれます。
+   - Actions のタブから「Deploy GitHub Pages」を手動で実行（Run workflow）することもできます。
 3. 数分後に次のURLが開けることを確認する。
    - 紹介ページ: <https://shigeya-t.github.io/Langria/>（日本語: <https://shigeya-t.github.io/Langria/ja.html>）
    - プライバシーポリシー: <https://shigeya-t.github.io/Langria/privacy/>（日本語: <https://shigeya-t.github.io/Langria/privacy/ja.html>）
-4. （Official URL を設定する場合）[Google Search Console](https://search.google.com/search-console) で **URL プレフィックス** に `https://shigeya-t.github.io/Langria/` を入力し、**HTML ファイル** の方法で確認する。
-   - ダウンロードした `google….html` を `docs/` に置いて `main` にマージし、公開されてから「確認」を押す。
+   - Webアプリ: <https://shigeya-t.github.io/Langria/app/>
+4. （Official URL を設定する場合）[Google Search Console](https://search.google.com/search-console) で **URL プレフィックス** に `https://shigeya-t.github.io/Langria/` を入力し、**HTML タグ** の方法で確認する。
+   - 表示された `<meta name="google-site-verification" content="…" />` を `docs/index.html` の `<head>` に貼り付けて `master` にマージし、公開されてから「確認」を押す。
+   - Google は後からも定期的に確認するので、このメタタグは消さずに残しておく。
    - デベロッパー登録と同じ Google アカウントで確認すると、ダッシュボードの **Official URL** で選べるようになります。
 
 ## 3. アップロードする zip を作る
