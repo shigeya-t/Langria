@@ -16,11 +16,14 @@ const { targets: targetLanguages, custom: customTarget } = LangriaLanguages;
 const { t, languageLabel } = LangriaI18n;
 LangriaI18n.setLanguage(localStorage.getItem('langria-ui-language'));
 
-let provider = localStorage.getItem('langria-provider') || 'openai';
+// Stored values are checked, as other pages on the same origin can write them.
+let provider = localStorage.getItem('langria-provider');
+if (!Object.hasOwn(configs, provider)) provider = 'openai';
 // Until a target is chosen it follows the UI language (see renderLanguage).
 let target = localStorage.getItem('langria-target') || LangriaI18n.defaultTarget();
 if (target !== customTarget && !targetLanguages[target]) target = LangriaI18n.defaultTarget();
-let mode = localStorage.getItem('langria-mode') || 'faithful';
+let mode = localStorage.getItem('langria-mode');
+if (!Object.hasOwn(translationModes, mode)) mode = 'faithful';
 let timer;
 let latestRequest = 0; // Replies to older requests are dropped so they cannot overwrite newer text.
 let lastResult = null; // The translation on screen, or null while none is shown (empty, pending, error).
