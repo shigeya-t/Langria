@@ -30,7 +30,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `#demoNotice`（デモ用の注意書き。× で閉じると `localStorage` の `langria-demo-notice-closed` に記録）の `hidden` を外す。`master` への push で動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
 | `store/` | Chrome ウェブストア（公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>）の掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`） |
-| `docs/` | GitHub Pages のサイトの直下に置かれる（Webアプリは `app/`、上の `build-pages.sh` を参照）。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）で、Webアプリ（`app/`）への入口も兼ねる。`privacy/` はプライバシーポリシー（英語・日本語）。紹介ページから参照できるのは `docs/` の中と `app/` だけなので、ファビコン（`favicon.svg` / `favicon-32.png` / `apple-touch-icon.png`）は `extension/icons/` から、スクリーンショット（`images/`）は `store/images/` と `assets/` からコピーしている。元を変えたらこちらも差し替える |
+| `docs/` | GitHub Pages のサイトの直下に置かれる（Webアプリは `app/`、上の `build-pages.sh` を参照）。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）で、Webアプリ（`app/`）への入口も兼ねる。`privacy/` はプライバシーポリシー（英語・日本語）。ページが使うファビコン（`favicon.svg` / `favicon-32.png`）とスクリーンショット（`images/`）は `docs/` に置かず、`build-pages.sh` が `extension/icons/`・`store/images/`・`assets/` からコピーする（使う画像を増やしたらコピー対象にも足す）。`apple-touch-icon.png`（180×180）だけは元がないので `docs/` に置いている。ページの確認は `build-pages.sh` で `_site/` を作り、ローカルサーバーで開く |
 
 ### 共用ファイルの決まり
 
