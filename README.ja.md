@@ -32,7 +32,7 @@ ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウ
 
 ### 公開版
 
-Webアプリは GitHub Pages で <https://shigeya-t.github.io/Langria/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`main` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。
+Webアプリは GitHub Pages で <https://shigeya-t.github.io/Langria/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`master` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。公開版では上部に「デモ用で、このリポジトリから自分用にセットアップできる」という注意書きを出します。リポジトリを自分で配信した場合は表示されません。
 
 公開版で保存した設定は `https://shigeya-t.github.io` の `localStorage` に入り、同じアカウントのほかの GitHub Pages のサイトと共有されます。APIキーを守るため、パスキーかパスフレーズで暗号化する（[APIキーの暗号化](#apiキーの暗号化)）か、自分のサーバーに置いて使ってください。
 
