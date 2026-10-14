@@ -273,12 +273,13 @@ function wrongLanguage(source, translation, target) {
 // split in half and retried so a single bad reply never shifts translations
 // onto the wrong text.
 export async function translateSegments(settings, segments, target, retried = false) {
-  let parsed = null;
+  let parsed = null, blocked = false;
   try {
     const reply = await callModel(settings, segmentsPrompt(settings, target, segments.length), `Translate each segment into ${target}:\n${JSON.stringify(segments)}`, maxOutputTokens(segments.join('')));
     parsed = parseSegments(reply, segments.length);
   } catch (error) {
     if (!(error instanceof TruncatedError || error instanceof BlockedError)) throw error;
+    blocked = error instanceof BlockedError;
   }
   if (parsed) {
     // Segments that came back in another language are asked for once more,
@@ -293,13 +294,16 @@ export async function translateSegments(settings, segments, target, retried = fa
   console.warn(`Langria: no usable reply for ${segments.length} segment(s), splitting`);
   if (segments.length === 1) {
     // A segment the service refuses stays in the original language rather
-    // than stopping the rest of the page.
+    // than stopping the rest of the page. Asking again with the plain-text
+    // prompt only helps with a malformed reply; a refusal would just repeat.
+    // The text itself is not logged, as it may be private.
     try {
-      return [await translateText(settings, segments[0], target)];
+      if (!blocked) return [await translateText(settings, segments[0], target)];
     } catch (error) {
-      if (error instanceof BlockedError) { console.warn('Langria: left untranslated:', segments[0]); return segments; }
-      throw error;
+      if (!(error instanceof BlockedError)) throw error;
     }
+    console.warn('Langria: 1 segment left untranslated (blocked)');
+    return segments;
   }
   const middle = Math.ceil(segments.length / 2);
   const [first, second] = await Promise.all([
