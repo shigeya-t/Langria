@@ -7,7 +7,7 @@ Formerly called MyLingo.
 A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in two forms:
 
 - **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
-- **Chrome extension**: translates the web page you are viewing, or the text you select (see [Chrome extension](#chrome-extension-page-translation)).
+- **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
 
 Project page: <https://shigeya-t.github.io/Langria/>
 
@@ -119,13 +119,14 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 
 ### Installation
 
-1. Open `chrome://extensions` in Chrome and turn on "Developer mode" at the top right.
-2. Click "Load unpacked" and select this repository's `extension` folder.
-3. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
+1. Install Langria from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa).
+2. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
 
-The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app.
+The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/Langria/privacy/>).
 
-The extension is being registered on the Chrome Web Store as a public item (see [store/README.md](store/README.md), in Japanese, for the steps). If you install it from the store, skip steps 1 and 2. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/Langria/privacy/>).
+#### Loading from the repository (development)
+
+To try the latest code in this repository instead of the store version, open `chrome://extensions` in Chrome, turn on "Developer mode" at the top right, click "Load unpacked" and select this repository's `extension` folder. Then enter your API keys as in step 2 above.
 
 After updating the repository (pull, switching branches, etc.), press Langria's reload button (↻) in `chrome://extensions`. The popup and settings page load the new files each time they open, but the background service worker that does the translating keeps running the old code until it is reloaded, and the mismatch can cause errors. Reloading also locks encrypted API keys again.
 

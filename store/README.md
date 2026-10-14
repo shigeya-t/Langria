@@ -2,6 +2,8 @@
 
 Langria の拡張機能を Chrome ウェブストアに**公開（Public）**で登録するための手順です。掲載欄に貼り付けるテキストは [listing.md](listing.md) にまとめてあります。
 
+公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>
+
 | ファイル | 内容 |
 | --- | --- |
 | `listing.md` | 説明文（英語・日本語）、権限の理由、データ使用の申告など、ダッシュボードに貼り付けるテキスト |

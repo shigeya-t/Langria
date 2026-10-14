@@ -7,7 +7,7 @@
 ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の2つがあります。
 
 - **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
-- **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
+- **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
 
 紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
@@ -119,13 +119,14 @@ git config core.hooksPath .githooks && .githooks/write-version
 
 ### インストール
 
-1. Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をオンにします。
-2. 「パッケージ化されていない拡張機能を読み込む」を押し、このリポジトリの `extension` フォルダを選択します。
-3. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
+1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)から Langria をインストールします。
+2. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
 
-拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。
+拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/Langria/privacy/ja.html>）にあります。
 
-Chrome ウェブストアには公開で登録する予定です（手順は [store/README.md](store/README.md)）。ストアからインストールした場合、上の1・2は不要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/Langria/privacy/ja.html>）にあります。
+#### リポジトリから読み込む（開発用）
+
+ストア版ではなくこのリポジトリの最新のコードを試すときは、Chromeで `chrome://extensions` を開き、右上の「デベロッパーモード」をオンにして「パッケージ化されていない拡張機能を読み込む」を押し、このリポジトリの `extension` フォルダを選択します。APIキーは上の2と同じように入力します。
 
 リポジトリを更新（pull・ブランチの切り替えなど）したら、`chrome://extensions` で Langria の再読み込みボタン（↻）を押してください。ポップアップや設定画面は開くたびに新しいファイルを読み込みますが、翻訳を行うバックグラウンド（Service Worker）は再読み込みするまで古いコードのまま動くため、食い違いでエラーになることがあります。再読み込みするとAPIキーの暗号化のロックも掛かり直します。
 
