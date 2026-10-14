@@ -11,7 +11,7 @@ h2 { font-size:1.2rem; margin:32px 0 8px; }
 h3 { font-size:1rem; margin:20px 0 6px; }
 .updated { color:var(--muted); margin:0 0 24px; }
 .summary { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 20px; }
-.summary ul { margin:0; padding-left:1.2em; }
+.summary ul { margin:0; padding-left:1.2em; } .summary p { margin:0; }
 ul { padding-left:1.4em; }
 code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; overflow-wrap:anywhere; }
 .brand-mark { width:24px; height:24px; }
