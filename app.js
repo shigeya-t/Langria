@@ -42,22 +42,45 @@ function initTheme() {
   applyTheme(stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 }
 
-// A rough guess by script, used for the label and for the swap button; the
+// A rough guess by script, used only by the swap button; the
 // model itself works out the source language. Returns a targetLanguages key,
-// or null when the script does not point to one language.
+// or null when the script does not point to one language. The script with the
+// most text wins, so a Latin brand name or URL in Chinese text does not make
+// it English. Latin and Cyrillic are counted by words, the others by characters.
 function detectLanguage(text) {
-  // Kanji without kana may just as well be Chinese, so it is left undecided.
-  if (/[\u3040-\u30ff]/.test(text)) return 'Japanese';
-  if (/[\uac00-\ud7af]/.test(text)) return 'Korean';
-  if (/[\u0e00-\u0e7f]/.test(text)) return 'Thai';
-  if (/[\u0400-\u04ff]/.test(text)) return 'Russian';
-  if (/[a-z]/i.test(text)) return 'English';
-  return null;
+  const count = (pattern) => (text.match(pattern) || []).length;
+  const han = count(/[\u3400-\u9fff\uf900-\ufaff]/g), kana = count(/[\u3040-\u30ff]/g);
+  const scores = {
+    // Kanji with kana is Japanese; kanji alone is Chinese.
+    cjk: han + kana,
+    Korean: count(/[\uac00-\ud7af\u1100-\u11ff\u3130-\u318f]/g),
+    Thai: count(/[\u0e00-\u0e7f]/g),
+    Russian: count(/[\u0400-\u04ff]+/g),
+    latin: count(/[a-z\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u024f\u1e00-\u1eff]+/gi)
+  };
+  const best = Object.keys(scores).reduce((a, b) => (scores[b] > scores[a] ? b : a));
+  if (!scores[best]) return null;
+  if (best === 'cjk') return kana ? 'Japanese' : chineseScript(text);
+  if (best === 'latin') {
+    if (/[\u0111\u01a1\u01b0\u1ea0-\u1ef9]/i.test(text)) return 'Vietnamese';
+    // Accented letters point to another European language, which the script alone cannot tell.
+    return /[\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u024f]/.test(text) ? null : 'English';
+  }
+  return best;
 }
 
-function setLanguages(text) {
-  const sourceLanguage = detectLanguage(text);
-  $('#sourceLang').textContent = text.trim() && sourceLanguage ? t('web.detected', { lang: languageLabel(sourceLanguage) }) : t('web.autoDetect');
+// Tells Simplified from Traditional Chinese by common characters that differ
+// between them; null when the text has none of them.
+const simplifiedChars = '这们个来说时会对过还没发经现开关问题国学长门东车马书见实间话认让处义从众动头气样后边钱师';
+const traditionalChars = '這們個來說時會對過還沒發經現開關問題國學長門東車馬書見實間話認讓處義從眾動頭氣樣後邊錢師';
+function chineseScript(text) {
+  let simplified = 0, traditional = 0;
+  for (const char of text) {
+    if (simplifiedChars.includes(char)) simplified++;
+    else if (traditionalChars.includes(char)) traditional++;
+  }
+  if (simplified === traditional) return null;
+  return simplified > traditional ? 'Simplified Chinese' : 'Traditional Chinese';
 }
 
 function setTarget(next) {
@@ -353,7 +376,6 @@ const vaultPanel = LangriaVault.mountPanel($('#vaultPanel'), {
 
 function refreshInputInfo() {
   $('#characterCount').textContent = t('web.characters', { count: source.value.length.toLocaleString(LangriaI18n.language) });
-  setLanguages(source.value.trim());
 }
 
 function scheduleTranslation() {
