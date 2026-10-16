@@ -42,7 +42,7 @@ function initTheme() {
   applyTheme(stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 }
 
-// A rough guess by script, used for the label and for the swap button; the
+// A rough guess by script, used only by the swap button; the
 // model itself works out the source language. Returns a targetLanguages key,
 // or null when the script does not point to one language. The script with the
 // most text wins, so a Latin brand name or URL in Chinese text does not make
@@ -81,11 +81,6 @@ function chineseScript(text) {
   }
   if (simplified === traditional) return null;
   return simplified > traditional ? 'Simplified Chinese' : 'Traditional Chinese';
-}
-
-function setLanguages(text) {
-  const sourceLanguage = detectLanguage(text);
-  $('#sourceLang').textContent = text.trim() && sourceLanguage ? t('web.detected', { lang: languageLabel(sourceLanguage) }) : t('web.autoDetect');
 }
 
 function setTarget(next) {
@@ -381,7 +376,6 @@ const vaultPanel = LangriaVault.mountPanel($('#vaultPanel'), {
 
 function refreshInputInfo() {
   $('#characterCount').textContent = t('web.characters', { count: source.value.length.toLocaleString(LangriaI18n.language) });
-  setLanguages(source.value.trim());
 }
 
 function scheduleTranslation() {
