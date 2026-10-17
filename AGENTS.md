@@ -89,7 +89,7 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
 - 権限・送信先・保存するデータを変えたら、`store/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。審査ではコードの動作との一致を見られます。
 - Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。
-- ストアに出す版を作るときは `extension/manifest.json` の `version` を上げます。
+- `extension/manifest.json` の `version` は、利用者から指示があったときだけ上げます（ストアに出す版を作るときなど）。指示がなければ、機能を変えても変更しないでください。
 
 ## Git
 

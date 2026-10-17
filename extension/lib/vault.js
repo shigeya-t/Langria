@@ -199,7 +199,9 @@
             <input class="vault-input" id="vaultPassphrase" type="password" autocomplete="new-password" placeholder="${t('vault.passphrasePlaceholder', { min: MIN_PASSPHRASE })}" />
             <input class="vault-input" id="vaultConfirm" type="password" autocomplete="new-password" placeholder="${t('vault.confirmPlaceholder')}" />${apply}`;
         } else if (choice === 'passkey') {
-          html += `<p class="vault-status">${t('vault.passkeyNext')}</p>${apply}`;
+          // Password managers often cannot handle passkeys for chrome-extension:// pages; warn before the prompt opens.
+          const extensionNote = location.protocol === 'chrome-extension:' ? `<p class="vault-status warn">${t('vault.passkeyExtensionNote')}</p>` : '';
+          html += `<p class="vault-status">${t('vault.passkeyNext')}</p>${extensionNote}${apply}`;
         } else {
           html += `<p class="vault-status">${t('vault.noneNext')}</p>${apply}`;
         }

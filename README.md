@@ -147,7 +147,7 @@ This app has no backend; the browser sends requests directly to each AI service'
 Under "API key encryption" in Settings, choose how API keys are stored: "Do not encrypt" (default), "Encrypt with a passkey" or "Encrypt with a passphrase" (in both the web app and the extension). You can switch to another method later (only while unlocked).
 
 - **Passkey (Touch ID, etc.)**: Uses the WebAuthn PRF extension to obtain an encryption key from the authenticator. Requires Chrome 116+ or Safari 18+ and a supporting authenticator. In the web app it only works over https (with a domain name) or at `http://localhost` (not when `index.html` is opened as a file).
-  - Password managers such as 1Password sometimes cannot save a passkey for the extension's settings page (`chrome-extension://`) and report that the passkey cannot be saved. In that case, try one of the following:
+  - Password managers such as 1Password sometimes cannot save a passkey for the extension's settings page (`chrome-extension://`) and report that the passkey cannot be saved (the extension's settings page shows a note about this when you choose a passkey). In that case, try one of the following:
     - In the password manager's dialog, choose another option such as a security key, and create the passkey with Touch ID in the browser's own dialog (it is saved in Chrome or iCloud Keychain).
     - In 1Password's settings (right-click the toolbar icon → "Settings" → "Autofill & save"), temporarily turn off "Offer to save and sign in with passkeys" while creating it. The same may be needed when unlocking.
     - Encrypt with a passphrase and keep the passphrase in 1Password.
