@@ -74,7 +74,7 @@ struct ContentView: View {
         Text(toast)
           .font(.subheadline.weight(.semibold))
           .padding(.horizontal, 16).padding(.vertical, 10)
-          .background(.thickMaterial, in: Capsule())
+          .glassCapsule()
           .padding(.bottom, 24)
           .transition(.move(edge: .bottom).combined(with: .opacity))
       }
@@ -102,7 +102,7 @@ struct ContentView: View {
         Button { sourceFocused = false; model.swap() } label: {
           Image(systemName: "arrow.left.arrow.right").font(.footnote.weight(.bold)).frame(width: 22, height: 22)
         }
-        .buttonStyle(.bordered)
+        .glassButton()
         .buttonBorderShape(.circle)
         .controlSize(.small)
         .disabled(model.result == nil)
@@ -316,5 +316,17 @@ private struct CopyButton: View {
   var body: some View {
     Button(action: action) { Image(systemName: "doc.on.doc") }
       .accessibilityLabel(label)
+  }
+}
+
+// Liquid Glass on iOS 26 and later; the closest earlier look otherwise. The
+// panes stay opaque, as they hold text to read.
+private extension View {
+  @ViewBuilder func glassButton() -> some View {
+    if #available(iOS 26, *) { buttonStyle(.glass) } else { buttonStyle(.bordered) }
+  }
+
+  @ViewBuilder func glassCapsule() -> some View {
+    if #available(iOS 26, *) { glassEffect(.regular, in: .capsule) } else { background(.thickMaterial, in: Capsule()) }
   }
 }

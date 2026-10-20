@@ -83,6 +83,8 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 
 - ビルドとテスト（Mac のみ）: `cd ios && xcodegen generate && xcodebuild test -project Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<シミュレーター名>'`
 - 画面の確認はシミュレーターで、英語・日本語（設定の「表示言語」）とライト・ダークの両方で行います。起動引数 `-langria-ui-language en -langria-theme dark` でも切り替えられます。iPad 幅では原文と翻訳が横に並びます。
+- iPhone Duo（折りたたみ）は iOS 27.1 のシミュレーターで確認できる（`xcodebuild -downloadPlatform iOS` で入れる）。Xcode 27 には Simulator アプリがなく、開閉や回転の操作はできないため、閉じた画面は通常の iPhone の幅で確認する。
+- 入れ替えボタンと通知は iOS 26 以降で Liquid Glass（`ContentView.swift` の `glassButton` / `glassCapsule`）。原文・翻訳のカードは読みやすさのため不透明のまま。
 - カメラはシミュレーターにないため、ボタンは出ません。OCR は `TextRecognizerTests` で確認します。シミュレーターのシステム写真ピッカーは読み込み中のまま止まることがあります。
 - Swift のコードも既存に合わせて2スペース、コメントは英語です。
 
