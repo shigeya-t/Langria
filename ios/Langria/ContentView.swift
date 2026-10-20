@@ -43,9 +43,10 @@ struct ContentView: View {
           }
           .accessibilityElement(children: .combine)
         }
-        ToolbarItem(placement: .topBarTrailing) {
-          Button { showSettings = true } label: { Image(systemName: "gearshape") }
-            .accessibilityLabel(shared.t("web.openSettings"))
+        if #available(iOS 26, *) {
+          ToolbarItem(placement: .topBarTrailing) { settingsButton }.sharedBackgroundVisibility(.hidden)
+        } else {
+          ToolbarItem(placement: .topBarTrailing) { settingsButton }
         }
         ToolbarItemGroup(placement: .keyboard) {
           Spacer()
@@ -170,8 +171,16 @@ struct ContentView: View {
         }
       }
     } footer: {
-      Text(model.characterCount)
+      if model.listening {
+        Label(shared.t("ios.listening", ["lang": shared.languageLabel(model.dictationLanguage)]), systemImage: "waveform")
+          .foregroundStyle(.red)
+          .lineLimit(1)
+          .symbolEffect(.variableColor.iterative)
+      } else {
+        Text(model.characterCount)
+      }
       Spacer()
+      dictationButton
       if CameraPicker.isAvailable {
         Button { sourceFocused = false; showCamera = true } label: { Image(systemName: "camera") }
           .accessibilityLabel(shared.t("ios.camera"))
@@ -201,9 +210,42 @@ struct ContentView: View {
     } footer: {
       Text(shared.t(model.statusKey))
       Spacer()
+      Button { model.toggleSpeaking() } label: {
+        Image(systemName: model.speaking ? "stop.circle" : "speaker.wave.2")
+      }
+      .disabled(model.result == nil && !model.speaking)
+      .accessibilityLabel(shared.t(model.speaking ? "ios.stopSpeaking" : "ios.speak"))
       CopyButton(label: shared.t("web.copyTranslation")) { model.copy(model.result) }
         .disabled(model.result == nil)
     }
+  }
+
+  /// Tap to start or stop; touch and hold to pick the language spoken.
+  private var dictationButton: some View {
+    Menu {
+      Picker(shared.t("ios.dictationLanguage"), selection: $model.dictationLanguage) {
+        ForEach(shared.targets, id: \.self) { Text(shared.languageLabel($0)).tag($0) }
+      }
+    } label: {
+      Image(systemName: model.listening ? "mic.fill" : "mic")
+        .foregroundStyle(model.listening ? Color.red : Color.accentColor)
+    } primaryAction: {
+      sourceFocused = false
+      Task { await model.toggleDictation() }
+    }
+    .accessibilityLabel(shared.t(model.listening ? "ios.stopDictation" : "ios.dictate"))
+    .accessibilityHint(shared.t("ios.dictateHint"))
+  }
+
+  // A small plain icon rather than the toolbar's glass button, so it does not draw the eye.
+  private var settingsButton: some View {
+    Button { showSettings = true } label: {
+      Image(systemName: "gearshape")
+        .font(.system(size: 15, weight: .regular))
+        .foregroundStyle(.secondary)
+    }
+    .buttonStyle(.plain)
+    .accessibilityLabel(shared.t("web.openSettings"))
   }
 
   @ViewBuilder private var translation: some View {

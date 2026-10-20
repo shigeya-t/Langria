@@ -32,6 +32,13 @@ final class AppModel: ObservableObject {
   /// The decrypted keys, or nil while locked.
   @Published private(set) var keys: [String: String]?
   @Published private(set) var locked = KeyStore.isLocked
+  /// The target language whose locale voice input listens in.
+  @Published var dictationLanguage: String { didSet { defaults.set(dictationLanguage, forKey: "langria-dictation-language") } }
+  @Published private(set) var listening = false
+  @Published private(set) var speaking = false
+
+  private let dictation = Dictation()
+  private let speaker = Speaker()
 
   private var latestRequest = 0
   /// Set while the text has changed since the result on screen was made.
@@ -48,6 +55,12 @@ final class AppModel: ObservableObject {
     // Until a target is chosen it follows the UI language.
     let stored = defaults.string(forKey: "langria-target") ?? ""
     target = stored == Shared.customTarget || shared.targets.contains(stored) ? stored : shared.defaultTarget
+    // Until one is picked, voice input listens in the device's language when it is in the list.
+    let device = Locale.preferredLanguages.first ?? "en"
+    let spoken = defaults.string(forKey: "langria-dictation-language") ?? ""
+    dictationLanguage = shared.targets.contains(spoken) ? spoken
+      : shared.targets.first { Self.matches(shared.locales[$0], device) } ?? shared.targets.first { Self.matches(shared.locales[$0], String(device.prefix(2))) } ?? "English"
+    speaker.onChange = { [weak self] in self?.speaking = $0 }
     if !locked { Task { await loadKeys(quiet: true) } }
   }
 
@@ -85,6 +98,7 @@ final class AppModel: ObservableObject {
     pending?.cancel()
     latestRequest += 1
     stale = true
+    speaker.stop()
     let text = source.trimmingCharacters(in: .whitespacesAndNewlines)
     if text.isEmpty { pane = .empty; statusKey = "status.ready"; return }
     pending = Task { [weak self] in
@@ -197,6 +211,61 @@ final class AppModel: ObservableObject {
     }
   }
 
+  // MARK: Voice input and reading aloud
+
+  private static func matches(_ locale: String?, _ device: String) -> Bool {
+    guard let locale else { return false }
+    // "zh-Hant-TW" and "zh-TW" both point to Traditional Chinese.
+    let simplify = { (tag: String) in tag.replacingOccurrences(of: "-Hans", with: "").replacingOccurrences(of: "-Hant", with: "") }
+    let a = simplify(locale).lowercased(), b = simplify(device).lowercased()
+    return a == b || (!b.contains("-") && a.hasPrefix(b + "-"))
+  }
+
+  func toggleDictation() async {
+    if listening { dictation.stop(); listening = false; return }
+    speaker.stop()
+    let language = dictationLanguage
+    // What is already in the pane stays; speech is added on a new line.
+    let base = source.trimmingCharacters(in: .whitespacesAndNewlines)
+    do {
+      try await dictation.start(locale: Locale(identifier: shared.locales[language] ?? "en-US")) { [weak self] text in
+        guard let self else { return }
+        self.source = base.isEmpty ? text : "\(base)\n\(text)"
+      } onEnd: { [weak self] error in
+        guard let self else { return }
+        self.listening = false
+        if let error { self.show(self.shared.t("ios.speechFailed", ["detail": error.localizedDescription])) }
+      }
+      listening = true
+    } catch Dictation.Failure.denied {
+      show(shared.t("ios.speechDenied"))
+    } catch Dictation.Failure.unavailable {
+      show(shared.t("ios.speechUnavailable", ["lang": shared.languageLabel(language)]))
+    } catch {
+      dictation.stop()
+      show(shared.t("ios.speechFailed", ["detail": error.localizedDescription]))
+    }
+  }
+
+  /// The status to show once reading text from a photo ends.
+  private var restingStatus: String {
+    switch pane {
+    case .translating: "status.translating"
+    case .result: "status.done"
+    case .failure: "status.error"
+    case .locked: "status.locked"
+    case .noKey: "status.noKey"
+    case .noTarget: "status.noTarget"
+    case .empty: "status.ready"
+    }
+  }
+
+  func toggleSpeaking() {
+    if speaking { speaker.stop(); return }
+    guard let text = result else { return }
+    speaker.speak(text, language: target == Shared.customTarget ? nil : shared.locales[target])
+  }
+
   // MARK: Reading text from photos
 
   func read(_ picked: UIImage) async {
@@ -209,7 +278,7 @@ final class AppModel: ObservableObject {
       guard image === picked else { return }
       if text.isEmpty {
         show(shared.t("ios.noText"))
-        statusKey = result == nil ? "status.ready" : "status.done"
+        statusKey = restingStatus
         return
       }
       source = text
@@ -250,6 +319,7 @@ final class AppModel: ObservableObject {
 
   /// Locks again when the app goes to the background, if the lock is on.
   func didEnterBackground() {
+    if listening { dictation.stop(); listening = false }
     guard locked else { return }
     keys = nil
     unlockPrompted = false

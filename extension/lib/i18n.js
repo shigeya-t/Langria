@@ -215,7 +215,17 @@
       'ios.light': 'Light',
       'ios.dark': 'Dark',
       'ios.done': 'Done',
-      'ios.version': 'Version'
+      'ios.version': 'Version',
+      'ios.dictate': 'Voice input',
+      'ios.dictateHint': 'Touch and hold to choose the language you speak.',
+      'ios.stopDictation': 'Stop voice input',
+      'ios.dictationLanguage': 'Language you speak',
+      'ios.listening': 'Listening ({lang})…',
+      'ios.speechDenied': 'To use voice input, allow the microphone and speech recognition for Langria in the Settings app.',
+      'ios.speechUnavailable': 'Voice input is not available for {lang} on this device.',
+      'ios.speechFailed': 'Voice input stopped ({detail}).',
+      'ios.speak': 'Read aloud',
+      'ios.stopSpeaking': 'Stop reading aloud'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -415,7 +425,17 @@
       'ios.light': 'ライト',
       'ios.dark': 'ダーク',
       'ios.done': '完了',
-      'ios.version': 'バージョン'
+      'ios.version': 'バージョン',
+      'ios.dictate': '音声入力',
+      'ios.dictateHint': '長押しで、話す言語を選べます。',
+      'ios.stopDictation': '音声入力を止める',
+      'ios.dictationLanguage': '話す言語',
+      'ios.listening': '聞き取り中（{lang}）…',
+      'ios.speechDenied': '音声入力を使うには、設定アプリで Langria にマイクと音声認識を許可してください。',
+      'ios.speechUnavailable': 'この端末では{lang}の音声入力を使えません。',
+      'ios.speechFailed': '音声入力が止まりました（{detail}）。',
+      'ios.speak': '読み上げ',
+      'ios.stopSpeaking': '読み上げを止める'
     }
   };
   const languages = { en: 'English', ja: '日本語' };

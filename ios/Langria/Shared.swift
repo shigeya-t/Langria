@@ -14,6 +14,8 @@ final class Shared: ObservableObject {
   /// The UI language in use, "en" or "ja".
   @Published private(set) var language = "en"
   let targets: [String]
+  /// BCP 47 tag of each target, for voice input and reading aloud.
+  let locales: [String: String]
   let commit: String
 
   private let context = JSContext()!
@@ -28,6 +30,7 @@ final class Shared: ObservableObject {
     }
     i18n = context.objectForKeyedSubscript("LangriaI18n")
     targets = context.evaluateScript("Object.keys(LangriaLanguages.targets)").toArray() as? [String] ?? ["English", "Japanese"]
+    locales = context.evaluateScript("Object.fromEntries(Object.entries(LangriaLanguages.targets).map(([name, labels]) => [name, labels.locale]))").toDictionary() as? [String: String] ?? [:]
     let hash = context.evaluateScript("globalThis.LANGRIA_COMMIT || ''").toString() ?? ""
     commit = hash == "undefined" ? "" : hash
     setChoice(UserDefaults.standard.string(forKey: "langria-ui-language"))

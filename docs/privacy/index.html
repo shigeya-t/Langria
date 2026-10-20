@@ -37,6 +37,7 @@
         <li><strong>API keys</strong>: the keys you enter for OpenAI, Anthropic or Google Gemini.</li>
         <li><strong>Settings</strong>: the selected service, model names, target language, translation mode, request limits and UI language.</li>
         <li><strong>Photos (iOS app)</strong>: photos you take or choose to translate the text in them. The text is read on your device (Apple’s Vision framework); the image is neither sent nor stored. Only the recognized text is sent for translation.</li>
+        <li><strong>Voice (iOS app)</strong>: microphone audio while voice input is on, turned into text by Apple’s speech recognition. It is processed on your device when the language supports on-device recognition; otherwise it is sent to Apple, as with keyboard dictation (<a href="https://www.apple.com/legal/privacy/">Apple Privacy Policy</a>). Langria does not store the audio and sends only the text to the AI service. Reading the translation aloud happens on your device.</li>
       </ul>
       <p>Langria does not collect your browsing history, personal information, location or any other data.</p>
 
@@ -67,6 +68,7 @@
         <li><code>contextMenus</code>: to add “Translate with Langria” to the right-click menu.</li>
         <li>Access to <code>api.openai.com</code>, <code>api.anthropic.com</code> and <code>generativelanguage.googleapis.com</code>: to send translation requests to the service you choose.</li>
         <li>Camera (iOS app): to photograph text to translate, only when you choose to take a photo. Photos are received only as you pick them in the system photo picker; the app does not ask for access to your whole library. Face ID is used only to unlock your API keys.</li>
+        <li>Microphone and speech recognition (iOS app): only when you turn on voice input.</li>
       </ul>
 
       <h2>Use of data</h2>

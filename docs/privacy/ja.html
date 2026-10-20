@@ -37,6 +37,7 @@
         <li><strong>APIキー</strong>: 利用者が入力した OpenAI・Anthropic・Google Gemini のAPIキー。</li>
         <li><strong>設定</strong>: 選択中のサービス、モデル名、翻訳先の言語、翻訳モード、リクエスト数の上限、表示言語。</li>
         <li><strong>写真（iOSアプリ）</strong>: 文字を翻訳するために撮影した写真や、選んだ写真。文字の読み取りは端末の中（Apple の Vision）で行い、画像は送信も保存もしません。翻訳のために送るのは、読み取った文字だけです。</li>
+        <li><strong>音声（iOSアプリ）</strong>: 音声入力のボタンを押している間の、マイクの音声。Apple の音声認識で文字にします。言語が端末内の認識に対応していれば端末の中で処理し、対応していなければキーボードの音声入力と同じく Apple へ送られます（<a href="https://www.apple.com/jp/legal/privacy/">Apple のプライバシーポリシー</a>）。Langria は音声を保存せず、AIサービスへ送るのは文字だけです。訳文の読み上げは端末の中で行います。</li>
       </ul>
       <p>閲覧履歴、個人情報、位置情報などそのほかのデータは収集しません。</p>
 
@@ -67,6 +68,7 @@
         <li><code>contextMenus</code>: 右クリックメニューに「Langria で翻訳」を追加するため。</li>
         <li><code>api.openai.com</code>・<code>api.anthropic.com</code>・<code>generativelanguage.googleapis.com</code> へのアクセス: 選択したサービスへ翻訳のリクエストを送るため。</li>
         <li>iOSアプリのカメラ: 文字を撮影して翻訳するため。撮影を選んだときにだけ使います。写真ライブラリはシステムの写真ピッカーで選んだ写真だけを受け取り、ライブラリ全体へのアクセスは求めません。Face ID は APIキーのロックを解除するときにだけ使います。</li>
+        <li>iOSアプリのマイクと音声認識: 音声入力のボタンを押したときにだけ使います。</li>
       </ul>
 
       <h2>データの利用目的</h2>

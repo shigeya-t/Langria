@@ -75,3 +75,13 @@ final class TextRecognizerTests: XCTestCase {
     XCTAssertEqual(text, "")
   }
 }
+
+@MainActor
+final class SpeechLanguageTests: XCTestCase {
+  func testLocalesComeFromLanguagesJS() {
+    let shared = Shared()
+    XCTAssertEqual(shared.locales["Japanese"], "ja-JP")
+    XCTAssertEqual(shared.locales["Traditional Chinese"], "zh-TW")
+    XCTAssertEqual(Set(shared.locales.keys), Set(shared.targets))
+  }
+}

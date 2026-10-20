@@ -145,8 +145,9 @@ The `ios/` folder contains a SwiftUI app for iPhone and iPad (iOS 17 or later) w
 
 - Same as the web app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, the English / Japanese UI (follows the device unless chosen in Settings) and light / dark appearance
 - **Translate text in photos**: take a photo with the camera button or pick one with the photo button. The text is read on the device (Apple’s Vision framework), put into the original pane where you can edit it, and translated. Lines are joined back into paragraphs so sentences are translated whole. Only the text is sent to the AI service, never the image
+- **Voice input and reading aloud**: the microphone button in the original pane turns speech into text (touch and hold it to choose the language you speak; it starts with the device’s language). Recognition runs on the device when the language supports it; otherwise the audio goes to Apple’s speech recognition, as with keyboard dictation. The speaker button in the translation pane reads the translation aloud with the system voice for the target language, on the device
 - API keys are stored in the device’s keychain (not synced). Turn on **Unlock with Face ID** in Settings to require Face ID (or Touch ID / the passcode) each time the app opens; the keys are locked again when the app moves to the background
-- The UI text and the target language list are the same files as the web app and the extension (`extension/lib/i18n.js` and `languages.js`), run in JavaScriptCore
+- The UI text and the target language list are the same files as the web app and the extension (`extension/lib/i18n.js` and `languages.js`, which also holds each language’s locale for voice input and reading aloud), run in JavaScriptCore
 
 ### Building
 

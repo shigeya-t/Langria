@@ -34,6 +34,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `ios/Langria/AppModel.swift` | 翻訳画面の状態。設定は UserDefaults に Webアプリの localStorage と同じ名前（`langria-provider` など）で保存。700ms 待って翻訳、古い応答は `latestRequest` で捨てる |
 | `ios/Langria/KeyStore.swift` | APIキーをキーチェーン（このデバイスのみ）に JSON 1件で保存。ロックをオンにすると `.userPresence` のアクセス制御を付け、読み出しに Face ID / パスコードが要る。Webアプリの vault.js の代わり |
 | `ios/Langria/TextRecognizer.swift` | Vision で写真の文字を読み、行を段落にまとめ直す。画像は送らない |
+| `ios/Langria/Speech.swift` | 原文の音声入力（Speech。対応する言語は端末内で認識）と訳文の読み上げ（AVSpeechSynthesizer）。言語は `languages.js` の `locale` を使い、「その他」の読み上げは NaturalLanguage で文の言語を推定する |
 | `ios/LangriaTests/` | XCTest。API はダミーの URLProtocol で差し替えるので APIキーは要らない |
 | `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `#demoNotice`（デモ用の注意書き。× で閉じると `localStorage` の `langria-demo-notice-closed` に記録）の `hidden` を外す。`master` への push で動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
@@ -42,7 +43,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 
 ### 共用ファイルの決まり
 
-`i18n.js`・`vault.js`・`languages.js` は Webアプリ（`<script>` タグ）と拡張機能（ES module の `import`）の両方から読み込みます。`i18n.js` と `languages.js` は iOSアプリも JavaScriptCore で実行します（DOM・`navigator.language` 以外のブラウザ API がない環境なので、トップレベルでそれらに触れないでください）。iOS だけの文言は `ios.` で始まるキーで `i18n.js` に置きます。そのため、`globalThis.LangriaI18n` / `globalThis.LangriaVault` / `globalThis.LangriaLanguages` を設定する**クラシックスクリプト**として書きます。`export` を書いたり chrome API に依存したりしないでください（`i18n.js` は `chrome.i18n` があれば使い、なければ `navigator.language` で判定します）。言語を追加・変更するときは `languages.js` だけを直せば、両方に反映されます。
+`i18n.js`・`vault.js`・`languages.js` は Webアプリ（`<script>` タグ）と拡張機能（ES module の `import`）の両方から読み込みます。`i18n.js` と `languages.js` は iOSアプリも JavaScriptCore で実行します（DOM・`navigator.language` 以外のブラウザ API がない環境なので、トップレベルでそれらに触れないでください）。iOS だけの文言は `ios.` で始まるキーで `i18n.js` に置きます。そのため、`globalThis.LangriaI18n` / `globalThis.LangriaVault` / `globalThis.LangriaLanguages` を設定する**クラシックスクリプト**として書きます。`export` を書いたり chrome API に依存したりしないでください（`i18n.js` は `chrome.i18n` があれば使い、なければ `navigator.language` で判定します）。言語を追加・変更するときは `languages.js` だけを直せば、全部に反映されます（`locale` は iOS の音声入力・読み上げに使う BCP 47 のタグ。Webアプリと拡張機能は読まない）。
 
 ### 表示言語（UIの国際化）
 
