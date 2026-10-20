@@ -12,25 +12,30 @@ struct ContentView: View {
 
   var body: some View {
     NavigationStack {
-      ScrollView {
-        VStack(spacing: 14) {
-          providerPicker
-          languageStrip
-          if sizeClass == .regular {
-            HStack(alignment: .top, spacing: 14) { inputPane; outputPane }
-          } else {
-            inputPane
-            outputPane
+      // The panes grow to fill the screen (sharing the height when stacked)
+      // and the page scrolls once their text needs more room.
+      GeometryReader { geometry in
+        ScrollView {
+          VStack(spacing: 14) {
+            providerPicker
+            languageStrip
+            if sizeClass == .regular {
+              HStack(alignment: .top, spacing: 14) { inputPane; outputPane }
+                .frame(maxHeight: .infinity)
+            } else {
+              inputPane.frame(maxHeight: .infinity)
+              outputPane.frame(maxHeight: .infinity)
+            }
+            Text(shared.t("ios.ocrNote"))
+              .font(.footnote)
+              .foregroundStyle(.secondary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding(.horizontal, 4)
           }
-          Text(shared.t("ios.ocrNote"))
-            .font(.footnote)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 4)
+          .padding(16)
+          .frame(maxWidth: 1100)
+          .frame(maxWidth: .infinity, minHeight: geometry.size.height)
         }
-        .padding(16)
-        .frame(maxWidth: 1100)
-        .frame(maxWidth: .infinity)
       }
       .scrollDismissesKeyboard(.interactively)
       .background(Color(.systemGroupedBackground))
@@ -167,7 +172,7 @@ struct ContentView: View {
           TextEditor(text: $model.source)
             .focused($sourceFocused)
             .scrollContentBackground(.hidden)
-            .frame(minHeight: 150)
+            .frame(minHeight: 150, maxHeight: .infinity)
         }
       }
     } footer: {
@@ -204,7 +209,7 @@ struct ContentView: View {
       }
     } content: {
       translation
-        .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity, alignment: .topLeading)
         .padding(.top, 8)
         .padding(.horizontal, 5)
     } footer: {
@@ -297,7 +302,7 @@ private struct Card<Header: View, Content: View, Footer: View>: View {
     VStack(alignment: .leading, spacing: 0) {
       header.padding(.horizontal, 14).frame(minHeight: 44)
       Divider()
-      content.padding(.horizontal, 9).padding(.vertical, 6)
+      content.padding(.horizontal, 9).padding(.vertical, 6).frame(maxHeight: .infinity, alignment: .top)
       Divider()
       HStack(spacing: 18) { footer }
         .font(.footnote)

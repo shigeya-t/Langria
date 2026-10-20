@@ -21,6 +21,8 @@ final class LanguageDetectorTests: XCTestCase {
 @MainActor
 final class SharedTests: XCTestCase {
   func testRunsSharedScripts() {
+    let saved = UserDefaults.standard.string(forKey: "langria-ui-language")
+    defer { UserDefaults.standard.set(saved, forKey: "langria-ui-language") }
     let shared = Shared()
     shared.setChoice("ja")
     XCTAssertEqual(shared.t("web.original"), "原文")
@@ -30,7 +32,6 @@ final class SharedTests: XCTestCase {
     XCTAssertEqual(shared.t("error.auth", ["name": "Claude"]), "Check your API key. The Claude API key is invalid or lacks permission.")
     XCTAssertEqual(shared.targets.first, "English")
     XCTAssertTrue(shared.targets.contains("Indonesian"))
-    shared.setChoice(nil)
   }
 }
 

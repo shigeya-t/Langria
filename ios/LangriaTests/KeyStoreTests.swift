@@ -17,6 +17,13 @@ final class KeyStoreTests: XCTestCase {
 
 @MainActor
 final class AppModelTests: XCTestCase {
+  // The tests run inside the app, so leave its saved settings as they were.
+  private let keys = ["langria-provider", "langria-target", "langria-ui-language", "langria-dictation-language"]
+  private var saved: [String: Any] = [:]
+
+  override func setUp() { saved = keys.reduce(into: [:]) { $0[$1] = UserDefaults.standard.object(forKey: $1) } }
+  override func tearDown() { keys.forEach { UserDefaults.standard.set(saved[$0], forKey: $0) } }
+
   func testSwapUsesDetectedLanguage() async throws {
     URLProtocol.registerClass(StubProtocol.self)
     defer { URLProtocol.unregisterClass(StubProtocol.self); StubProtocol.handler = nil }
