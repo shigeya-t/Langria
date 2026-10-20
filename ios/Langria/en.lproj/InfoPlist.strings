@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "Langria uses the camera to photograph text and translate it. The text is read on this device.";
+"NSFaceIDUsageDescription" = "Langria uses Face ID to unlock your API keys.";

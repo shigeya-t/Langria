@@ -1,0 +1,5 @@
+// cp Local.xcconfig.example Local.xcconfig して、自分の Team ID に書き換える。
+// Team ID は Xcode の Settings → Accounts、または developer.apple.com の Membership で確認できる。
+DEVELOPMENT_TEAM = XXXXXXXXXX
+// バンドルIDを変えるときだけ書く（App ID が他の人と重なるときなど）。
+// PRODUCT_BUNDLE_IDENTIFIER = com.example.Langria

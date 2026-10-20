@@ -19,3 +19,9 @@ coverage/
 
 # Commit hash written by .githooks/write-version
 extension/lib/version.js
+
+# iOS: the Xcode project is generated from ios/project.yml with xcodegen
+ios/Langria.xcodeproj/
+ios/Local.xcconfig
+ios/build/
+xcuserdata/

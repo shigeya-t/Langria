@@ -1,8 +1,10 @@
 // UI text in English and Japanese, shared by the web app, the extension's
-// pages, its service worker and its content script. Japanese is used when the
-// browser's language is Japanese, English otherwise, unless the user picked
-// one with the language switch (stored by each caller: `langria-ui-language` in
-// the web app's localStorage, `uiLanguage` in the extension's storage).
+// pages, its service worker and its content script, and the iOS app (which
+// runs it in JavaScriptCore). Japanese is used when the browser's language is
+// Japanese, English otherwise, unless the user picked one with the language
+// switch (stored by each caller: `langria-ui-language` in the web app's
+// localStorage and the iOS app's UserDefaults, `uiLanguage` in the extension's
+// storage).
 // A classic script that sets `LangriaI18n`, like vault.js and languages.js.
 (() => {
   // The extension injects this with content.js every time; keep the first
@@ -187,7 +189,33 @@
       'vault.unlockedNow': 'Your API keys are stored encrypted with {method}. They are unlocked right now.',
       'vault.plain': 'Your API keys are stored in this browser unencrypted.',
       'vault.mismatch': 'The passphrases do not match.',
-      'vault.resetConfirm': 'This deletes the encrypted API keys. You will need to enter them again. Continue?'
+      'vault.resetConfirm': 'This deletes the encrypted API keys. You will need to enter them again. Continue?',
+
+      // iOS app
+      'ios.settingsDescription': 'Enter the API key and model for each AI service. Keys are stored only in this device’s keychain.',
+      'ios.camera': 'Take a photo',
+      'ios.photo': 'Choose a photo',
+      'ios.removeImage': 'Remove image',
+      'ios.reading': 'Reading text…',
+      'ios.noText': 'No text was found in the image.',
+      'ios.ocrFailed': 'Could not read text from the image.',
+      'ios.imageFailed': 'Could not load the image.',
+      'ios.ocrNote': 'Text in photos is read on this device. Only the text is sent for translation.',
+      'ios.lockTitle': 'API key lock',
+      'ios.lockToggle': 'Unlock with {method}',
+      'ios.lockNote': 'Keys are always stored in the keychain. When this is on, {method} is needed each time you open the app.',
+      'ios.unlockButton': 'Unlock with {method} and translate',
+      'ios.unlockReason': 'Unlock your API keys',
+      'ios.passcode': 'the device passcode',
+      'ios.noPasscode': 'Set a device passcode to lock the API keys.',
+      'ios.keychainError': 'Could not access the keychain ({detail}).',
+      'ios.displayLanguage': 'Display language',
+      'ios.system': 'System',
+      'ios.appearance': 'Appearance',
+      'ios.light': 'Light',
+      'ios.dark': 'Dark',
+      'ios.done': 'Done',
+      'ios.version': 'Version'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -362,7 +390,32 @@
       'vault.unlockedNow': 'APIキーは{method}で暗号化して保存されています。いまはロック解除中です。',
       'vault.plain': 'APIキーは暗号化されずにこのブラウザに保存されています。',
       'vault.mismatch': '確認用のパスフレーズが一致しません。',
-      'vault.resetConfirm': '暗号化して保存したAPIキーを削除します。キーはあとで入力し直してください。よろしいですか？'
+      'vault.resetConfirm': '暗号化して保存したAPIキーを削除します。キーはあとで入力し直してください。よろしいですか？',
+
+      'ios.settingsDescription': 'AIサービスごとにAPIキーとモデルを入力します。キーはこの端末のキーチェーンにだけ保存されます。',
+      'ios.camera': '写真を撮る',
+      'ios.photo': '写真を選ぶ',
+      'ios.removeImage': '画像を外す',
+      'ios.reading': '文字を読み取り中…',
+      'ios.noText': '画像から文字が見つかりませんでした。',
+      'ios.ocrFailed': '画像の文字を読み取れませんでした。',
+      'ios.imageFailed': '画像を読み込めませんでした。',
+      'ios.ocrNote': '写真の文字はこの端末の中で読み取ります。翻訳のために送るのは文字だけです。',
+      'ios.lockTitle': 'APIキーのロック',
+      'ios.lockToggle': '{method}でロックを解除する',
+      'ios.lockNote': 'キーはいつもキーチェーンに保存されます。オンにすると、アプリを開くたびに{method}が必要になります。',
+      'ios.unlockButton': '{method}でロックを解除して翻訳',
+      'ios.unlockReason': 'APIキーのロックを解除します',
+      'ios.passcode': '端末のパスコード',
+      'ios.noPasscode': 'APIキーをロックするには、端末のパスコードを設定してください。',
+      'ios.keychainError': 'キーチェーンを使えませんでした（{detail}）。',
+      'ios.displayLanguage': '表示言語',
+      'ios.system': '端末の設定',
+      'ios.appearance': '表示テーマ',
+      'ios.light': 'ライト',
+      'ios.dark': 'ダーク',
+      'ios.done': '完了',
+      'ios.version': 'バージョン'
     }
   };
   const languages = { en: 'English', ja: '日本語' };

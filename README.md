@@ -4,10 +4,11 @@ English | [日本語](README.ja.md)
 
 Formerly called MyLingo.
 
-A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in two forms:
+A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in three forms:
 
 - **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
 - **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
+- **iOS app**: the web app’s translation on iPhone and iPad, plus reading and translating the text in photos you take or choose (see [iOS app](#ios-app-iphone--ipad)).
 
 Project page: <https://shigeya-t.github.io/Langria/>
 
@@ -138,6 +139,25 @@ Gemini API's free tier limits requests per minute (e.g. 15 per minute for `gemin
 
 The extension extracts the page's text element by element and sends only the parts on screen (and a little beyond), closest to the viewport first, to the AI in batches, then replaces them with the translations (without changing the HTML structure). API calls are made from the extension's background service worker, so they are not affected by the site's settings. Page access is limited to `activeTab`, which is granted temporarily only to the tab you translate. Text inside Shadow DOM (web components) and inside frames from the same site is translated too; frames from other sites (embedded videos, ads, and the like) are left as they are, because `activeTab` does not reach them.
 
+## iOS app (iPhone / iPad)
+
+The `ios/` folder contains a SwiftUI app for iPhone and iPad (iOS 17 or later) with the same features as the web app, plus translating text from photos.
+
+- Same as the web app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, the English / Japanese UI (follows the device unless chosen in Settings) and light / dark appearance
+- **Translate text in photos**: take a photo with the camera button or pick one with the photo button. The text is read on the device (Apple’s Vision framework), put into the original pane where you can edit it, and translated. Lines are joined back into paragraphs so sentences are translated whole. Only the text is sent to the AI service, never the image
+- API keys are stored in the device’s keychain (not synced). Turn on **Unlock with Face ID** in Settings to require Face ID (or Touch ID / the passcode) each time the app opens; the keys are locked again when the app moves to the background
+- The UI text and the target language list are the same files as the web app and the extension (`extension/lib/i18n.js` and `languages.js`), run in JavaScriptCore
+
+### Building
+
+You need macOS with Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`). The Xcode project is not in git; it is generated from `ios/project.yml`.
+
+1. In `ios/`, run `cp Local.xcconfig.example Local.xcconfig` and set `DEVELOPMENT_TEAM` to your Team ID (change `PRODUCT_BUNDLE_IDENTIFIER` there too if needed). `Local.xcconfig` is not committed
+2. In `ios/`, run `xcodegen generate` and open `Langria.xcodeproj`. Regenerate after adding or removing files or switching branches
+3. Run the **Langria** scheme on an iPhone, iPad or simulator. Tests: `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<simulator>'`
+
+The camera button appears only on devices with a camera (not in the simulator).
+
 ## About API keys
 
 This app has no backend; the browser sends requests directly to each AI service's API. API keys are stored in `localStorage` and are never part of the repository.
@@ -172,6 +192,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── AGENTS.md    # Development notes for AI coding agents
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
+├── ios/         # iOS app (SwiftUI; project.yml for XcodeGen, Langria/ sources, LangriaTests/)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
 ├── store/       # Chrome Web Store listing text, images and publishing steps
