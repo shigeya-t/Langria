@@ -4,13 +4,27 @@ import SwiftUI
 struct ContentView: View {
   @EnvironmentObject private var shared: Shared
   @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var ads: Ads
   @Environment(\.horizontalSizeClass) private var sizeClass
   @State private var showSettings = false
   @State private var showCamera = false
   @State private var photoItem: PhotosPickerItem?
   @FocusState private var sourceFocused: Bool
+  @State private var keyboardShown = false
 
   var body: some View {
+    // The banner sits below the screen rather than over it, so it never
+    // covers the text, and is hidden while typing so it is not right above the keyboard.
+    VStack(spacing: 0) {
+      screen
+      if ads.ready { BannerAd(hidden: keyboardShown) }
+    }
+    .background(Color(.systemGroupedBackground))
+    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardShown = true }
+    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardShown = false }
+  }
+
+  private var screen: some View {
     NavigationStack {
       // The panes grow to fill the screen (sharing the height when stacked)
       // and the page scrolls once their text needs more room.
@@ -38,6 +52,7 @@ struct ContentView: View {
         }
       }
       .scrollDismissesKeyboard(.interactively)
+      // Below the panes rather than over them, so it never covers the text.
       .background(Color(.systemGroupedBackground))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {

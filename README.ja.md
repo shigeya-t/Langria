@@ -147,11 +147,12 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 - **写真の文字を翻訳**: カメラのボタンで撮影するか、写真のボタンで写真を選びます。文字は端末の中（Apple の Vision）で読み取って原文欄に入れ、そのまま翻訳します（原文欄で直すこともできます）。行は段落にまとめ直すので、文の途中で切れずに翻訳されます。AIサービスへ送るのは文字だけで、画像は送りません
 - **音声入力と読み上げ**: 原文欄のマイクのボタンで、話した言葉を文字にします（長押しで話す言語を選べます。最初は端末の言語）。言語が対応していれば認識は端末の中で行い、対応していなければキーボードの音声入力と同じく Apple の音声認識へ音声を送ります。翻訳欄のスピーカーのボタンで、訳文を翻訳先の言語のシステムの声で読み上げます（端末の中で行います）
 - APIキーは端末のキーチェーン（同期しない項目）に保存します。設定の「**Face ID でロックを解除する**」をオンにすると、アプリを開くたびに Face ID（または Touch ID・パスコード）が必要になります。アプリが背面に回るとロックし直します
+- 画面の下に Google AdMob のバナー広告を表示します（キーボードを出している間は隠します）。法律で必要な地域では同意（Google の同意フォーム）を求め、続けてトラッキングの許可（App Tracking Transparency）を求めます。翻訳する文章を広告に使うことはありません。Debug ビルドでは Google のテスト広告が出ます
 - 画面の文言と翻訳先の言語一覧は、Webアプリ・拡張機能と同じファイル（`extension/lib/i18n.js` と `languages.js`。`languages.js` には音声入力・読み上げに使う各言語のロケールも入っています）を JavaScriptCore で読み込んで使います
 
 ### ビルド
 
-macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）が必要です。Xcode のプロジェクトは git に入れず、`ios/project.yml` から作ります。
+macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）が必要です。Xcode のプロジェクトは git に入れず、`ios/project.yml` から作ります。唯一の外部ライブラリである Google Mobile Ads SDK は Swift Package Manager で取得します。
 
 1. `ios/` で `cp Local.xcconfig.example Local.xcconfig` し、`DEVELOPMENT_TEAM` を自分の Team ID にする（必要ならバンドルID `PRODUCT_BUNDLE_IDENTIFIER` もここで変える）。`Local.xcconfig` は git に入らない
 2. `ios/` で `xcodegen generate` を実行し、`Langria.xcodeproj` を開く。ファイルを足したり消したり、ブランチを切り替えたあとは作り直す

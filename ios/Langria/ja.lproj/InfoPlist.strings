@@ -2,3 +2,4 @@
 "NSFaceIDUsageDescription" = "APIキーのロックを Face ID で解除するために使います。";
 "NSMicrophoneUsageDescription" = "翻訳する文章を音声で入力するためにマイクを使います。";
 "NSSpeechRecognitionUsageDescription" = "話した言葉を文字にして翻訳します。言語が対応していれば、認識はこの端末の中で行います。";
+"NSUserTrackingUsageDescription" = "Langria は広告で無料で提供しています。許可すると、興味に合った広告が表示されます。翻訳する文章は広告に使いません。";

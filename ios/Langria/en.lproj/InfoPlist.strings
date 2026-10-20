@@ -2,3 +2,4 @@
 "NSFaceIDUsageDescription" = "Langria uses Face ID to unlock your API keys.";
 "NSMicrophoneUsageDescription" = "Langria uses the microphone for voice input of the text to translate.";
 "NSSpeechRecognitionUsageDescription" = "Langria turns your speech into text to translate. It runs on this device when the language supports it.";
+"NSUserTrackingUsageDescription" = "Langria shows ads to keep the app free. Allowing tracking lets the ads match your interests; the text you translate is never used.";

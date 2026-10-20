@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
   @EnvironmentObject private var shared: Shared
   @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var ads: Ads
   @Environment(\.dismiss) private var dismiss
   @AppStorage("langria-theme") private var theme = ""
   @State private var editing: Provider = .openai
@@ -101,6 +102,9 @@ struct SettingsView: View {
         Section {
           Text(shared.t("web.securityNote")).font(.footnote).foregroundStyle(.secondary)
           Link(shared.t("settings.repo"), destination: URL(string: "https://github.com/shigeya-t/Langria")!)
+          if ads.privacyOptionsRequired {
+            Button(shared.t("ios.adPrivacy")) { Task { await ads.showPrivacyOptions() } }
+          }
           LabeledContent(shared.t("ios.version"), value: version)
         }
       }
