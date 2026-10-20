@@ -225,7 +225,10 @@
       'ios.speechUnavailable': 'Voice input is not available for {lang} on this device.',
       'ios.speechFailed': 'Voice input stopped ({detail}).',
       'ios.speak': 'Read aloud',
-      'ios.stopSpeaking': 'Stop reading aloud'
+      'ios.stopSpeaking': 'Stop reading aloud',
+      'ios.unsavedTitle': 'Discard unsaved changes?',
+      'ios.unsavedMessage': 'The API key or model you changed for {name} has not been saved.',
+      'ios.discard': 'Discard changes'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -435,7 +438,10 @@
       'ios.speechUnavailable': 'この端末では{lang}の音声入力を使えません。',
       'ios.speechFailed': '音声入力が止まりました（{detail}）。',
       'ios.speak': '読み上げ',
-      'ios.stopSpeaking': '読み上げを止める'
+      'ios.stopSpeaking': '読み上げを止める',
+      'ios.unsavedTitle': '保存していない変更を破棄しますか？',
+      'ios.unsavedMessage': '{name}のAPIキーまたはモデルの変更は、まだ保存されていません。',
+      'ios.discard': '変更を破棄'
     }
   };
   const languages = { en: 'English', ja: '日本語' };

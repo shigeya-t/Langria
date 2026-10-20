@@ -334,7 +334,7 @@ final class AppModel: ObservableObject {
     }
     let trimmed = model.trimmingCharacters(in: .whitespaces)
     defaults.set(trimmed.isEmpty ? provider.defaultModel : trimmed, forKey: provider.modelKey)
-    show(shared.t("web.savedProvider", ["name": provider.name]))
+    // The settings sheet, still open, says it was saved.
     textChanged()
   }
 

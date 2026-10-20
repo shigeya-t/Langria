@@ -10,12 +10,21 @@ struct SettingsView: View {
   @State private var modelName = ""
   @State private var showKey = false
   @State private var error = ""
+  /// The key and model as stored, to tell whether the fields were changed.
+  @State private var savedKey = ""
+  @State private var savedModel = ""
+  @State private var justSaved = false
+  /// Set while asking whether to drop unsaved changes: the provider to switch
+  /// to, or nil when closing the settings.
+  @State private var leaving: Provider??
 
   var body: some View {
     NavigationStack {
       Form {
         Section {
-          Picker(shared.t("popup.aiService"), selection: $editing) {
+          Picker(shared.t("popup.aiService"), selection: Binding(get: { editing }, set: { next in
+            if hasChanges { leaving = .some(next) } else { editing = next }
+          })) {
             ForEach(Provider.allCases) { Text($0.name).tag($0) }
           }
           .pickerStyle(.segmented)
@@ -39,7 +48,18 @@ struct SettingsView: View {
               .autocorrectionDisabled()
               .font(.body.monospaced())
           }
-          Button(shared.t("settings.save")) { save() }
+          HStack {
+            Button(shared.t("settings.save")) { save() }
+              .disabled(!hasChanges)
+            Spacer()
+            if justSaved {
+              Label(shared.t("web.savedProvider", ["name": editing.name]), systemImage: "checkmark.circle.fill")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .transition(.opacity)
+            }
+          }
+          .animation(.easeOut(duration: 0.2), value: justSaved)
         } header: {
           Text("\(shared.t("settings.apiKey")) · \(editing.name)")
         } footer: {
@@ -87,8 +107,21 @@ struct SettingsView: View {
       .navigationTitle(shared.t("settings.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .confirmationAction) { Button(shared.t("ios.done")) { dismiss() } }
+        ToolbarItem(placement: .confirmationAction) {
+          Button(shared.t("ios.done")) { if hasChanges { leaving = .some(nil) } else { dismiss() } }
+        }
       }
+      // Swiping the sheet down would drop the changes without asking.
+      .interactiveDismissDisabled(hasChanges)
+      .alert(shared.t("ios.unsavedTitle"), isPresented: Binding(get: { leaving != nil }, set: { if !$0 { leaving = nil } })) {
+        Button(shared.t("ios.discard"), role: .destructive) { leave(saving: false) }
+        Button(shared.t("settings.save")) { leave(saving: true) }
+        Button(shared.t("vault.cancel"), role: .cancel) { leaving = nil }
+      } message: {
+        Text(shared.t("ios.unsavedMessage", ["name": editing.name]))
+      }
+      .onChange(of: key) { _, _ in justSaved = false }
+      .onChange(of: modelName) { _, _ in justSaved = false }
       .onAppear { editing = model.provider; fill() }
       .onChange(of: editing) { _, _ in fill() }
       .onChange(of: model.keys) { _, _ in fill() }
@@ -103,17 +136,48 @@ struct SettingsView: View {
   }
 
   private func fill() {
-    key = model.keys?[editing.rawValue] ?? ""
-    modelName = model.model(for: editing)
+    savedKey = model.keys?[editing.rawValue] ?? ""
+    savedModel = model.model(for: editing)
+    key = savedKey
+    modelName = savedModel
     error = ""
   }
 
-  private func save() {
+  private var trimmedKey: String { key.trimmingCharacters(in: .whitespacesAndNewlines) }
+  // A blank model field means the default model, as when saving.
+  private var effectiveModel: String {
+    let trimmed = modelName.trimmingCharacters(in: .whitespaces)
+    return trimmed.isEmpty ? editing.defaultModel : trimmed
+  }
+
+  private var hasChanges: Bool {
+    (model.keys != nil && trimmedKey != savedKey) || effectiveModel != savedModel
+  }
+
+  /// Saves and stays on the settings, so other services can be set up too.
+  @discardableResult
+  private func save() -> Bool {
     do {
-      try model.save(key: key.trimmingCharacters(in: .whitespacesAndNewlines), model: modelName, for: editing)
-      dismiss()
+      try model.save(key: trimmedKey, model: modelName, for: editing)
+      fill()
+      justSaved = true
+      return true
     } catch {
       self.error = model.describe(error)
+      return false
+    }
+  }
+
+  /// Answers the unsaved-changes alert: switches to the chosen service or closes the settings.
+  private func leave(saving: Bool) {
+    guard let target = leaving else { return }
+    leaving = nil
+    if saving && !save() { return }
+    if let next = target {
+      editing = next
+      justSaved = false
+    } else {
+      dismiss()
     }
   }
 
