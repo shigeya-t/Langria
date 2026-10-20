@@ -1,0 +1,4 @@
+"NSCameraUsageDescription" = "文字を撮影して翻訳するためにカメラを使います。文字の読み取りはこの端末の中で行います。";
+"NSFaceIDUsageDescription" = "APIキーのロックを Face ID で解除するために使います。";
+"NSMicrophoneUsageDescription" = "翻訳する文章を音声で入力するためにマイクを使います。";
+"NSSpeechRecognitionUsageDescription" = "話した言葉を文字にして翻訳します。言語が対応していれば、認識はこの端末の中で行います。";

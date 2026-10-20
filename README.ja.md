@@ -4,10 +4,11 @@
 
 旧名は MyLingo です。
 
-ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の2つがあります。
+ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の3つがあります。
 
 - **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
 - **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
+- **iOSアプリ**: Webアプリと同じ翻訳に加え、カメラで撮った写真や選んだ写真の文字を読み取って翻訳します（[iOSアプリ](#iosアプリiphone--ipad)を参照）。
 
 紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
@@ -138,6 +139,26 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 
 ページのテキストを要素ごとに取り出し、画面内（と少し先）に入った部分だけを、画面に近い順にまとめてAIへ送って翻訳結果に差し替えます（HTMLの構造は変えません）。APIへの通信は拡張機能のバックグラウンド（Service Worker）から行うため、閲覧中サイトの設定に影響されません。ページへのアクセス権は `activeTab` のみで、翻訳を実行したタブにだけ一時的に許可されます。Shadow DOM（Webコンポーネント）の中と、同じサイトの iframe の中も翻訳します。別のサイトの iframe（埋め込み動画や広告など）は `activeTab` の権限が届かないため、そのままです。
 
+## iOSアプリ（iPhone / iPad）
+
+`ios/` フォルダーには、Webアプリと同じ機能に写真の文字の翻訳を加えた、iPhone・iPad 用の SwiftUI アプリ（iOS 17 以降）が入っています。
+
+- Webアプリと同じ: ChatGPT / Claude / Gemini の切り替え、翻訳先の言語（「その他」を含む）、翻訳モード、入力して少し待つと自動で翻訳、入れ替えボタン、コピー、英語 / 日本語の表示（設定で選ばなければ端末の言語に従う）、ライト / ダーク
+- **写真の文字を翻訳**: カメラのボタンで撮影するか、写真のボタンで写真を選びます。文字は端末の中（Apple の Vision）で読み取って原文欄に入れ、そのまま翻訳します（原文欄で直すこともできます）。行は段落にまとめ直すので、文の途中で切れずに翻訳されます。AIサービスへ送るのは文字だけで、画像は送りません
+- **音声入力と読み上げ**: 原文欄のマイクのボタンで、話した言葉を文字にします（長押しで話す言語を選べます。最初は端末の言語）。言語が対応していれば認識は端末の中で行い、対応していなければキーボードの音声入力と同じく Apple の音声認識へ音声を送ります。翻訳欄のスピーカーのボタンで、訳文を翻訳先の言語のシステムの声で読み上げます（端末の中で行います）
+- APIキーは端末のキーチェーン（同期しない項目）に保存します。設定の「**Face ID でロックを解除する**」をオンにすると、アプリを開くたびに Face ID（または Touch ID・パスコード）が必要になります。アプリが背面に回るとロックし直します
+- 画面の文言と翻訳先の言語一覧は、Webアプリ・拡張機能と同じファイル（`extension/lib/i18n.js` と `languages.js`。`languages.js` には音声入力・読み上げに使う各言語のロケールも入っています）を JavaScriptCore で読み込んで使います
+
+### ビルド
+
+macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）が必要です。Xcode のプロジェクトは git に入れず、`ios/project.yml` から作ります。
+
+1. `ios/` で `cp Local.xcconfig.example Local.xcconfig` し、`DEVELOPMENT_TEAM` を自分の Team ID にする（必要ならバンドルID `PRODUCT_BUNDLE_IDENTIFIER` もここで変える）。`Local.xcconfig` は git に入らない
+2. `ios/` で `xcodegen generate` を実行し、`Langria.xcodeproj` を開く。ファイルを足したり消したり、ブランチを切り替えたあとは作り直す
+3. スキーム **Langria** を iPhone・iPad・シミュレーターで実行する。テストは `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<シミュレーター名>'`
+
+カメラのボタンは、カメラのある端末でだけ表示されます（シミュレーターでは出ません）。
+
 ## APIキーについて
 
 このアプリはバックエンドを持たず、ブラウザから各AIサービスのAPIへ直接リクエストします。APIキーは `localStorage` に保存され、リポジトリに含まれることはありません。
@@ -172,6 +193,7 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 ├── AGENTS.md    # AIコーディングエージェント向けの開発メモ
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
+├── ios/         # iOSアプリ（SwiftUI。XcodeGen 用の project.yml、Langria/ にコード、LangriaTests/ にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順
