@@ -133,18 +133,15 @@ struct ContentView: View {
 
   private var inputPane: some View {
     Card {
-      HStack(spacing: 8) {
-        Text(shared.t("web.original")).font(.subheadline.weight(.bold))
-        Picker(shared.t("mode.label"), selection: $model.mode) {
-          ForEach(TranslationMode.allCases) { Text(shared.t("mode.\($0.rawValue)")).tag($0) }
-        }
-        .pickerStyle(.menu)
-        .labelsHidden()
-        .fixedSize()
-        Spacer()
-        Button(shared.t("web.clear")) { model.clear() }
-          .font(.subheadline)
-          .disabled(model.source.isEmpty && model.image == nil)
+      // A long mode name or a large text size can leave no room for
+      // everything on one line: the "Original" title goes first, then
+      // "Clear" becomes an icon, so nothing wraps.
+      ViewThatFits(in: .horizontal) {
+        HStack(spacing: 8) { originalTitle; modePicker.fixedSize(); Spacer(minLength: 8); clearButton(icon: false) }
+        HStack(spacing: 8) { modePicker.fixedSize(); Spacer(minLength: 8); clearButton(icon: false) }
+        // As a last resort the mode name is cut short instead of widening the pane.
+        HStack(spacing: 8) { modePicker.layoutPriority(-1); clearButton(icon: true) }
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
     } content: {
       VStack(alignment: .leading, spacing: 10) {
@@ -194,6 +191,38 @@ struct ContentView: View {
         .accessibilityLabel(shared.t("ios.photo"))
       CopyButton(label: shared.t("web.copyOriginal")) { model.copy(model.source) }
     }
+  }
+
+  private var originalTitle: some View {
+    Text(shared.t("web.original")).font(.subheadline.weight(.bold)).lineLimit(1).fixedSize()
+  }
+
+  // A Menu with its own label rather than a menu-style Picker, whose label
+  // wraps onto two lines instead of truncating when space runs out.
+  private var modePicker: some View {
+    Menu {
+      Picker(shared.t("mode.label"), selection: $model.mode) {
+        ForEach(TranslationMode.allCases) { Text(shared.t("mode.\($0.rawValue)")).tag($0) }
+      }
+    } label: {
+      HStack(spacing: 4) {
+        Text(shared.t("mode.\(model.mode.rawValue)")).lineLimit(1)
+        Image(systemName: "chevron.up.chevron.down").imageScale(.small)
+      }
+      .font(.subheadline)
+    }
+    .accessibilityLabel(shared.t("mode.label"))
+    .accessibilityValue(shared.t("mode.\(model.mode.rawValue)"))
+  }
+
+  private func clearButton(icon: Bool) -> some View {
+    Button { model.clear() } label: {
+      if icon { Image(systemName: "xmark.circle") } else { Text(shared.t("web.clear")).lineLimit(1) }
+    }
+    .font(.subheadline)
+    .fixedSize()
+    .disabled(model.source.isEmpty && model.image == nil)
+    .accessibilityLabel(shared.t("web.clear"))
   }
 
   private var outputPane: some View {
