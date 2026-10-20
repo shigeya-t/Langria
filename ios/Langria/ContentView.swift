@@ -10,21 +10,8 @@ struct ContentView: View {
   @State private var showCamera = false
   @State private var photoItem: PhotosPickerItem?
   @FocusState private var sourceFocused: Bool
-  @State private var keyboardShown = false
 
   var body: some View {
-    // The banner sits below the screen rather than over it, so it never
-    // covers the text, and is hidden while typing so it is not right above the keyboard.
-    VStack(spacing: 0) {
-      screen
-      if ads.ready { BannerAd(hidden: keyboardShown) }
-    }
-    .background(Color(.systemGroupedBackground))
-    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardShown = true }
-    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardShown = false }
-  }
-
-  private var screen: some View {
     NavigationStack {
       // The panes grow to fill the screen (sharing the height when stacked)
       // and the page scrolls once their text needs more room.
@@ -45,6 +32,8 @@ struct ContentView: View {
               .foregroundStyle(.secondary)
               .frame(maxWidth: .infinity, alignment: .leading)
               .padding(.horizontal, 4)
+            // At the end of the page, so it scrolls with the text and never covers it.
+            if ads.ready { BannerAd() }
           }
           .padding(16)
           .frame(maxWidth: 1100)
