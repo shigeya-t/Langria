@@ -169,7 +169,15 @@ private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     stop()
     let utterance = AVSpeechUtterance(string: text)
     if let tag = language ?? NLLanguageRecognizer.dominantLanguage(for: text)?.rawValue { utterance.voice = AVSpeechSynthesisVoice(language: tag) }
-    synthesizer.speak(utterance)
+    // The default ambient category is silent while the watch is in silent
+    // mode; playback plays through the speaker, as the user asked for it.
+    Task {
+      await Task.detached {
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, policy: .default)
+        try? AVAudioSession.sharedInstance().setActive(true)
+      }.value
+      synthesizer.speak(utterance)
+    }
     onChange?(true)
   }
 
@@ -181,6 +189,10 @@ private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
   nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { ended() }
 
   private nonisolated func ended() {
-    Task { @MainActor in if !self.synthesizer.isSpeaking { self.onChange?(false) } }
+    Task { @MainActor in
+      guard !self.synthesizer.isSpeaking else { return }
+      Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
+      self.onChange?(false)
+    }
   }
 }
