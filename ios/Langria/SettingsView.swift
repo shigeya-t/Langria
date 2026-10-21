@@ -93,7 +93,10 @@ struct SettingsView: View {
           } header: {
             Text("Apple Watch")
           } footer: {
-            Text(shared.t(model.locked ? "ios.watchNoteLocked" : "ios.watchNote"))
+            VStack(alignment: .leading, spacing: 6) {
+              Text(shared.t(model.locked ? "ios.watchNoteLocked" : "ios.watchNote"))
+              if watch.enabled && !watch.installed { Text(shared.t("ios.watchNotInstalled")) }
+            }
           }
         }
 

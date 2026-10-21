@@ -8,6 +8,9 @@ import WatchConnectivity
 final class WatchSync: NSObject, ObservableObject, WCSessionDelegate {
   /// Whether an Apple Watch is paired, to show the setting only then.
   @Published private(set) var paired = false
+  /// Whether the watch app is on the watch. An app cannot install it; the
+  /// user does that in the Watch app unless automatic app install is on.
+  @Published private(set) var installed = false
   @Published var enabled = UserDefaults.standard.bool(forKey: "langria-watch") {
     didSet { UserDefaults.standard.set(enabled, forKey: "langria-watch"); send() }
   }
@@ -55,7 +58,8 @@ final class WatchSync: NSObject, ObservableObject, WCSessionDelegate {
     guard WCSession.isSupported() else { return }
     let session = WCSession.default
     paired = session.activationState == .activated && session.isPaired
-    guard paired, session.isWatchAppInstalled else { return }
+    installed = paired && session.isWatchAppInstalled
+    guard installed else { return }
     let next = settings
     guard next.hashValue != last, let data = try? JSONEncoder().encode(next) else { return }
     do {
