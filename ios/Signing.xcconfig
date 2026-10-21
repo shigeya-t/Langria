@@ -1,4 +1,6 @@
 // 署名の Team（と、必要ならバンドルID）は Local.xcconfig（git 管理外）に書く。書き方は Local.xcconfig.example。
 // Xcode の Signing で選んだ Team は、xcodegen generate で作り直すと消える。
-PRODUCT_BUNDLE_IDENTIFIER = io.github.shigeya-t.Langria
+// Apple Watch アプリは $(LANGRIA_BUNDLE_ID).watchkitapp になる。
+LANGRIA_BUNDLE_ID = io.github.shigeya-t.Langria
+PRODUCT_BUNDLE_IDENTIFIER = $(LANGRIA_BUNDLE_ID)
 #include? "Local.xcconfig"

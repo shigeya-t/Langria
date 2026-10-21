@@ -230,7 +230,16 @@
       'ios.stopSpeaking': 'Stop reading aloud',
       'ios.unsavedTitle': 'Discard unsaved changes?',
       'ios.unsavedMessage': 'The API key or model you changed for {name} has not been saved.',
-      'ios.discard': 'Discard changes'
+      'ios.discard': 'Discard changes',
+      'ios.watchToggle': 'Use on Apple Watch',
+      'ios.watchNote': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain. Turning this off deletes them from the watch.',
+      'ios.watchNoteLocked': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain (protected by the watch’s passcode, without Face ID). The keys are sent while they are unlocked. Turning this off deletes them from the watch.',
+
+      // Apple Watch app (the iPhone app sends it these messages)
+      'watch.input': 'Speak or type',
+      'watch.translateTo': 'Translate into',
+      'watch.noKey': 'No {name} API key is set. Enter it in Langria’s settings on your iPhone.',
+      'watch.noTarget': 'Enter the target language in Langria on your iPhone.'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -445,7 +454,16 @@
       'ios.stopSpeaking': '読み上げを止める',
       'ios.unsavedTitle': '保存していない変更を破棄しますか？',
       'ios.unsavedMessage': '{name}のAPIキーまたはモデルの変更は、まだ保存されていません。',
-      'ios.discard': '変更を破棄'
+      'ios.discard': '変更を破棄',
+      'ios.watchToggle': 'Apple Watch で使う',
+      'ios.watchNote': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます。オフにすると Apple Watch から削除します。',
+      'ios.watchNoteLocked': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます（Face ID ではなく Apple Watch のパスコードで保護されます）。キーはロックを解除している間に送ります。オフにすると Apple Watch から削除します。',
+
+      // Apple Watch app (the iPhone app sends it these messages)
+      'watch.input': '話すか入力する',
+      'watch.translateTo': '翻訳先',
+      'watch.noKey': '{name} のAPIキーが未設定です。iPhone の Langria の設定で入力してください。',
+      'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。'
     }
   };
   const languages = { en: 'English', ja: '日本語' };

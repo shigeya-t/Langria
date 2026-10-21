@@ -23,7 +23,7 @@
       <h1>プライバシーポリシー</h1>
       <p class="updated">最終更新日: 2026年10月21日</p>
 
-      <p>このポリシーは、Chrome拡張機能「Langria – AI Webページ翻訳」、Langria のWebアプリ、Langria のiOSアプリが利用者のデータをどう扱うかを説明するものです。Langria は独自のサーバーを持たず、開発者が利用者のデータを受け取ったり、収集・保存したりすることはありません。</p>
+      <p>このポリシーは、Chrome拡張機能「Langria – AI Webページ翻訳」、Langria のWebアプリ、Langria のiOSアプリ（Apple Watch アプリを含む）が利用者のデータをどう扱うかを説明するものです。Langria は独自のサーバーを持たず、開発者が利用者のデータを受け取ったり、収集・保存したりすることはありません。</p>
 
       <div class="summary">
         <ul>
@@ -71,6 +71,7 @@
         <li>翻訳結果は保存しません。ページ上に表示し、原文に戻したときやページを離れたときに破棄されます。</li>
         <li>Webアプリは、同じ種類の設定をブラウザの <code>localStorage</code> に保存します。</li>
         <li>iOSアプリは、APIキーをこの端末のキーチェーン（ほかの端末へ同期しない項目）に、設定を端末内（UserDefaults）に保存します。ロックをオンにすると、キーチェーンのキーを読み出すたびに Face ID・Touch ID またはパスコードが必要になり、解除したキーはアプリが背面に回るまでメモリ上にだけ保持します。</li>
+        <li>「Apple Watch で使う」をオンにすると、iOSアプリは APIキーと設定を、ペアリングした Apple Watch の Langria へ Apple の WatchConnectivity で送ります（端末どうしで直接やり取りし、Langria のサーバーは通りません）。Apple Watch はキーの複製を自分のキーチェーン（同期しない項目。Apple Watch のパスコードで保護）に保存し、Apple Watch で入力した文章を AIサービスへ直接送ります。オフにすると Apple Watch からキーを削除します。</li>
       </ul>
 
       <h2>権限</h2>

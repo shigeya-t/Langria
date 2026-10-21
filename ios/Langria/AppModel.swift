@@ -150,21 +150,7 @@ final class AppModel: ObservableObject {
   var result: String? { if !stale, case .result(let text) = pane { text } else { nil } }
 
   func message(for error: TranslationError, provider: Provider, model: String) -> String {
-    let t = shared.t
-    switch error {
-    case .api(let status, let detail):
-      let summary = status == 401 || status == 403 ? t("error.auth", ["name": provider.name])
-        : status == 429 ? t("error.rateLimit", [:])
-        : status == 400 || status == 404 ? t("error.model", ["model": model])
-        : t("error.http", ["name": provider.name, "status": String(status)])
-      return "\(summary)\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
-    case .truncated: return t("error.truncated", [:])
-    case .empty: return t("error.empty", [:])
-    case .network: return t("error.network", ["name": provider.name])
-    case .timeout: return t("error.timeout", ["name": provider.name])
-    case .blocked(let reason): return t("error.blocked", ["name": provider.name, "reason": reason])
-    case .unexpected(let detail): return detail.isEmpty ? t("error.unexpected", [:]) : detail
-    }
+    error.message(provider: provider, model: model, t: shared.t)
   }
 
   func clear() {

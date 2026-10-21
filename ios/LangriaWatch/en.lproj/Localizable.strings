@@ -1,0 +1,2 @@
+/* Shown before the iPhone has sent anything; the rest of the UI text comes from the iPhone (i18n.js). */
+"setup" = "Open Langria on your iPhone and turn on “Use on Apple Watch” in Settings.";

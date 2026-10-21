@@ -33,6 +33,19 @@ final class SharedTests: XCTestCase {
     XCTAssertEqual(shared.targets.first, "English")
     XCTAssertTrue(shared.targets.contains("Indonesian"))
   }
+
+  /// The watch shows the key itself for a message missing from i18n.js.
+  func testWatchMessagesExist() {
+    let saved = UserDefaults.standard.string(forKey: "langria-ui-language")
+    defer { UserDefaults.standard.set(saved, forKey: "langria-ui-language") }
+    let shared = Shared()
+    for language in ["en", "ja"] {
+      shared.setChoice(language)
+      for key in WatchSettings.messageKeys { XCTAssertNotEqual(shared.t(key), key, "\(language): \(key)") }
+    }
+    shared.setChoice("ja")
+    XCTAssertNotEqual(shared.t("watch.input"), "Speak or type")
+  }
 }
 
 final class TextRecognizerTests: XCTestCase {

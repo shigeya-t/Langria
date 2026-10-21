@@ -2,4 +2,4 @@
 // Team ID は Xcode の Settings → Accounts、または developer.apple.com の Membership で確認できる。
 DEVELOPMENT_TEAM = XXXXXXXXXX
 // バンドルIDを変えるときだけ書く（App ID が他の人と重なるときなど）。
-// PRODUCT_BUNDLE_IDENTIFIER = com.example.Langria
+// LANGRIA_BUNDLE_ID = com.example.Langria

@@ -4,6 +4,7 @@ struct SettingsView: View {
   @EnvironmentObject private var shared: Shared
   @EnvironmentObject private var model: AppModel
   @EnvironmentObject private var ads: Ads
+  @EnvironmentObject private var watch: WatchSync
   @Environment(\.dismiss) private var dismiss
   @AppStorage("langria-theme") private var theme = ""
   @State private var editing: Provider = .openai
@@ -83,6 +84,16 @@ struct SettingsView: View {
             Text(shared.t("ios.lockNote", ["method": model.lockMethod]))
             if !error.isEmpty { Text(error).foregroundStyle(.red) }
             if !model.unlockError.isEmpty { Text(model.unlockError).foregroundStyle(.red) }
+          }
+        }
+
+        if watch.paired {
+          Section {
+            Toggle(shared.t("ios.watchToggle"), isOn: $watch.enabled)
+          } header: {
+            Text("Apple Watch")
+          } footer: {
+            Text(shared.t(model.locked ? "ios.watchNoteLocked" : "ios.watchNote"))
           }
         }
 
