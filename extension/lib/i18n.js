@@ -243,7 +243,7 @@
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': 'Speak or type',
       'watch.translateTo': 'Translate into',
-      'watch.dictationHint': 'To dictate in another language, swipe up from the bottom of the input screen and choose it. Add languages in the Watch app on iPhone: My Watch → General → Language & Region. Some languages do not offer dictation (no microphone); for English, try English (US).',
+      'watch.dictationHint': 'To dictate in another language, swipe up from the bottom of the input screen and choose it. Add languages in the Watch app on iPhone: My Watch → General → Language & Region. Some languages do not offer dictation on the watch (no microphone); use voice input in Langria on iPhone for those.',
       'watch.noKey': 'No {name} API key is set. Enter it in Langria’s settings on your iPhone.',
       'watch.noTarget': 'Enter the target language in Langria on your iPhone.'
     },
@@ -473,7 +473,7 @@
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': '話すか入力する',
       'watch.translateTo': '翻訳先',
-      'watch.dictationHint': 'ほかの言語で音声入力するには、入力画面の下から上にスワイプして言語を選びます。言語は iPhone の Watch アプリの「マイウォッチ」→「一般」→「言語と地域」で追加できます。言語によっては音声入力（マイク）が出ません。英語なら「英語（米国）」を試してください。',
+      'watch.dictationHint': 'ほかの言語で音声入力するには、入力画面の下から上にスワイプして言語を選びます。言語は iPhone の Watch アプリの「マイウォッチ」→「一般」→「言語と地域」で追加できます。言語によっては Apple Watch で音声入力（マイク）が出ません。その言語は iPhone の Langria の音声入力を使ってください。',
       'watch.noKey': '{name} のAPIキーが未設定です。iPhone の Langria の設定で入力してください。',
       'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。'
     }
