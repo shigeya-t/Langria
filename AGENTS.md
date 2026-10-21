@@ -36,7 +36,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `ios/Langria/AppModel.swift` | 翻訳画面の状態。設定は UserDefaults に Webアプリの localStorage と同じ名前（`langria-provider` など）で保存。700ms 待って翻訳、古い応答は `latestRequest` で捨てる |
 | `ios/Langria/KeyStore.swift` | APIキーをキーチェーン（このデバイスのみ）に JSON 1件で保存。ロックをオンにすると `.userPresence` のアクセス制御を付け、読み出しに Face ID / パスコードが要る。Webアプリの vault.js の代わり |
 | `ios/Langria/TextRecognizer.swift` | Vision で写真の文字を読み、行を段落にまとめ直す。画像は送らない |
-| `ios/Langria/Speech.swift` | 原文の音声入力（Speech。対応する言語は端末内で認識）と訳文の読み上げ（AVSpeechSynthesizer）。言語は `languages.js` の `locale` を使い、「その他」の読み上げは NaturalLanguage で文の言語を推定する |
+| `ios/Langria/Speech.swift` / `Speaker.swift` | 原文の音声入力（Speech。対応する言語は端末内で認識。間が空くと認識し直すので、発話ごとに文字をつなぐ）と訳文の読み上げ（AVSpeechSynthesizer。`Speaker.swift` は Apple Watch アプリと共用）。言語は `languages.js` の `locale` を使い、「その他」の読み上げは NaturalLanguage で文の言語を推定する。音声入力の「自動」は、端末の言語、翻訳先が端末の言語なら直前の翻訳先（UserDefaults の `langria-dictation-other`） |
 | `ios/Langria/WatchSync.swift` / `WatchSettings.swift` | Apple Watch への送信。設定の「Apple Watch で使う」（UserDefaults の `langria-watch`）がオンのとき、APIキー・設定・Watch が使う文言（`WatchSettings.messageKeys`）と言語名を WatchConnectivity の application context で送る。ロック中はキーを含めず、Watch は手元のキーを使い続ける。オフにすると Watch はキーを消す |
 | `ios/LangriaWatch/` | Apple Watch アプリ。`Translator.swift` と `WatchSettings.swift` を iOS と共用し、API へは Watch から直接リクエストする。キーは Watch のキーチェーン（このデバイスのみ）。watchOS には JavaScriptCore がないので、文言は iPhone が送ったもの（iPhone の表示言語）を使う。まだ何も届いていないときの案内だけは `LangriaWatch/*.lproj/Localizable.strings` に置く |
 | `ios/LangriaTests/` | XCTest。API はダミーの URLProtocol で差し替えるので APIキーは要らない |

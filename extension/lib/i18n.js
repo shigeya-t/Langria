@@ -222,6 +222,9 @@
       'ios.dictateHint': 'Touch and hold to choose the language you speak.',
       'ios.stopDictation': 'Stop voice input',
       'ios.dictationLanguage': 'Language you speak',
+      'ios.dictationAuto': 'Auto ({lang})',
+      'ios.dictationAutoShort': 'Auto · {lang}',
+      'ios.dictationAutoNote': 'Auto listens in your device’s language, or in the other person’s when translating into yours.',
       'ios.listening': 'Listening ({lang})…',
       'ios.speechDenied': 'To use voice input, allow the microphone and speech recognition for Langria in the Settings app.',
       'ios.speechUnavailable': 'Voice input is not available for {lang} on this device.',
@@ -240,6 +243,7 @@
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': 'Speak or type',
       'watch.translateTo': 'Translate into',
+      'watch.dictationHint': 'To dictate in another language, swipe up from the bottom of the input screen and choose it. Add languages in the Watch app on iPhone: My Watch → General → Language & Region.',
       'watch.noKey': 'No {name} API key is set. Enter it in Langria’s settings on your iPhone.',
       'watch.noTarget': 'Enter the target language in Langria on your iPhone.'
     },
@@ -448,6 +452,9 @@
       'ios.dictateHint': '長押しで、話す言語を選べます。',
       'ios.stopDictation': '音声入力を止める',
       'ios.dictationLanguage': '話す言語',
+      'ios.dictationAuto': '自動（{lang}）',
+      'ios.dictationAutoShort': '自動 · {lang}',
+      'ios.dictationAutoNote': '自動では端末の言語で聞き取ります。翻訳先が端末の言語のときは、相手の言語（直前の翻訳先）で聞き取ります。',
       'ios.listening': '聞き取り中（{lang}）…',
       'ios.speechDenied': '音声入力を使うには、設定アプリで Langria にマイクと音声認識を許可してください。',
       'ios.speechUnavailable': 'この端末では{lang}の音声入力を使えません。',
@@ -466,6 +473,7 @@
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': '話すか入力する',
       'watch.translateTo': '翻訳先',
+      'watch.dictationHint': 'ほかの言語で音声入力するには、入力画面の下から上にスワイプして言語を選びます。言語は iPhone の Watch アプリの「マイウォッチ」→「一般」→「言語と地域」で追加できます。',
       'watch.noKey': '{name} のAPIキーが未設定です。iPhone の Langria の設定で入力してください。',
       'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。'
     }

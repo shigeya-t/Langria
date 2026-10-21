@@ -46,6 +46,9 @@ struct WatchView: View {
         Picker(model.t("watch.translateTo"), selection: Binding(get: { model.target }, set: { model.pick($0) })) {
           ForEach(model.targets, id: \.self) { Text(model.label($0)).tag($0) }
         }
+      } footer: {
+        // The system input decides the dictation language; the app cannot set it.
+        Text(model.t("watch.dictationHint"))
       }
       result
     }
