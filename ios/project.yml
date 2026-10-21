@@ -79,6 +79,7 @@ targets:
     sources:
       - path: LangriaWatch
       - path: Langria/Translator.swift
+      - path: Langria/Speaker.swift
       - path: Langria/WatchSettings.swift
     settings:
       PRODUCT_NAME: Langria

@@ -23,7 +23,7 @@ struct WatchSettings: Codable, Hashable {
 
   /// The message keys the watch uses.
   static let messageKeys = [
-    "watch.input", "watch.translateTo", "watch.noKey", "watch.noTarget", "status.translating", "ios.speak", "ios.stopSpeaking",
+    "watch.input", "watch.translateTo", "watch.noKey", "watch.noTarget", "status.translating", "ios.speak", "ios.stopSpeaking", "ios.speakUnavailable",
     "error.detail", "error.noDetail", "error.auth", "error.rateLimit", "error.model", "error.http",
     "error.truncated", "error.empty", "error.network", "error.timeout", "error.blocked", "error.unexpected"
   ]

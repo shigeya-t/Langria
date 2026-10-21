@@ -1,5 +1,3 @@
-import AVFAudio
-import NaturalLanguage
 import Security
 import SwiftUI
 import WatchConnectivity
@@ -22,6 +20,8 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
   @Published var source = "" { didSet { if source != oldValue { textChanged() } } }
   @Published private(set) var pane: Pane = .empty
   @Published private(set) var speaking = false
+  /// Shown under the read-aloud button when the watch has no voice for the language.
+  @Published private(set) var notice: String?
   /// The target picked on the watch, or nil to use the iPhone's.
   @Published private(set) var picked: String?
 
@@ -83,6 +83,7 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
     latestRequest += 1
     let request = latestRequest
     speaker.stop()
+    notice = nil
     let text = source.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !text.isEmpty else { pane = .empty; return }
     let provider = provider, model = model, language = target
@@ -107,9 +108,9 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
   }
 
   func toggleSpeaking() {
-    if speaking { speaker.stop(); return }
+    if speaking { speaker.stop(); speaking = false; return }
     guard case .result(let text) = pane else { return }
-    speaker.speak(text, language: settings?.locales[target])
+    notice = speaker.speak(text, language: settings?.locales[target]) ? nil : t("ios.speakUnavailable", ["lang": label(target)])
   }
 
   // MARK: Settings from the iPhone
@@ -164,57 +165,5 @@ private enum WatchKeys {
     item[kSecValueData] = data
     item[kSecAttrAccessible] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     SecItemAdd(item as CFDictionary, nil)
-  }
-}
-
-/// Reads the translation aloud with the system voices, on the watch.
-@MainActor
-private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
-  private let synthesizer = AVSpeechSynthesizer()
-  /// The utterance being read. `isSpeaking` can still be true when the
-  /// watch reports it finished, so the end is told by the utterance instead.
-  private var current: AVSpeechUtterance?
-  var onChange: ((Bool) -> Void)?
-
-  override init() {
-    super.init()
-    synthesizer.delegate = self
-  }
-
-  /// `language` is a BCP 47 tag, or nil to guess it from the text.
-  func speak(_ text: String, language: String?) {
-    stop()
-    let utterance = AVSpeechUtterance(string: text)
-    if let tag = language ?? NLLanguageRecognizer.dominantLanguage(for: text)?.rawValue { utterance.voice = AVSpeechSynthesisVoice(language: tag) }
-    current = utterance
-    // The default ambient category is silent while the watch is in silent
-    // mode; playback plays through the speaker, as the user asked for it.
-    Task {
-      await Task.detached {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, policy: .default)
-        try? AVAudioSession.sharedInstance().setActive(true)
-      }.value
-      // Stopped while the session was being set up.
-      guard current === utterance else { return }
-      synthesizer.speak(utterance)
-    }
-    onChange?(true)
-  }
-
-  func stop() {
-    guard let utterance = current else { return }
-    synthesizer.stopSpeaking(at: .immediate)
-    ended(utterance)
-  }
-
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { Task { @MainActor in self.ended(utterance) } }
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { Task { @MainActor in self.ended(utterance) } }
-
-  /// Only the utterance being read ends it; a stopped earlier one may report late.
-  private func ended(_ utterance: AVSpeechUtterance) {
-    guard current === utterance else { return }
-    current = nil
-    Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
-    onChange?(false)
   }
 }

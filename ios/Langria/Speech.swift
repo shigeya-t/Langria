@@ -1,5 +1,4 @@
 import AVFoundation
-import NaturalLanguage
 import Speech
 
 /// Voice input for the original pane, with Apple's speech recognition. It
@@ -118,52 +117,5 @@ final class Dictation {
     }
     guard speech else { return false }
     return await AVAudioApplication.requestRecordPermission()
-  }
-}
-
-/// Reads the translation aloud with the system voices, on the device.
-@MainActor
-final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
-  private let synthesizer = AVSpeechSynthesizer()
-  var onChange: ((Bool) -> Void)?
-
-  override init() {
-    super.init()
-    synthesizer.delegate = self
-  }
-
-  var isSpeaking: Bool { synthesizer.isSpeaking }
-
-  /// `language` is a BCP 47 tag, or nil to guess it from the text (for a
-  /// target typed in under "Other").
-  func speak(_ text: String, language: String?) {
-    stop()
-    // Play even with the ring / silent switch on, as the user asked for it.
-    let utterance = AVSpeechUtterance(string: text)
-    let tag = language ?? NLLanguageRecognizer.dominantLanguage(for: text)?.rawValue
-    if let tag { utterance.voice = AVSpeechSynthesisVoice(language: tag) }
-    Task {
-      await Task.detached {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
-        try? AVAudioSession.sharedInstance().setActive(true)
-      }.value
-      synthesizer.speak(utterance)
-    }
-    onChange?(true)
-  }
-
-  func stop() {
-    if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
-  }
-
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { ended() }
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { ended() }
-
-  private nonisolated func ended() {
-    Task { @MainActor in
-      guard !self.synthesizer.isSpeaking else { return }
-      Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
-      self.onChange?(false)
-    }
   }
 }

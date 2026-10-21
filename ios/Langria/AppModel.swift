@@ -247,9 +247,11 @@ final class AppModel: ObservableObject {
   }
 
   func toggleSpeaking() {
-    if speaking { speaker.stop(); return }
+    if speaking { speaker.stop(); speaking = false; return }
     guard let text = result else { return }
-    speaker.speak(text, language: target == Shared.customTarget ? nil : shared.locales[target])
+    if !speaker.speak(text, language: target == Shared.customTarget ? nil : shared.locales[target]) {
+      show(shared.t("ios.speakUnavailable", ["lang": target == Shared.customTarget ? targetLanguage : shared.languageLabel(target)]))
+    }
   }
 
   // MARK: Reading text from photos

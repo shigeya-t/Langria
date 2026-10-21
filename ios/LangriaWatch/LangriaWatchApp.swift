@@ -68,6 +68,7 @@ struct WatchView: View {
         Button(model.t(model.speaking ? "ios.stopSpeaking" : "ios.speak"), systemImage: model.speaking ? "stop.fill" : "speaker.wave.2") {
           model.toggleSpeaking()
         }
+        if let notice = model.notice { Text(notice).font(.footnote).foregroundStyle(.secondary) }
       } footer: {
         Text("\(model.provider.name) · \(model.model)")
       }
