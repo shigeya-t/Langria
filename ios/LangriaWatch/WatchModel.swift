@@ -19,13 +19,14 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
 
   @Published private(set) var settings: WatchSettings?
   @Published private(set) var keys: [String: String] = [:]
-  @Published var source = "" { didSet { if source != oldValue { translate() } } }
+  @Published var source = "" { didSet { if source != oldValue { textChanged() } } }
   @Published private(set) var pane: Pane = .empty
   @Published private(set) var speaking = false
   /// The target picked on the watch, or nil to use the iPhone's.
   @Published private(set) var picked: String?
 
   private var latestRequest = 0
+  private var pending: Task<Void, Never>?
   private let speaker = Speaker()
 
   override init() {
@@ -65,7 +66,20 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
 
   // MARK: Translating
 
+  /// Waits 700 ms as the iPhone app does, so text that arrives in pieces
+  /// (dictation) is translated once it settles.
+  private func textChanged() {
+    pending?.cancel()
+    latestRequest += 1
+    pending = Task { [weak self] in
+      try? await Task.sleep(for: .milliseconds(700))
+      guard !Task.isCancelled else { return }
+      self?.translate()
+    }
+  }
+
   func translate() {
+    pending?.cancel()
     latestRequest += 1
     let request = latestRequest
     speaker.stop()

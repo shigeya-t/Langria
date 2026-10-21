@@ -44,9 +44,10 @@ final class Dictation {
     try engine.start()
     isRecording = true
 
+    var transcript = Transcript(separator: ["ja", "zh"].contains(locale.language.languageCode?.identifier ?? "") ? "" : " ")
     task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-      let text = result?.bestTranscription.formattedString
       let done = error != nil || result?.isFinal == true
+      let text = result.map { transcript.add($0.bestTranscription.formattedString, ended: $0.speechRecognitionMetadata != nil || $0.isFinal) }
       Task { @MainActor in
         guard let self, self.isRecording else { return }
         if let text { onText(text) }
@@ -80,6 +81,35 @@ final class Dictation {
   private static func isSilence(_ error: Error?) -> Bool {
     guard let error = error as NSError? else { return true }
     return error.domain == "kAFAssistantErrorDomain" && error.code == 1110
+  }
+
+  /// Joins the utterances of one session. After a pause, recognition starts
+  /// a new utterance and its results no longer include the earlier ones, so
+  /// those are kept here.
+  struct Transcript {
+    let separator: String
+    private var kept = ""
+    private var current = ""
+
+    init(separator: String) { self.separator = separator }
+
+    /// Takes the latest result and returns the whole text so far. `ended` marks
+    /// the last result of an utterance.
+    mutating func add(_ text: String, ended: Bool) -> String {
+      // Not every pause is marked; a result that drops what was heard means a new utterance.
+      if !current.isEmpty, text.count < current.count, !current.hasPrefix(text), !text.hasPrefix(current.prefix(1)) { keep(current) }
+      current = text
+      let whole = join(kept, current)
+      if ended { keep(current); current = "" }
+      return whole
+    }
+
+    private mutating func keep(_ text: String) { kept = join(kept, text) }
+
+    private func join(_ a: String, _ b: String) -> String {
+      let a = a.trimmingCharacters(in: .whitespaces), b = b.trimmingCharacters(in: .whitespaces)
+      return a.isEmpty ? b : b.isEmpty ? a : a + separator + b
+    }
   }
 
   private static func authorize() async -> Bool {
