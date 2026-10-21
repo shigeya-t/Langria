@@ -5,6 +5,15 @@ options:
   deploymentTarget:
     iOS: "17.0"
 # Team などの手元の設定は Local.xcconfig（git 管理外）に書く。Signing.xcconfig がそれを読む。
+# The one exception to "no external libraries": the ads. UMP comes with it,
+# but is named too because the app imports it directly.
+packages:
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads.git
+    from: 13.11.0
+  GoogleUserMessagingPlatform:
+    url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git
+    from: 3.1.0
 configFiles:
   Debug: Signing.xcconfig
   Release: Signing.xcconfig
@@ -18,6 +27,10 @@ settings:
   configs:
     Debug:
       SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+      # Google's test banner, so development builds never show live ads.
+      ADMOB_BANNER_UNIT_ID: ca-app-pub-3940256099942544/2435281174
+    Release:
+      ADMOB_BANNER_UNIT_ID: ca-app-pub-1566635098782317/9032522022
 targets:
   Langria:
     type: application
@@ -34,9 +47,13 @@ targets:
       - path: ../extension/lib/version.js
         buildPhase: resources
         optional: true
+    dependencies:
+      - package: GoogleMobileAds
+      - package: GoogleUserMessagingPlatform
     settings:
       PRODUCT_NAME: Langria
       GENERATE_INFOPLIST_FILE: true
+      INFOPLIST_FILE: Langria/Info.plist
       INFOPLIST_KEY_CFBundleDisplayName: Langria
       INFOPLIST_KEY_UILaunchScreen_Generation: true
       INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: true
@@ -46,6 +63,7 @@ targets:
       INFOPLIST_KEY_NSFaceIDUsageDescription: Langria uses Face ID to unlock your API keys.
       INFOPLIST_KEY_NSMicrophoneUsageDescription: Langria uses the microphone for voice input of the text to translate.
       INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: Langria turns your speech into text to translate. It runs on this device when the language supports it.
+      INFOPLIST_KEY_NSUserTrackingUsageDescription: Langria shows ads to keep the app free. Allowing tracking lets the ads match your interests; the text you translate is never used.
       INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: false
       TARGETED_DEVICE_FAMILY: "1,2"
       SUPPORTS_MACCATALYST: false

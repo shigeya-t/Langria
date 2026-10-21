@@ -10,7 +10,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 - **Chrome拡張機能**（`extension/`、Manifest V3）: 表示中のWebページや選択テキストを翻訳する。
 - **iOSアプリ**（`ios/`、SwiftUI、iOS 17 以降）: Webアプリと同じ翻訳に加え、カメラ・写真の文字を端末内で読み取って（Vision）翻訳する。
 
-どれもバックエンドを持たず、ブラウザ（拡張機能は Service Worker、iOS は URLSession）から各サービスのAPIへ直接リクエストします。Webアプリと拡張機能にはビルド工程、パッケージマネージャー、依存ライブラリはありません。iOSアプリも外部ライブラリは使わず、Xcode のプロジェクトは XcodeGen で `ios/project.yml` から作ります。
+どれもバックエンドを持たず、ブラウザ（拡張機能は Service Worker、iOS は URLSession）から各サービスのAPIへ直接リクエストします。Webアプリと拡張機能にはビルド工程、パッケージマネージャー、依存ライブラリはありません。iOSアプリも外部ライブラリは使いません（例外は広告の Google Mobile Ads SDK と、それに含まれる UMP SDK だけ。Swift Package Manager で入れる）。Xcode のプロジェクトは XcodeGen で `ios/project.yml` から作ります。
 
 ## ファイルと役割
 
@@ -28,7 +28,9 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `extension/icons/` | `icon.svg` がアイコン・ロゴの元データ（Webアプリのファビコンとヘッダーも参照する。**Webアプリと共用**）。PNG はこの SVG から書き出す。`icon-128.png` だけはストアの規定に合わせ、96×96 の絵の周りに 16px の透明な余白を付ける |
 | `extension/_locales/` | manifest の説明文など（Chrome の言語に従う） |
 | `extension/lib/version.js` | git フックが生成するコミットハッシュ。git管理外で、なくても動く（iOSアプリも設定画面の「バージョン」に出す） |
-| `ios/project.yml` | iOSアプリの XcodeGen 定義。`Langria.xcodeproj` は git管理外で、`xcodegen generate` で作る。署名の Team は `ios/Local.xcconfig`（git管理外、`Local.xcconfig.example` を参照） |
+| `ios/project.yml` | iOSアプリの XcodeGen 定義。`Langria.xcodeproj` は git管理外で、`xcodegen generate` で作る。署名の Team は `ios/Local.xcconfig`（git管理外、`Local.xcconfig.example` を参照）。広告ユニット ID は `ADMOB_BANNER_UNIT_ID`（Debug は Google のテスト用、Release は本番） |
+| `ios/Langria/Info.plist` | ビルド設定で書けない Info.plist の項目（AdMob の App ID `GADApplicationIdentifier`、`SKAdNetworkItems`、広告ユニット ID）。`INFOPLIST_KEY_*` から作られる項目とまとめられる |
+| `ios/Langria/Ads.swift` | 広告。起動して前面に来るたびに UMP で同意を確認し（必要な地域では同意フォーム）、ATT の許可を求めてから SDK を始める。バナー（インラインのアダプティブバナー）はページの最後（`ContentView` の `BannerAd`）に置き、文章と一緒にスクロールする。ATT は前面に来るたびに、まだ決めていなければ求め直す（前面になりきる前に求めると、ダイアログが出ずに終わるため）。同意フォームを出し直す入口が必要な地域では、設定に「広告のプライバシー設定」が出る |
 | `ios/Langria/Shared.swift` | `i18n.js`・`languages.js`・`version.js` を JavaScriptCore で実行し、文言（`t()`）・言語一覧・コミットハッシュを Swift から使う。3つはビルド時にアプリへ同梱される（`project.yml`） |
 | `ios/Langria/Translator.swift` | iOS の API 呼び出しとプロンプト（`app.js` の移植）。`LanguageDetector.swift` は入れ替えボタン用の `detectLanguage` の移植 |
 | `ios/Langria/AppModel.swift` | 翻訳画面の状態。設定は UserDefaults に Webアプリの localStorage と同じ名前（`langria-provider` など）で保存。700ms 待って翻訳、古い応答は `latestRequest` で捨てる |
@@ -93,7 +95,7 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 既存コードの書き方に合わせます: 素の JavaScript、セミコロンあり、シングルクォート、2スペース。短い処理は1行にまとめるスタイルも多いです。
 - **UIの文言は `i18n.js` に英語と日本語の両方**を書きます（上記「表示言語」）。**コード中のコメントは英語**です。コメントは「なぜそうしているか」が分かりにくい箇所にだけ書きます。
 - CSS の色は `:root` のカスタムプロパティを使い、ライト/ダーク両方で確認します。
-- 外部ライブラリやビルド工程は入れません。
+- 外部ライブラリやビルド工程は入れません（iOS の広告 SDK だけは例外）。
 
 ## 注意点
 

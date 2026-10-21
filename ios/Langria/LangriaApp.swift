@@ -4,6 +4,7 @@ import SwiftUI
 struct LangriaApp: App {
   @StateObject private var shared: Shared
   @StateObject private var model: AppModel
+  @StateObject private var ads = Ads()
   @AppStorage("langria-theme") private var theme = ""
   @Environment(\.scenePhase) private var scenePhase
 
@@ -18,11 +19,13 @@ struct LangriaApp: App {
       ContentView()
         .environmentObject(shared)
         .environmentObject(model)
+        .environmentObject(ads)
         .environment(\.locale, Locale(identifier: shared.language))
         .preferredColorScheme(theme == "light" ? .light : theme == "dark" ? .dark : nil)
     }
-    .onChange(of: scenePhase) { _, phase in
+    .onChange(of: scenePhase, initial: true) { _, phase in
       if phase == .background { model.didEnterBackground() }
+      if phase == .active { Task { await ads.gatherConsent() } }
     }
   }
 }

@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
   @EnvironmentObject private var shared: Shared
   @EnvironmentObject private var model: AppModel
+  @EnvironmentObject private var ads: Ads
   @Environment(\.horizontalSizeClass) private var sizeClass
   @State private var showSettings = false
   @State private var showCamera = false
@@ -31,6 +32,8 @@ struct ContentView: View {
               .foregroundStyle(.secondary)
               .frame(maxWidth: .infinity, alignment: .leading)
               .padding(.horizontal, 4)
+            // At the end of the page, so it scrolls with the text and never covers it.
+            if ads.ready { BannerAd() }
           }
           .padding(16)
           .frame(maxWidth: 1100)
@@ -38,6 +41,7 @@ struct ContentView: View {
         }
       }
       .scrollDismissesKeyboard(.interactively)
+      // Below the panes rather than over them, so it never covers the text.
       .background(Color(.systemGroupedBackground))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
@@ -169,7 +173,7 @@ struct ContentView: View {
           TextEditor(text: $model.source)
             .focused($sourceFocused)
             .scrollContentBackground(.hidden)
-            .frame(minHeight: 150, maxHeight: .infinity)
+            .frame(minHeight: ads.ready ? 130 : 150, maxHeight: .infinity)
         }
       }
     } footer: {
@@ -238,7 +242,7 @@ struct ContentView: View {
       }
     } content: {
       translation
-        .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity, alignment: .topLeading)
+        .frame(maxWidth: .infinity, minHeight: translationMinHeight, maxHeight: .infinity, alignment: .topLeading)
         .padding(.top, 8)
         .padding(.horizontal, 5)
     } footer: {
@@ -282,6 +286,10 @@ struct ContentView: View {
     .accessibilityLabel(shared.t("web.openSettings"))
   }
 
+  // Lower with the banner (as is the original pane's), so the banner fits on
+  // the first screen of an iPhone too; the panes still grow into any room left.
+  private var translationMinHeight: CGFloat { ads.ready ? 80 : 150 }
+
   @ViewBuilder private var translation: some View {
     switch model.pane {
     case .empty:
@@ -289,9 +297,9 @@ struct ContentView: View {
         Text("✦").font(.title).foregroundStyle(.tertiary)
         Text(shared.t("web.empty")).foregroundStyle(.secondary)
       }
-      .frame(maxWidth: .infinity, minHeight: 140)
+      .frame(maxWidth: .infinity, minHeight: translationMinHeight - 10)
     case .translating:
-      ProgressView().frame(maxWidth: .infinity, minHeight: 140)
+      ProgressView().frame(maxWidth: .infinity, minHeight: translationMinHeight - 10)
     case .result(let text):
       Text(text).textSelection(.enabled)
     case .noKey:
