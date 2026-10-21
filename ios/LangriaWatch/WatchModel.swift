@@ -171,6 +171,9 @@ private enum WatchKeys {
 @MainActor
 private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
   private let synthesizer = AVSpeechSynthesizer()
+  /// The utterance being read. `isSpeaking` can still be true when the
+  /// watch reports it finished, so the end is told by the utterance instead.
+  private var current: AVSpeechUtterance?
   var onChange: ((Bool) -> Void)?
 
   override init() {
@@ -183,6 +186,7 @@ private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     stop()
     let utterance = AVSpeechUtterance(string: text)
     if let tag = language ?? NLLanguageRecognizer.dominantLanguage(for: text)?.rawValue { utterance.voice = AVSpeechSynthesisVoice(language: tag) }
+    current = utterance
     // The default ambient category is silent while the watch is in silent
     // mode; playback plays through the speaker, as the user asked for it.
     Task {
@@ -190,23 +194,27 @@ private final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, policy: .default)
         try? AVAudioSession.sharedInstance().setActive(true)
       }.value
+      // Stopped while the session was being set up.
+      guard current === utterance else { return }
       synthesizer.speak(utterance)
     }
     onChange?(true)
   }
 
   func stop() {
-    if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
+    guard let utterance = current else { return }
+    synthesizer.stopSpeaking(at: .immediate)
+    ended(utterance)
   }
 
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { ended() }
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { ended() }
+  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { Task { @MainActor in self.ended(utterance) } }
+  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { Task { @MainActor in self.ended(utterance) } }
 
-  private nonisolated func ended() {
-    Task { @MainActor in
-      guard !self.synthesizer.isSpeaking else { return }
-      Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
-      self.onChange?(false)
-    }
+  /// Only the utterance being read ends it; a stopped earlier one may report late.
+  private func ended(_ utterance: AVSpeechUtterance) {
+    guard current === utterance else { return }
+    current = nil
+    Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
+    onChange?(false)
   }
 }
