@@ -222,15 +222,30 @@
       'ios.dictateHint': 'Touch and hold to choose the language you speak.',
       'ios.stopDictation': 'Stop voice input',
       'ios.dictationLanguage': 'Language you speak',
+      'ios.dictationAuto': 'Auto ({lang})',
+      'ios.dictationAutoShort': 'Auto · {lang}',
+      'ios.dictationAutoNote': 'Auto listens in your device’s language, or in the other person’s when translating into yours.',
       'ios.listening': 'Listening ({lang})…',
       'ios.speechDenied': 'To use voice input, allow the microphone and speech recognition for Langria in the Settings app.',
       'ios.speechUnavailable': 'Voice input is not available for {lang} on this device.',
       'ios.speechFailed': 'Voice input stopped ({detail}).',
       'ios.speak': 'Read aloud',
       'ios.stopSpeaking': 'Stop reading aloud',
+      'ios.speakUnavailable': 'Reading aloud is not available for {lang} on this device.',
       'ios.unsavedTitle': 'Discard unsaved changes?',
       'ios.unsavedMessage': 'The API key or model you changed for {name} has not been saved.',
-      'ios.discard': 'Discard changes'
+      'ios.discard': 'Discard changes',
+      'ios.watchToggle': 'Use on Apple Watch',
+      'ios.watchNote': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain. Turning this off deletes them from the watch.',
+      'ios.watchNotInstalled': 'Langria is not installed on your Apple Watch yet. Install it in the Watch app on this iPhone, under My Watch → Available Apps.',
+      'ios.watchNoteLocked': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain (protected by the watch’s passcode, without Face ID). The keys are sent while they are unlocked. Turning this off deletes them from the watch.',
+
+      // Apple Watch app (the iPhone app sends it these messages)
+      'watch.input': 'Speak or type',
+      'watch.translateTo': 'Translate into',
+      'watch.dictationHint': 'To dictate in another language, swipe up from the bottom of the input screen and choose it. Add languages in the Watch app on iPhone: My Watch → General → Language & Region. Some languages do not offer dictation on the watch (no microphone); use voice input in Langria on iPhone for those.',
+      'watch.noKey': 'No {name} API key is set. Enter it in Langria’s settings on your iPhone.',
+      'watch.noTarget': 'Enter the target language in Langria on your iPhone.'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -437,15 +452,30 @@
       'ios.dictateHint': '長押しで、話す言語を選べます。',
       'ios.stopDictation': '音声入力を止める',
       'ios.dictationLanguage': '話す言語',
+      'ios.dictationAuto': '自動（{lang}）',
+      'ios.dictationAutoShort': '自動 · {lang}',
+      'ios.dictationAutoNote': '自動では端末の言語で聞き取ります。翻訳先が端末の言語のときは、相手の言語（直前の翻訳先）で聞き取ります。',
       'ios.listening': '聞き取り中（{lang}）…',
       'ios.speechDenied': '音声入力を使うには、設定アプリで Langria にマイクと音声認識を許可してください。',
       'ios.speechUnavailable': 'この端末では{lang}の音声入力を使えません。',
       'ios.speechFailed': '音声入力が止まりました（{detail}）。',
       'ios.speak': '読み上げ',
       'ios.stopSpeaking': '読み上げを止める',
+      'ios.speakUnavailable': '{lang} の読み上げはこの端末では使えません。',
       'ios.unsavedTitle': '保存していない変更を破棄しますか？',
       'ios.unsavedMessage': '{name}のAPIキーまたはモデルの変更は、まだ保存されていません。',
-      'ios.discard': '変更を破棄'
+      'ios.discard': '変更を破棄',
+      'ios.watchToggle': 'Apple Watch で使う',
+      'ios.watchNote': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます。オフにすると Apple Watch から削除します。',
+      'ios.watchNotInstalled': 'Apple Watch に Langria がまだ入っていません。この iPhone の Watch アプリの「マイウォッチ」→「利用可能なApp」からインストールしてください。',
+      'ios.watchNoteLocked': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます（Face ID ではなく Apple Watch のパスコードで保護されます）。キーはロックを解除している間に送ります。オフにすると Apple Watch から削除します。',
+
+      // Apple Watch app (the iPhone app sends it these messages)
+      'watch.input': '話すか入力する',
+      'watch.translateTo': '翻訳先',
+      'watch.dictationHint': 'ほかの言語で音声入力するには、入力画面の下から上にスワイプして言語を選びます。言語は iPhone の Watch アプリの「マイウォッチ」→「一般」→「言語と地域」で追加できます。言語によっては Apple Watch で音声入力（マイク）が出ません。その言語は iPhone の Langria の音声入力を使ってください。',
+      'watch.noKey': '{name} のAPIキーが未設定です。iPhone の Langria の設定で入力してください。',
+      'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。'
     }
   };
   const languages = { en: 'English', ja: '日本語' };

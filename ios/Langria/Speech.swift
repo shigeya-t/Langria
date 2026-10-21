@@ -1,5 +1,4 @@
 import AVFoundation
-import NaturalLanguage
 import Speech
 
 /// Voice input for the original pane, with Apple's speech recognition. It
@@ -44,9 +43,10 @@ final class Dictation {
     try engine.start()
     isRecording = true
 
+    var transcript = Transcript(separator: ["ja", "zh"].contains(locale.language.languageCode?.identifier ?? "") ? "" : " ")
     task = recognizer.recognitionTask(with: request) { [weak self] result, error in
-      let text = result?.bestTranscription.formattedString
       let done = error != nil || result?.isFinal == true
+      let text = result.map { transcript.add($0.bestTranscription.formattedString, ended: $0.speechRecognitionMetadata != nil || $0.isFinal) }
       Task { @MainActor in
         guard let self, self.isRecording else { return }
         if let text { onText(text) }
@@ -82,58 +82,40 @@ final class Dictation {
     return error.domain == "kAFAssistantErrorDomain" && error.code == 1110
   }
 
+  /// Joins the utterances of one session. After a pause, recognition starts
+  /// a new utterance and its results no longer include the earlier ones, so
+  /// those are kept here.
+  struct Transcript {
+    let separator: String
+    private var kept = ""
+    private var current = ""
+
+    init(separator: String) { self.separator = separator }
+
+    /// Takes the latest result and returns the whole text so far. `ended` marks
+    /// the last result of an utterance.
+    mutating func add(_ text: String, ended: Bool) -> String {
+      // Not every pause is marked; a result that drops what was heard means a new utterance.
+      if !current.isEmpty, text.count < current.count, !current.hasPrefix(text), !text.hasPrefix(current.prefix(1)) { keep(current) }
+      current = text
+      let whole = join(kept, current)
+      if ended { keep(current); current = "" }
+      return whole
+    }
+
+    private mutating func keep(_ text: String) { kept = join(kept, text) }
+
+    private func join(_ a: String, _ b: String) -> String {
+      let a = a.trimmingCharacters(in: .whitespaces), b = b.trimmingCharacters(in: .whitespaces)
+      return a.isEmpty ? b : b.isEmpty ? a : a + separator + b
+    }
+  }
+
   private static func authorize() async -> Bool {
     let speech = await withCheckedContinuation { continuation in
       SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0 == .authorized) }
     }
     guard speech else { return false }
     return await AVAudioApplication.requestRecordPermission()
-  }
-}
-
-/// Reads the translation aloud with the system voices, on the device.
-@MainActor
-final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
-  private let synthesizer = AVSpeechSynthesizer()
-  var onChange: ((Bool) -> Void)?
-
-  override init() {
-    super.init()
-    synthesizer.delegate = self
-  }
-
-  var isSpeaking: Bool { synthesizer.isSpeaking }
-
-  /// `language` is a BCP 47 tag, or nil to guess it from the text (for a
-  /// target typed in under "Other").
-  func speak(_ text: String, language: String?) {
-    stop()
-    // Play even with the ring / silent switch on, as the user asked for it.
-    let utterance = AVSpeechUtterance(string: text)
-    let tag = language ?? NLLanguageRecognizer.dominantLanguage(for: text)?.rawValue
-    if let tag { utterance.voice = AVSpeechSynthesisVoice(language: tag) }
-    Task {
-      await Task.detached {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
-        try? AVAudioSession.sharedInstance().setActive(true)
-      }.value
-      synthesizer.speak(utterance)
-    }
-    onChange?(true)
-  }
-
-  func stop() {
-    if synthesizer.isSpeaking { synthesizer.stopSpeaking(at: .immediate) }
-  }
-
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) { ended() }
-  nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) { ended() }
-
-  private nonisolated func ended() {
-    Task { @MainActor in
-      guard !self.synthesizer.isSpeaking else { return }
-      Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
-      self.onChange?(false)
-    }
   }
 }

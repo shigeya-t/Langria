@@ -8,7 +8,7 @@ ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウ
 
 - **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
 - **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
-- **iOSアプリ**: Webアプリと同じ翻訳に加え、カメラで撮った写真や選んだ写真の文字を読み取って翻訳します（[iOSアプリ](#iosアプリiphone--ipad)を参照）。
+- **iOSアプリ**: Webアプリと同じ翻訳に加え、カメラで撮った写真や選んだ写真の文字を読み取って翻訳します。Apple Watch でも使えます（[iOSアプリ](#iosアプリiphone--ipad)を参照）。
 
 紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
@@ -145,18 +145,19 @@ Gemini APIの無料枠には1分あたりのリクエスト数の上限（例: `
 
 - Webアプリと同じ: ChatGPT / Claude / Gemini の切り替え、翻訳先の言語（「その他」を含む）、翻訳モード、入力して少し待つと自動で翻訳、入れ替えボタン、コピー、英語 / 日本語の表示（設定で選ばなければ端末の言語に従う）、ライト / ダーク
 - **写真の文字を翻訳**: カメラのボタンで撮影するか、写真のボタンで写真を選びます。文字は端末の中（Apple の Vision）で読み取って原文欄に入れ、そのまま翻訳します（原文欄で直すこともできます）。行は段落にまとめ直すので、文の途中で切れずに翻訳されます。AIサービスへ送るのは文字だけで、画像は送りません
-- **音声入力と読み上げ**: 原文欄のマイクのボタンで、話した言葉を文字にします（長押しで話す言語を選べます。最初は端末の言語）。言語が対応していれば認識は端末の中で行い、対応していなければキーボードの音声入力と同じく Apple の音声認識へ音声を送ります。翻訳欄のスピーカーのボタンで、訳文を翻訳先の言語のシステムの声で読み上げます（端末の中で行います）
+- **音声入力と読み上げ**: 原文欄のマイクのボタンで、話した言葉を文字にします（横のメニューで話す言語を選べます。「**自動**」では端末の言語で聞き取り、翻訳先が端末の言語のときは相手の言語（直前の翻訳先）で聞き取ります。入れ替えボタンで一緒に切り替わります）。言語が対応していれば認識は端末の中で行い、対応していなければキーボードの音声入力と同じく Apple の音声認識へ音声を送ります。翻訳欄のスピーカーのボタンで、訳文を翻訳先の言語のシステムの声で読み上げます（端末の中で行います）
 - APIキーは端末のキーチェーン（同期しない項目）に保存します。設定の「**Face ID でロックを解除する**」をオンにすると、アプリを開くたびに Face ID（または Touch ID・パスコード）が必要になります。アプリが背面に回るとロックし直します
 - ページの最後（翻訳欄の下）に Google AdMob のバナー広告を表示します。文章と一緒にスクロールします。法律で必要な地域では同意（Google の同意フォーム）を求め、続けてトラッキングの許可（App Tracking Transparency）を求めます。翻訳する文章を広告に使うことはありません。Debug ビルドでは Google のテスト広告が出ます
+- **Apple Watch**: 設定の「**Apple Watch で使う**」をオンにすると、Apple Watch（watchOS 10 以降）でも翻訳できます。iPhone から APIキーと設定を送り、Apple Watch は自分のキーチェーンにキーの複製を保存して、AIサービスへ直接リクエストします。音声入力・手書き・キーボードで文章を入れ、翻訳先の言語を選び、訳文を読み上げられます。音声入力の言語は Apple Watch 側の設定で、入力画面の下から上にスワイプして切り替えます（言語によっては Apple Watch で音声入力が出ません。その言語は iPhone の音声入力を使います）。Apple Watch アプリが自動で入らないときは、iPhone の Watch アプリの「マイウォッチ」→「利用可能なApp」からインストールします（入るまで設定に案内を表示します）。オフにすると Apple Watch からキーを削除します。ロックがオンのときは、ロックを解除している間にキーを送ります
 - 画面の文言と翻訳先の言語一覧は、Webアプリ・拡張機能と同じファイル（`extension/lib/i18n.js` と `languages.js`。`languages.js` には音声入力・読み上げに使う各言語のロケールも入っています）を JavaScriptCore で読み込んで使います
 
 ### ビルド
 
 macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew install xcodegen`）が必要です。Xcode のプロジェクトは git に入れず、`ios/project.yml` から作ります。唯一の外部ライブラリである Google Mobile Ads SDK は Swift Package Manager で取得します。
 
-1. `ios/` で `cp Local.xcconfig.example Local.xcconfig` し、`DEVELOPMENT_TEAM` を自分の Team ID にする（必要ならバンドルID `PRODUCT_BUNDLE_IDENTIFIER` もここで変える）。`Local.xcconfig` は git に入らない
+1. `ios/` で `cp Local.xcconfig.example Local.xcconfig` し、`DEVELOPMENT_TEAM` を自分の Team ID にする（必要ならバンドルID `LANGRIA_BUNDLE_ID` もここで変える。Apple Watch アプリはこれに `.watchkitapp` を付けたもの）。`Local.xcconfig` は git に入らない
 2. `ios/` で `xcodegen generate` を実行し、`Langria.xcodeproj` を開く。ファイルを足したり消したり、ブランチを切り替えたあとは作り直す
-3. スキーム **Langria** を iPhone・iPad・シミュレーターで実行する。テストは `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<シミュレーター名>'`
+3. スキーム **Langria** を iPhone・iPad・シミュレーターで実行する。Apple Watch アプリも一緒にビルドされ、iPhone アプリに入る。シミュレーターで試すときは、Apple Watch のシミュレーターとペアリングした iPhone のシミュレーターを使う。テストは `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<シミュレーター名>'`
 
 カメラのボタンは、カメラのある端末でだけ表示されます（シミュレーターでは出ません）。
 
@@ -194,7 +195,7 @@ macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew in
 ├── AGENTS.md    # AIコーディングエージェント向けの開発メモ
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
-├── ios/         # iOSアプリ（SwiftUI。XcodeGen 用の project.yml、Langria/ にコード、LangriaTests/ にテスト）
+├── ios/         # iOSアプリ（SwiftUI。XcodeGen 用の project.yml、Langria/ にコード、LangriaWatch/ に Apple Watch アプリ、LangriaTests/ にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順

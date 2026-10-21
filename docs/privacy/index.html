@@ -23,7 +23,7 @@
       <h1>Privacy Policy</h1>
       <p class="updated">Last updated: October 21, 2026</p>
 
-      <p>This policy explains how the Langria Chrome extension (“Langria – AI Web Page Translator”) the Langria web app and the Langria iOS app handle your data. Langria has no server of its own: the developer does not receive, collect or store any of your data.</p>
+      <p>This policy explains how the Langria Chrome extension (“Langria – AI Web Page Translator”) the Langria web app and the Langria iOS app (including its Apple Watch app) handle your data. Langria has no server of its own: the developer does not receive, collect or store any of your data.</p>
 
       <div class="summary">
         <ul>
@@ -71,6 +71,7 @@
         <li>Translated text is not stored. It is shown on the page and discarded when you show the original again or leave the page.</li>
         <li>The web app stores the same kinds of settings in the browser’s <code>localStorage</code>.</li>
         <li>The iOS app stores API keys in this device’s keychain (as an item that is not synced to other devices) and settings on the device (UserDefaults). With the lock on, Face ID, Touch ID or the passcode is needed each time the keys are read from the keychain, and the unlocked keys are kept only in memory until the app moves to the background.</li>
+        <li>If you turn on “Use on Apple Watch”, the iOS app sends the API keys and settings to the Langria app on your paired Apple Watch over Apple’s WatchConnectivity (directly between your devices, not through any server of Langria’s). The watch keeps a copy of the keys in its own keychain (not synced; protected by the watch’s passcode) and sends the text you enter on it straight to the AI service. Turning the setting off deletes the keys from the watch.</li>
       </ul>
 
       <h2>Permissions</h2>

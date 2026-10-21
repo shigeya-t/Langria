@@ -186,6 +186,7 @@ struct ContentView: View {
         Text(model.characterCount)
       }
       Spacer()
+      dictationLanguageMenu
       dictationButton
       if CameraPicker.isAvailable {
         Button { sourceFocused = false; showCamera = true } label: { Image(systemName: "camera") }
@@ -258,13 +259,38 @@ struct ContentView: View {
     }
   }
 
-  /// Tap to start or stop; touch and hold to pick the language spoken.
-  private var dictationButton: some View {
-    Menu {
-      Picker(shared.t("ios.dictationLanguage"), selection: $model.dictationLanguage) {
+  private var dictationLanguagePicker: some View {
+    Section(shared.t("ios.dictationAutoNote")) {
+      Picker(shared.t("ios.dictationLanguage"), selection: $model.dictationChoice) {
+        Text(shared.t("ios.dictationAuto", ["lang": shared.languageLabel(model.autoDictationLanguage)])).tag(AppModel.autoDictation)
         ForEach(shared.targets, id: \.self) { Text(shared.languageLabel($0)).tag($0) }
       }
-    } label: {
+    }
+  }
+
+  /// The language voice input listens in, shown short ("EN", "Auto · JA") so it fits next to the buttons.
+  private var dictationLanguageMenu: some View {
+    Menu { dictationLanguagePicker } label: {
+      let code = dictationCode(model.dictationLanguage)
+      Text(model.dictationChoice == AppModel.autoDictation ? shared.t("ios.dictationAutoShort", ["lang": code]) : code)
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(Color.accentColor)
+        .lineLimit(1)
+        .fixedSize()
+    }
+    .accessibilityLabel(shared.t("ios.dictationLanguage"))
+    .accessibilityValue(shared.languageLabel(model.dictationLanguage))
+  }
+
+  /// "en-US" → "EN"; Chinese keeps its region, which tells the two apart.
+  private func dictationCode(_ language: String) -> String {
+    let tag = shared.locales[language] ?? language
+    return (tag.hasPrefix("zh") ? tag : String(tag.prefix { $0 != "-" })).uppercased()
+  }
+
+  /// Tap to start or stop; touch and hold to pick the language spoken.
+  private var dictationButton: some View {
+    Menu { dictationLanguagePicker } label: {
       Image(systemName: model.listening ? "mic.fill" : "mic")
         .foregroundStyle(model.listening ? Color.red : Color.accentColor)
     } primaryAction: {

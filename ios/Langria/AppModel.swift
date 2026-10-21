@@ -32,8 +32,11 @@ final class AppModel: ObservableObject {
   /// The decrypted keys, or nil while locked.
   @Published private(set) var keys: [String: String]?
   @Published private(set) var locked = KeyStore.isLocked
-  /// The target language whose locale voice input listens in.
-  @Published var dictationLanguage: String { didSet { defaults.set(dictationLanguage, forKey: "langria-dictation-language") } }
+  static let autoDictation = "auto"
+  /// The language picked for voice input, a target or `autoDictation`.
+  @Published var dictationChoice: String { didSet { defaults.set(dictationChoice, forKey: "langria-dictation-language") } }
+  /// The target in the list that matches the device's language.
+  let deviceLanguage: String
   @Published private(set) var listening = false
   @Published private(set) var speaking = false
 
@@ -55,11 +58,10 @@ final class AppModel: ObservableObject {
     // Until a target is chosen it follows the UI language.
     let stored = defaults.string(forKey: "langria-target") ?? ""
     target = stored == Shared.customTarget || shared.targets.contains(stored) ? stored : shared.defaultTarget
-    // Until one is picked, voice input listens in the device's language when it is in the list.
     let device = Locale.preferredLanguages.first ?? "en"
+    deviceLanguage = shared.targets.first { Self.matches(shared.locales[$0], device) } ?? shared.targets.first { Self.matches(shared.locales[$0], String(device.prefix(2))) } ?? "English"
     let spoken = defaults.string(forKey: "langria-dictation-language") ?? ""
-    dictationLanguage = shared.targets.contains(spoken) ? spoken
-      : shared.targets.first { Self.matches(shared.locales[$0], device) } ?? shared.targets.first { Self.matches(shared.locales[$0], String(device.prefix(2))) } ?? "English"
+    dictationChoice = shared.targets.contains(spoken) ? spoken : Self.autoDictation
     speaker.onChange = { [weak self] in self?.speaking = $0 }
     if !locked { Task { await loadKeys(quiet: true) } }
   }
@@ -68,6 +70,19 @@ final class AppModel: ObservableObject {
   private func setTarget(_ next: String) {
     target = next
     defaults.set(next, forKey: "langria-target")
+    if shared.targets.contains(next) && next != deviceLanguage { defaults.set(next, forKey: "langria-dictation-other") }
+  }
+
+  /// The language voice input listens in. Auto assumes you speak the
+  /// device's language, unless you are translating into it: then the other
+  /// person's, the last target that was not the device's language. So the
+  /// swap button switches it too.
+  var dictationLanguage: String { dictationChoice == Self.autoDictation ? autoDictationLanguage : dictationChoice }
+
+  var autoDictationLanguage: String {
+    guard target == deviceLanguage else { return deviceLanguage }
+    let other = defaults.string(forKey: "langria-dictation-other") ?? ""
+    return shared.targets.contains(other) && other != deviceLanguage ? other : shared.targets.first { $0 != deviceLanguage } ?? "English"
   }
 
   /// The target picked in the menu.
@@ -150,21 +165,7 @@ final class AppModel: ObservableObject {
   var result: String? { if !stale, case .result(let text) = pane { text } else { nil } }
 
   func message(for error: TranslationError, provider: Provider, model: String) -> String {
-    let t = shared.t
-    switch error {
-    case .api(let status, let detail):
-      let summary = status == 401 || status == 403 ? t("error.auth", ["name": provider.name])
-        : status == 429 ? t("error.rateLimit", [:])
-        : status == 400 || status == 404 ? t("error.model", ["model": model])
-        : t("error.http", ["name": provider.name, "status": String(status)])
-      return "\(summary)\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
-    case .truncated: return t("error.truncated", [:])
-    case .empty: return t("error.empty", [:])
-    case .network: return t("error.network", ["name": provider.name])
-    case .timeout: return t("error.timeout", ["name": provider.name])
-    case .blocked(let reason): return t("error.blocked", ["name": provider.name, "reason": reason])
-    case .unexpected(let detail): return detail.isEmpty ? t("error.unexpected", [:]) : detail
-    }
+    error.message(provider: provider, model: model, t: shared.t)
   }
 
   func clear() {
@@ -261,9 +262,11 @@ final class AppModel: ObservableObject {
   }
 
   func toggleSpeaking() {
-    if speaking { speaker.stop(); return }
+    if speaking { speaker.stop(); speaking = false; return }
     guard let text = result else { return }
-    speaker.speak(text, language: target == Shared.customTarget ? nil : shared.locales[target])
+    if !speaker.speak(text, language: target == Shared.customTarget ? nil : shared.locales[target]) {
+      show(shared.t("ios.speakUnavailable", ["lang": target == Shared.customTarget ? targetLanguage : shared.languageLabel(target)]))
+    }
   }
 
   // MARK: Reading text from photos

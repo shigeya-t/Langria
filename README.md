@@ -8,7 +8,7 @@ A simple browser translation tool that lets you switch between ChatGPT, Claude a
 
 - **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
 - **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
-- **iOS app**: the web app’s translation on iPhone and iPad, plus reading and translating the text in photos you take or choose (see [iOS app](#ios-app-iphone--ipad)).
+- **iOS app**: the web app’s translation on iPhone and iPad, plus reading and translating the text in photos you take or choose, and an Apple Watch app (see [iOS app](#ios-app-iphone--ipad)).
 
 Project page: <https://shigeya-t.github.io/Langria/>
 
@@ -145,18 +145,19 @@ The `ios/` folder contains a SwiftUI app for iPhone and iPad (iOS 17 or later) w
 
 - Same as the web app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, the English / Japanese UI (follows the device unless chosen in Settings) and light / dark appearance
 - **Translate text in photos**: take a photo with the camera button or pick one with the photo button. The text is read on the device (Apple’s Vision framework), put into the original pane where you can edit it, and translated. Lines are joined back into paragraphs so sentences are translated whole. Only the text is sent to the AI service, never the image
-- **Voice input and reading aloud**: the microphone button in the original pane turns speech into text (touch and hold it to choose the language you speak; it starts with the device’s language). Recognition runs on the device when the language supports it; otherwise the audio goes to Apple’s speech recognition, as with keyboard dictation. The speaker button in the translation pane reads the translation aloud with the system voice for the target language, on the device
+- **Voice input and reading aloud**: the microphone button in the original pane turns speech into text (pick the language you speak in the menu next to it; **Auto** listens in the device’s language, or in the other person’s — the last target — when translating into the device’s language, so the swap button switches it too). Recognition runs on the device when the language supports it; otherwise the audio goes to Apple’s speech recognition, as with keyboard dictation. The speaker button in the translation pane reads the translation aloud with the system voice for the target language, on the device
 - API keys are stored in the device’s keychain (not synced). Turn on **Unlock with Face ID** in Settings to require Face ID (or Touch ID / the passcode) each time the app opens; the keys are locked again when the app moves to the background
 - A banner ad from Google AdMob is shown at the end of the page, below the translation, and scrolls with it. The app asks for consent where the law requires it (Google’s consent form) and for permission to track (App Tracking Transparency); the text you translate is never used for ads. Debug builds show Google’s test ads
+- **Apple Watch**: turn on **Use on Apple Watch** in Settings to use Langria on the watch (watchOS 10 or later). The iPhone sends the API keys and settings to the watch, which keeps a copy of the keys in its own keychain and calls the AI service directly. Speak, scribble or type the text, pick the target language, and have the translation read aloud. The dictation language is the watch’s own: swipe up from the bottom of the input screen to switch it (some languages offer no dictation on the watch; use voice input on iPhone for those). If the watch app is not installed automatically, install it in the iPhone’s Watch app (My Watch → Available Apps); Settings shows this until it is installed. Turning the setting off deletes the keys from the watch; with the lock on, the keys are sent while they are unlocked
 - The UI text and the target language list are the same files as the web app and the extension (`extension/lib/i18n.js` and `languages.js`, which also holds each language’s locale for voice input and reading aloud), run in JavaScriptCore
 
 ### Building
 
 You need macOS with Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`). The Xcode project is not in git; it is generated from `ios/project.yml`. The only external library, the Google Mobile Ads SDK, is fetched by Swift Package Manager.
 
-1. In `ios/`, run `cp Local.xcconfig.example Local.xcconfig` and set `DEVELOPMENT_TEAM` to your Team ID (change `PRODUCT_BUNDLE_IDENTIFIER` there too if needed). `Local.xcconfig` is not committed
+1. In `ios/`, run `cp Local.xcconfig.example Local.xcconfig` and set `DEVELOPMENT_TEAM` to your Team ID (change `LANGRIA_BUNDLE_ID` there too if needed; the watch app uses it with `.watchkitapp` added). `Local.xcconfig` is not committed
 2. In `ios/`, run `xcodegen generate` and open `Langria.xcodeproj`. Regenerate after adding or removing files or switching branches
-3. Run the **Langria** scheme on an iPhone, iPad or simulator. Tests: `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<simulator>'`
+3. Run the **Langria** scheme on an iPhone, iPad or simulator. The Apple Watch app is built and embedded with it; to try it in the simulator, use an iPhone simulator paired with a watch simulator. Tests: `xcodebuild test -project ios/Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=<simulator>'`
 
 The camera button appears only on devices with a camera (not in the simulator).
 
@@ -194,7 +195,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── AGENTS.md    # Development notes for AI coding agents
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
-├── ios/         # iOS app (SwiftUI; project.yml for XcodeGen, Langria/ sources, LangriaTests/)
+├── ios/         # iOS app (SwiftUI; project.yml for XcodeGen, Langria/ sources, LangriaWatch/ Apple Watch app, LangriaTests/)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
 ├── store/       # Chrome Web Store listing text, images and publishing steps

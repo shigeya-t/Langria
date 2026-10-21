@@ -33,6 +33,40 @@ final class SharedTests: XCTestCase {
     XCTAssertEqual(shared.targets.first, "English")
     XCTAssertTrue(shared.targets.contains("Indonesian"))
   }
+
+  /// The watch shows the key itself for a message missing from i18n.js.
+  func testWatchMessagesExist() {
+    let saved = UserDefaults.standard.string(forKey: "langria-ui-language")
+    defer { UserDefaults.standard.set(saved, forKey: "langria-ui-language") }
+    let shared = Shared()
+    for language in ["en", "ja"] {
+      shared.setChoice(language)
+      for key in WatchSettings.messageKeys { XCTAssertNotEqual(shared.t(key), key, "\(language): \(key)") }
+    }
+    shared.setChoice("ja")
+    XCTAssertNotEqual(shared.t("watch.input"), "Speak or type")
+  }
+}
+
+final class TranscriptTests: XCTestCase {
+  func testKeepsEarlierUtterances() {
+    var transcript = Dictation.Transcript(separator: " ")
+    XCTAssertEqual(transcript.add("Hello", ended: false), "Hello")
+    XCTAssertEqual(transcript.add("Hello there", ended: true), "Hello there")
+    // After a pause the results start over with the new utterance.
+    XCTAssertEqual(transcript.add("How", ended: false), "Hello there How")
+    XCTAssertEqual(transcript.add("How are you", ended: false), "Hello there How are you")
+    // A revision of the same utterance replaces it.
+    XCTAssertEqual(transcript.add("How are", ended: false), "Hello there How are")
+    // A restart that is not marked as one is still kept.
+    XCTAssertEqual(transcript.add("Fine", ended: false), "Hello there How are Fine")
+  }
+
+  func testJoinsJapaneseWithoutSpaces() {
+    var transcript = Dictation.Transcript(separator: "")
+    _ = transcript.add("おはようございます。", ended: true)
+    XCTAssertEqual(transcript.add("今日は", ended: false), "おはようございます。今日は")
+  }
 }
 
 final class TextRecognizerTests: XCTestCase {
