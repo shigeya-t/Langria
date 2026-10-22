@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Compose draws the app; this only sets the window before it starts. -->
+  <style name="Theme.Langria" parent="android:Theme.Material.Light.NoActionBar">
+    <item name="android:windowBackground">@color/background</item>
+  </style>
+</resources>

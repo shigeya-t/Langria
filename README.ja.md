@@ -4,11 +4,12 @@
 
 旧名は MyLingo です。
 
-ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の3つがあります。
+ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の4つがあります。
 
 - **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
 - **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
 - **iOSアプリ**: Webアプリと同じ翻訳に加え、カメラで撮った写真や選んだ写真の文字を読み取って翻訳します。Apple Watch でも使えます（[iOSアプリ](#iosアプリiphone--ipad)を参照）。
+- **Androidアプリ**: iOSアプリと同じ機能を Android のスマホ・タブレットで使えます（ウォッチアプリはなし。[Androidアプリ](#androidアプリ)を参照）。
 
 紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
 
@@ -161,6 +162,26 @@ macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew in
 
 カメラのボタンは、カメラのある端末でだけ表示されます（シミュレーターでは出ません）。
 
+## Androidアプリ
+
+`android/` フォルダーには、iOSアプリと同じ機能（ウォッチアプリを除く）を持つ、Android のスマホ・タブレット用の Jetpack Compose アプリ（Android 11 以降）が入っています。
+
+- iOSアプリと同じ: ChatGPT / Claude / Gemini の切り替え、翻訳先の言語（「その他」を含む）、翻訳モード、入力して少し待つと翻訳、入れ替えボタン、コピー、写真の文字の翻訳（カメラ、またはシステムの写真ピッカー）、話す言語を選べる音声入力（「自動」も iOS と同じ）と読み上げ、英語 / 日本語の表示、ライト / ダークの表示テーマ。タブレットや横に広い画面では、原文と翻訳が横に並びます
+- **Langria に共有**: ほかのアプリから共有した文章や、ほかのアプリで文字を選んだときのメニューの **Langria** で送った文章を、原文の欄に入れて翻訳します
+- 写真の文字は、Google の ML Kit で端末の中で読み取ります（モデルは Google Play 開発者サービスが用意する。ラテン文字・日本語・中国語・韓国語のモデルでそれぞれ読み、いちばんよく読めたものを使う）。AIサービスへ送るのは文字だけで、画像は送りません
+- 音声入力はシステムの音声認識を使います。その言語のモデルが端末にあれば端末の中で、なければキーボードの音声入力と同じく音声認識サービス（多くの端末では Google）で文字にします。読み上げはシステムの音声合成を使います
+- APIキーは、Android Keystore の鍵で暗号化して、この端末にだけ保存します（バックアップされません）。設定の「指紋・顔認証または画面ロックでロックを解除する」をオンにすると、アプリを開くたびにそれが必要になり、アプリが背面に回るとまたロックされます
+- iOS と同じく、ページの最後に Google AdMob のバナー広告を表示します。法律で必要な地域では同意を求めます（Google の同意フォーム）。Android にはトラッキングの許可のダイアログはありません。デバッグ版は Google のテスト広告です
+- 表示の文言と翻訳先の言語一覧は、ほかのアプリと同じファイル（`extension/lib/i18n.js` と `languages.js`）です。ビルド時にアプリへ入れ、アプリは WebView で一度だけ読み込みます
+
+### ビルド
+
+JDK 17 以降と Android SDK（Android Studio、または `brew install --cask android-commandlinetools`）が必要です。外部ライブラリは Google Mobile Ads SDK（UMP を含む）、ML Kit の文字認識、AndroidX / Jetpack Compose だけで、Gradle が取得します。
+
+1. `android/` で `cp local.properties.example local.properties` し、`sdk.dir` を設定する（Android Studio で開くと自動で書かれる）。リリース版を作るときは、Android アプリの AdMob の ID（`admob.appId`・`admob.bannerUnitId`）と署名の鍵もここに書く。書かないとリリース版は Google のテスト広告になり、署名もされない。`local.properties` は git に入らない
+2. `android/` を Android Studio で開いて **app** を実行する。または端末・エミュレーターをつないで `./gradlew installDebug`
+3. テストは `./gradlew testDebugUnitTest`（API はローカルのダミーサーバーに送るので、APIキーは要らない）
+
 ## APIキーについて
 
 このアプリはバックエンドを持たず、ブラウザから各AIサービスのAPIへ直接リクエストします。APIキーは `localStorage` に保存され、リポジトリに含まれることはありません。
@@ -196,6 +217,7 @@ macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew in
 ├── assets/      # README 用の画像
 ├── .githooks/   # コミットハッシュを version.js に書き出すフック
 ├── ios/         # iOSアプリ（SwiftUI。XcodeGen 用の project.yml、Langria/ にコード、LangriaWatch/ に Apple Watch アプリ、LangriaTests/ にテスト）
+├── android/     # Androidアプリ（Jetpack Compose。Gradle のプロジェクト、app/src/main にコード、app/src/test にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
 ├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順

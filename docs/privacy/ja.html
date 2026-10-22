@@ -21,15 +21,15 @@
       </header>
 
       <h1>プライバシーポリシー</h1>
-      <p class="updated">最終更新日: 2026年10月21日</p>
+      <p class="updated">最終更新日: 2026年10月22日</p>
 
-      <p>このポリシーは、Chrome拡張機能「Langria – AI Webページ翻訳」、Langria のWebアプリ、Langria のiOSアプリ（Apple Watch アプリを含む）が利用者のデータをどう扱うかを説明するものです。Langria は独自のサーバーを持たず、開発者が利用者のデータを受け取ったり、収集・保存したりすることはありません。</p>
+      <p>このポリシーは、Chrome拡張機能「Langria – AI Webページ翻訳」、Langria のWebアプリ、Langria のiOSアプリ（Apple Watch アプリを含む）、Langria のAndroidアプリが利用者のデータをどう扱うかを説明するものです。Langria は独自のサーバーを持たず、開発者が利用者のデータを受け取ったり、収集・保存したりすることはありません。</p>
 
       <div class="summary">
         <ul>
           <li>文章は、翻訳を指示したときにだけ、利用者が選んだAIサービス（OpenAI・Anthropic・Google）へ送信されます。</li>
           <li>APIキーと設定はブラウザ内にだけ保存されます。APIキーはパスキーまたはパスフレーズで暗号化できます。</li>
-          <li>拡張機能とWebアプリには、アクセス解析・トラッキング・広告はありません。iOSアプリは Google AdMob の広告を表示しますが、翻訳する文章を広告に使うことはありません。</li>
+          <li>拡張機能とWebアプリには、アクセス解析・トラッキング・広告はありません。iOSアプリとAndroidアプリは Google AdMob の広告を表示しますが、翻訳する文章を広告に使うことはありません。</li>
           <li>データを販売することはありません。</li>
         </ul>
       </div>
@@ -40,7 +40,9 @@
         <li><strong>APIキー</strong>: 利用者が入力した OpenAI・Anthropic・Google Gemini のAPIキー。</li>
         <li><strong>設定</strong>: 選択中のサービス、モデル名、翻訳先の言語、翻訳モード、リクエスト数の上限、表示言語。</li>
         <li><strong>写真（iOSアプリ）</strong>: 文字を翻訳するために撮影した写真や、選んだ写真。文字の読み取りは端末の中（Apple の Vision）で行い、画像は送信も保存もしません。翻訳のために送るのは、読み取った文字だけです。</li>
+        <li><strong>写真（Androidアプリ）</strong>: 同じく、文字の読み取りは端末の中（Google の ML Kit。モデルは Google Play 開発者サービスが用意）で行い、画像は送信も保存もしません。カメラで撮った写真は、次の写真で置き換わるまでアプリのキャッシュにだけ残ります。Google Play 開発者サービスが ML Kit の利用状況や診断の情報を集めることがありますが、画像や文字は含みません（<a href="https://developers.google.com/ml-kit/terms">ML Kit の規約</a>）。</li>
         <li><strong>音声（iOSアプリ）</strong>: 音声入力のボタンを押している間の、マイクの音声。Apple の音声認識で文字にします。言語が端末内の認識に対応していれば端末の中で処理し、対応していなければキーボードの音声入力と同じく Apple へ送られます（<a href="https://www.apple.com/jp/legal/privacy/">Apple のプライバシーポリシー</a>）。Langria は音声を保存せず、AIサービスへ送るのは文字だけです。訳文の読み上げは端末の中で行います。</li>
+        <li><strong>音声（Androidアプリ）</strong>: 音声入力をオンにしている間の、マイクの音声。システムの音声認識サービス（多くの端末では Google）で文字にします。その言語のモデルが端末にあれば端末の中で処理し、なければキーボードの音声入力と同じくそのサービスへ送られます。Langria は音声を保存せず、AIサービスへ送るのは文字だけです。訳文の読み上げはシステムの音声合成で行います。</li>
       </ul>
       <p>閲覧履歴、個人情報、位置情報などそのほかのデータは収集しません。</p>
 
@@ -51,15 +53,15 @@
         <li>Claude: Anthropic（<code>api.anthropic.com</code>）— <a href="https://www.anthropic.com/legal/privacy">Anthropic のプライバシーポリシー</a></li>
         <li>Gemini: Google（<code>generativelanguage.googleapis.com</code>）— <a href="https://policies.google.com/privacy?hl=ja">Google のプライバシーポリシー</a>、<a href="https://ai.google.dev/gemini-api/terms">Gemini API 利用規約</a></li>
       </ul>
-      <p>送信した文章がそのサービスでどう扱われるか（保存期間や学習への利用など）は、各サービスの規約と利用者のアカウント設定によります。機密性の高い文章を翻訳する前にご確認ください。iOSアプリの広告（後述）を除き、Langria がこれ以外の送信先へデータを送ることはありません。</p>
+      <p>送信した文章がそのサービスでどう扱われるか（保存期間や学習への利用など）は、各サービスの規約と利用者のアカウント設定によります。機密性の高い文章を翻訳する前にご確認ください。スマホアプリの広告（後述）を除き、Langria がこれ以外の送信先へデータを送ることはありません。</p>
       <p><a href="https://shigeya-t.github.io/Langria/app/">shigeya-t.github.io/Langria/app/</a> で公開しているWebアプリは GitHub Pages で配信し、フォントを Google Fonts から読み込みます。一般的なWebサイトと同じく、ページを開いたときに IPアドレスやブラウザの情報が GitHub と Google に送られますが、翻訳する文章やAPIキーは送られません。詳しくは <a href="https://docs.github.com/ja/site-policy/privacy-policies/github-general-privacy-statement">GitHub のプライバシーステートメント</a>と <a href="https://developers.google.com/fonts/faq/privacy?hl=ja">Google Fonts のプライバシーに関する FAQ</a> をご覧ください。</p>
 
-      <h2>広告（iOSアプリ）</h2>
-      <p>iOSアプリは、ページの最後（翻訳欄の下）に Google AdMob のバナー広告を表示します。Chrome拡張機能とWebアプリには広告はありません。</p>
+      <h2>広告（iOSアプリ・Androidアプリ）</h2>
+      <p>iOSアプリとAndroidアプリは、ページの最後（翻訳欄の下）に Google AdMob のバナー広告を表示します。Chrome拡張機能とWebアプリには広告はありません。</p>
       <ul>
-        <li>Google の Mobile Ads SDK は、広告の配信と効果測定のために、IPアドレス、端末の機種、OS のバージョン、広告の表示やタップ、そしてトラッキングを許可した場合にだけ広告識別子（IDFA）などの端末・利用状況のデータを収集します。詳しくは <a href="https://policies.google.com/technologies/partner-sites?hl=ja">Google のサービスを使用するサイトやアプリから収集した情報の Google による使用</a>と <a href="https://policies.google.com/privacy?hl=ja">Google のプライバシーポリシー</a>をご覧ください。</li>
+        <li>Google の Mobile Ads SDK は、広告の配信と効果測定のために、IPアドレス、端末の機種、OS のバージョン、広告の表示やタップ、広告識別子（iOS ではトラッキングを許可した場合にだけ IDFA。Android では広告 ID で、端末の設定の「プライバシー」→「広告」でリセット・削除できる）などの端末・利用状況のデータを収集します。詳しくは <a href="https://policies.google.com/technologies/partner-sites?hl=ja">Google のサービスを使用するサイトやアプリから収集した情報の Google による使用</a>と <a href="https://policies.google.com/privacy?hl=ja">Google のプライバシーポリシー</a>をご覧ください。</li>
         <li>翻訳する文章、翻訳結果、APIキー、写真、音声を広告に渡すことはありません。</li>
-        <li>アプリはトラッキングの許可（App Tracking Transparency）を求めます。許可しなければ、広告識別子を使ったパーソナライズは行われません。許可はいつでも iPhone の「設定」→「プライバシーとセキュリティ」→「トラッキング」で変えられます。</li>
+        <li>iOSアプリはトラッキングの許可（App Tracking Transparency）を求めます。許可しなければ、広告識別子を使ったパーソナライズは行われません。許可はいつでも iPhone の「設定」→「プライバシーとセキュリティ」→「トラッキング」で変えられます。</li>
         <li>法律で必要な地域（EEA・英国・スイスなど）では、最初に Google の同意フォームを表示します。選んだ内容は、アプリの設定の「広告のプライバシー設定」から後で変えられます。</li>
       </ul>
 
@@ -71,6 +73,7 @@
         <li>翻訳結果は保存しません。ページ上に表示し、原文に戻したときやページを離れたときに破棄されます。</li>
         <li>Webアプリは、同じ種類の設定をブラウザの <code>localStorage</code> に保存します。</li>
         <li>iOSアプリは、APIキーをこの端末のキーチェーン（ほかの端末へ同期しない項目）に、設定を端末内（UserDefaults）に保存します。ロックをオンにすると、キーチェーンのキーを読み出すたびに Face ID・Touch ID またはパスコードが必要になり、解除したキーはアプリが背面に回るまでメモリ上にだけ保持します。</li>
+        <li>Androidアプリは、APIキーを Android Keystore の鍵（端末の外に出ない）で暗号化して端末に、設定をアプリ専用の領域に保存します。どちらもバックアップや新しい端末への移行の対象にしません。ロックをオンにすると、キーを復号するたびに指紋・顔認証または画面ロックが必要になり、解除したキーはアプリが背面に回るまでメモリ上にだけ保持します。</li>
         <li>「Apple Watch で使う」をオンにすると、iOSアプリは APIキーと設定を、ペアリングした Apple Watch の Langria へ Apple の WatchConnectivity で送ります（端末どうしで直接やり取りし、Langria のサーバーは通りません）。Apple Watch はキーの複製を自分のキーチェーン（同期しない項目。Apple Watch のパスコードで保護）に保存し、Apple Watch で入力した文章を AIサービスへ直接送ります。オフにすると Apple Watch からキーを削除します。</li>
       </ul>
 
@@ -82,14 +85,15 @@
         <li><code>api.openai.com</code>・<code>api.anthropic.com</code>・<code>generativelanguage.googleapis.com</code> へのアクセス: 選択したサービスへ翻訳のリクエストを送るため。</li>
         <li>iOSアプリのカメラ: 文字を撮影して翻訳するため。撮影を選んだときにだけ使います。写真ライブラリはシステムの写真ピッカーで選んだ写真だけを受け取り、ライブラリ全体へのアクセスは求めません。Face ID は APIキーのロックを解除するときにだけ使います。</li>
         <li>iOSアプリのマイクと音声認識: 音声入力のボタンを押したときにだけ使います。</li>
+        <li>Androidアプリ: マイクは音声入力のボタンを押したときにだけ、指紋・顔認証のダイアログは APIキーのロックを解除するときにだけ使います。写真はシステムのカメラアプリで撮り、システムの写真ピッカーで選んだものだけを受け取ります。カメラやストレージの権限は持ちません。ほかのアプリから Langria に共有した文章は、入力したときと同じく原文の欄に入ります。</li>
         <li>iOSアプリのトラッキング: 広告識別子で広告をパーソナライズするために一度だけ求めます。許可しなくても、アプリは同じように使えます。</li>
       </ul>
 
       <h2>データの利用目的</h2>
-      <p>データは、Langria の唯一の目的である翻訳のためにだけ使います。販売、選択したAIサービス以外の第三者への提供、広告への利用（上記のiOSアプリの広告にも渡しません）、信用力の判断や融資目的での利用は行いません。Chrome の API から得た情報の利用は、限定利用（Limited Use）の要件を含む <a href="https://developer.chrome.com/docs/webstore/program-policies/policies?hl=ja">Chrome ウェブストアのユーザーデータに関するポリシー</a>に従います。</p>
+      <p>データは、Langria の唯一の目的である翻訳のためにだけ使います。販売、選択したAIサービス以外の第三者への提供、広告への利用（上記のスマホアプリの広告にも渡しません）、信用力の判断や融資目的での利用は行いません。Chrome の API から得た情報の利用は、限定利用（Limited Use）の要件を含む <a href="https://developer.chrome.com/docs/webstore/program-policies/policies?hl=ja">Chrome ウェブストアのユーザーデータに関するポリシー</a>に従います。</p>
 
       <h2>データの削除</h2>
-      <p>拡張機能の設定画面でAPIキーを消すか、<code>chrome://extensions</code> から拡張機能を削除してください。削除すると、拡張機能が保存したデータはすべて消去されます。Webアプリの場合は、ブラウザでそのアドレスのサイトデータを削除してください。iOSアプリの場合は、設定画面でAPIキーを消すか、アプリを削除してください。AIサービス側に残るデータの削除は、各サービスのアカウント設定から行ってください。</p>
+      <p>拡張機能の設定画面でAPIキーを消すか、<code>chrome://extensions</code> から拡張機能を削除してください。削除すると、拡張機能が保存したデータはすべて消去されます。Webアプリの場合は、ブラウザでそのアドレスのサイトデータを削除してください。iOSアプリとAndroidアプリの場合は、設定画面でAPIキーを消すか、アプリを削除してください。AIサービス側に残るデータの削除は、各サービスのアカウント設定から行ってください。</p>
 
       <h2>子どもについて</h2>
       <p>Langria は子ども向けのサービスではなく、子どもの情報を意図して収集することはありません。</p>
