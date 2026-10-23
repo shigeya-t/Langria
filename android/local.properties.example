@@ -1,0 +1,14 @@
+# cp local.properties.example local.properties して書き換える（git 管理外）。
+# Android SDK の場所。Android Studio で開くと自動で書かれる。
+sdk.dir=/opt/homebrew/share/android-commandlinetools
+
+# リリース版の AdMob の ID（AdMob に Android アプリを登録して作る）。
+# 書かないとリリース版も Google のテスト用の ID になる。
+# admob.appId=ca-app-pub-0000000000000000~0000000000
+# admob.bannerUnitId=ca-app-pub-0000000000000000/0000000000
+
+# リリース版の署名。書かないとリリース版は署名されない。
+# signing.storeFile=/path/to/langria.jks
+# signing.storePassword=...
+# signing.keyAlias=langria
+# signing.keyPassword=...

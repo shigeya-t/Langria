@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <!-- Voice input. Asked for the first time the microphone button is tapped. -->
+  <uses-permission android:name="android.permission.RECORD_AUDIO" />
+  <!-- The fingerprint or face prompt that unlocks the API keys. -->
+  <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+  <!-- Speech recognition and text to speech are reached through these intents. -->
+  <queries>
+    <intent>
+      <action android:name="android.speech.RecognitionService" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.TTS_SERVICE" />
+    </intent>
+  </queries>
+
+  <!-- The API keys are encrypted with a key that never leaves this device, so
+       a backup of them could not be read anywhere else. -->
+  <application
+    android:allowBackup="false"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="Langria"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.Langria"
+    android:enableOnBackInvokedCallback="true"
+    tools:targetApi="37">
+
+    <activity
+      android:name=".MainActivity"
+      android:exported="true"
+      android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <!-- Text shared from other apps, or picked with "Translate" in the selection menu. -->
+      <intent-filter>
+        <action android:name="android.intent.action.SEND" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:mimeType="text/plain" />
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.PROCESS_TEXT" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <data android:mimeType="text/plain" />
+      </intent-filter>
+    </activity>
+
+    <!-- Photos taken with the camera app are written here before reading their text. -->
+    <provider
+      android:name="androidx.core.content.FileProvider"
+      android:authorities="${applicationId}.photos"
+      android:exported="false"
+      android:grantUriPermissions="true">
+      <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/photo_paths" />
+    </provider>
+
+    <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="${admobAppId}" />
+    <!-- Google Play services downloads the text recognition models at install. -->
+    <meta-data
+      android:name="com.google.mlkit.vision.DEPENDENCIES"
+      android:value="ocr,ocr_japanese,ocr_chinese,ocr_korean" />
+  </application>
+</manifest>

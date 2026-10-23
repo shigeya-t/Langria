@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- From extension/icons/icon.svg: the dark tile and its lime half. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="108dp" android:height="108dp"
+  android:viewportWidth="128" android:viewportHeight="128">
+  <path android:fillColor="@color/icon_background" android:pathData="M0,0h128v128h-128z" />
+  <path android:fillColor="@color/icon_lime" android:pathData="M128 0v128H0z" />
+</vector>

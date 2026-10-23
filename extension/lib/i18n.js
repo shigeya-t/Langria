@@ -1,10 +1,10 @@
 // UI text in English and Japanese, shared by the web app, the extension's
-// pages, its service worker and its content script, and the iOS app (which
-// runs it in JavaScriptCore). Japanese is used when the browser's language is
-// Japanese, English otherwise, unless the user picked one with the language
-// switch (stored by each caller: `langria-ui-language` in the web app's
-// localStorage and the iOS app's UserDefaults, `uiLanguage` in the extension's
-// storage).
+// pages, its service worker and its content script, the iOS app (which runs
+// it in JavaScriptCore) and the Android app (which reads `messages`).
+// Japanese is used when the browser's language is Japanese, English
+// otherwise, unless the user picked one with the language switch (stored by
+// each caller: `langria-ui-language` in the web app's localStorage and the
+// mobile apps' settings, `uiLanguage` in the extension's storage).
 // A classic script that sets `LangriaI18n`, like vault.js and languages.js.
 (() => {
   // The extension injects this with content.js every time; keep the first
@@ -245,7 +245,16 @@
       'watch.translateTo': 'Translate into',
       'watch.dictationHint': 'To dictate in another language, swipe up from the bottom of the input screen and choose it. Add languages in the Watch app on iPhone: My Watch → General → Language & Region. Some languages do not offer dictation on the watch (no microphone); use voice input in Langria on iPhone for those.',
       'watch.noKey': 'No {name} API key is set. Enter it in Langria’s settings on your iPhone.',
-      'watch.noTarget': 'Enter the target language in Langria on your iPhone.'
+      'watch.noTarget': 'Enter the target language in Langria on your iPhone.',
+
+      // Android app (it also uses the ios.* messages that are not about Apple devices)
+      'android.settingsDescription': 'Enter the API key and model for each AI service. Keys are stored encrypted, only on this device.',
+      'android.lockMethod': 'your fingerprint, face or screen lock',
+      'android.lockNote': 'Keys are always stored encrypted on this device. When this is on, {method} is needed each time you open the app.',
+      'android.noScreenLock': 'Set a screen lock on this device to lock the API keys.',
+      'android.keystoreError': 'Could not use the Android Keystore ({detail}).',
+      'android.keysLost': 'The saved API keys can no longer be read on this device. Enter them again.',
+      'android.speechDenied': 'To use voice input, allow the microphone for Langria in the system settings.'
     },
     ja: {
       'lang.switch': '表示言語',
@@ -475,7 +484,16 @@
       'watch.translateTo': '翻訳先',
       'watch.dictationHint': 'ほかの言語で音声入力するには、入力画面の下から上にスワイプして言語を選びます。言語は iPhone の Watch アプリの「マイウォッチ」→「一般」→「言語と地域」で追加できます。言語によっては Apple Watch で音声入力（マイク）が出ません。その言語は iPhone の Langria の音声入力を使ってください。',
       'watch.noKey': '{name} のAPIキーが未設定です。iPhone の Langria の設定で入力してください。',
-      'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。'
+      'watch.noTarget': 'iPhone の Langria で翻訳先の言語を入力してください。',
+
+      // Android app (it also uses the ios.* messages that are not about Apple devices)
+      'android.settingsDescription': 'AIサービスごとにAPIキーとモデルを入力します。キーは暗号化して、この端末にだけ保存されます。',
+      'android.lockMethod': '指紋・顔認証または画面ロック',
+      'android.lockNote': 'キーはいつも暗号化してこの端末に保存されます。オンにすると、アプリを開くたびに{method}が必要になります。',
+      'android.noScreenLock': 'APIキーをロックするには、端末の画面ロックを設定してください。',
+      'android.keystoreError': 'Android Keystore を使えませんでした（{detail}）。',
+      'android.keysLost': '保存したAPIキーをこの端末で読み出せなくなりました。もう一度入力してください。',
+      'android.speechDenied': '音声入力を使うには、端末の設定で Langria にマイクを許可してください。'
     }
   };
   const languages = { en: 'English', ja: '日本語' };
@@ -546,5 +564,7 @@
     return { render };
   }
 
-  globalThis.LangriaI18n = { t, setLanguage, languageLabel, defaultTarget, apply, mountSwitch, get language() { return current; } };
+  // `messages` is read once by the Android app, which has no JavaScript
+  // engine to call `t` with and looks the messages up itself.
+  globalThis.LangriaI18n = { t, setLanguage, languageLabel, defaultTarget, apply, mountSwitch, messages, get language() { return current; } };
 })();

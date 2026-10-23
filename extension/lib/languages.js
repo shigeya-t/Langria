@@ -1,7 +1,7 @@
 // Target languages offered by the web app and the extension. Keys are the
 // language names given to the model; values are the labels shown in the
-// dropdowns, per UI language, and `locale` is the BCP 47 tag the iOS app uses
-// for voice input and reading aloud. `custom` is the "Other" choice, whose name
+// dropdowns, per UI language, and `locale` is the BCP 47 tag the iOS and
+// Android apps use for voice input and reading aloud. `custom` is the "Other" choice, whose name
 // the user types in.
 // A classic script that sets `LangriaLanguages`, so the web app can load it
 // with a plain <script> tag and the extension's modules can import it.

@@ -4,11 +4,12 @@ English | [日本語](README.ja.md)
 
 Formerly called MyLingo.
 
-A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in three forms:
+A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in four forms:
 
 - **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
 - **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
 - **iOS app**: the web app’s translation on iPhone and iPad, plus reading and translating the text in photos you take or choose, and an Apple Watch app (see [iOS app](#ios-app-iphone--ipad)).
+- **Android app**: the same as the iOS app on Android phones and tablets, without a watch app (see [Android app](#android-app)).
 
 Project page: <https://shigeya-t.github.io/Langria/>
 
@@ -161,6 +162,26 @@ You need macOS with Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen) 
 
 The camera button appears only on devices with a camera (not in the simulator).
 
+## Android app
+
+The `android/` folder contains a Jetpack Compose app for Android phones and tablets (Android 11 or later) with the same features as the iOS app, except the watch app.
+
+- Same as the iOS app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, translating text in photos (camera or the system photo picker), voice input with the language you speak (**Auto** works as on iOS) and reading aloud, the English / Japanese UI and light / dark appearance. On tablets and wide windows the panes sit side by side
+- **Share to Langria**: text shared from another app, or picked with **Langria** in another app’s text selection menu, is put into the original pane and translated
+- Text in photos is read on the device with Google’s ML Kit, whose models come with Google Play services (the Latin, Japanese, Chinese and Korean models each read the photo; the one that reads it best is used). Only the text is sent to the AI service, never the image
+- Voice input uses the system’s speech recognition: on the device when the language’s model is installed, otherwise through the speech recognition service (Google’s, on most devices), as with keyboard voice typing. Reading aloud uses the system’s text to speech
+- API keys are stored on the device only, encrypted with a key in the Android Keystore (not backed up). Turn on **Unlock with your fingerprint, face or screen lock** in Settings to require it each time the app opens; the keys are locked again when the app moves to the background
+- A banner ad from Google AdMob is shown at the end of the page, as on iOS. The app asks for consent where the law requires it (Google’s consent form); Android has no tracking prompt. Debug builds show Google’s test ads
+- The UI text and the target language list are the same files as the other apps (`extension/lib/i18n.js` and `languages.js`). The build copies them into the app, which reads them once in a WebView
+
+### Building
+
+You need JDK 17 or later and the Android SDK (Android Studio, or `brew install --cask android-commandlinetools`). The only external libraries are the Google Mobile Ads SDK (with UMP), ML Kit text recognition and AndroidX / Jetpack Compose, fetched by Gradle.
+
+1. In `android/`, run `cp local.properties.example local.properties` and set `sdk.dir` (Android Studio does this when you open the folder). For a release build, also set the AdMob IDs of the Android app (`admob.appId`, `admob.bannerUnitId`) and the signing key there; without them the release build uses Google’s test ads and is unsigned. `local.properties` is not committed
+2. Open `android/` in Android Studio and run the **app** configuration, or run `./gradlew installDebug` with a device or emulator connected
+3. Tests: `./gradlew testDebugUnitTest` (the API calls go to a local stub server, so no API key is needed)
+
 ## About API keys
 
 This app has no backend; the browser sends requests directly to each AI service's API. API keys are stored in `localStorage` and are never part of the repository.
@@ -196,6 +217,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── assets/      # Images for the README
 ├── .githooks/   # Hooks that write the commit hash to version.js
 ├── ios/         # iOS app (SwiftUI; project.yml for XcodeGen, Langria/ sources, LangriaWatch/ Apple Watch app, LangriaTests/)
+├── android/     # Android app (Jetpack Compose; Gradle project, app/src/main sources, app/src/test unit tests)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
 ├── store/       # Chrome Web Store listing text, images and publishing steps
