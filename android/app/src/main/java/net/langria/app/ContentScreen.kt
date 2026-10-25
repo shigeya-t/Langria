@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import android.Manifest
 import android.content.pm.PackageManager

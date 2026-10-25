@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

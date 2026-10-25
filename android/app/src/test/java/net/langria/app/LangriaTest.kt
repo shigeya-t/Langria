@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

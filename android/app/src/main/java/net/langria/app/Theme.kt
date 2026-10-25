@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -54,5 +54,5 @@ private val dark = darkColorScheme(
 
 @Composable
 fun LangriaTheme(dark: Boolean, content: @Composable () -> Unit) {
-  MaterialTheme(colorScheme = if (dark) io.github.shigeya_t.langria.dark else light, content = content)
+  MaterialTheme(colorScheme = if (dark) net.langria.app.dark else light, content = content)
 }

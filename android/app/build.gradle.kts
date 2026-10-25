@@ -15,11 +15,11 @@ val testAdMobAppId = "ca-app-pub-3940256099942544~3347511713"
 val testBannerUnitId = "ca-app-pub-3940256099942544/9214589741"
 
 android {
-  namespace = "io.github.shigeya_t.langria"
+  namespace = "net.langria.app"
   compileSdk = 37
 
   defaultConfig {
-    applicationId = local.getProperty("applicationId") ?: "io.github.shigeya_t.langria"
+    applicationId = local.getProperty("applicationId") ?: "net.langria.app"
     minSdk = 30
     targetSdk = 37
     versionCode = 1

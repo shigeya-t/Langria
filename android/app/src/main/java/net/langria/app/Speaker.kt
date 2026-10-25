@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import android.content.Context
 import android.speech.tts.TextToSpeech

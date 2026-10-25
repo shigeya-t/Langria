@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import com.sun.net.httpserver.HttpServer
 import kotlinx.coroutines.runBlocking
