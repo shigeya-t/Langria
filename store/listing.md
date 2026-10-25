@@ -88,8 +88,8 @@ Langria は個人による独立したプロジェクトであり、OpenAI・Ant
 | --- | --- |
 | Category | Productivity → Tools（仕事効率化 → ツール） |
 | Language | English（既定）、日本語を追加 |
-| Official URL | `https://shigeya-t.github.io/Langria/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
-| Homepage URL | `https://shigeya-t.github.io/Langria/`（日本語の掲載では `https://shigeya-t.github.io/Langria/ja.html`） |
+| Official URL | `https://langria.net/`（Search Console で所有権を確認してから選ぶ。手順は [README.md](README.md)） |
+| Homepage URL | `https://langria.net/`（日本語の掲載では `https://langria.net/ja.html`） |
 | Support URL | `https://github.com/shigeya-t/Langria/issues` |
 | Mature content | なし |
 
@@ -163,7 +163,7 @@ Sends the text to be translated, with the user's own API key, directly to the AI
 ### Privacy policy URL
 
 ```text
-https://shigeya-t.github.io/Langria/privacy/
+https://langria.net/privacy/
 ```
 
 ## 配布（Distribution）

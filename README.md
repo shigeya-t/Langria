@@ -6,12 +6,12 @@ Formerly called MyLingo.
 
 A simple browser translation tool that lets you switch between ChatGPT, Claude and Gemini. Translate into English, Japanese or any language you like. It comes in four forms:
 
-- **Web app**: translates text you type or paste. Try it at <https://shigeya-t.github.io/Langria/app/> — no installation needed, just enter your own API key.
+- **Web app**: translates text you type or paste. Try it at <https://langria.net/app/> — no installation needed, just enter your own API key.
 - **Chrome extension**: translates the web page you are viewing, or the text you select. Install it from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa) (see [Chrome extension](#chrome-extension-page-translation)).
 - **iOS app**: the web app’s translation on iPhone and iPad, plus reading and translating the text in photos you take or choose, and an Apple Watch app (see [iOS app](#ios-app-iphone--ipad)).
 - **Android app**: the same as the iOS app on Android phones and tablets, without a watch app (see [Android app](#android-app)).
 
-Project page: <https://shigeya-t.github.io/Langria/>
+Project page: <https://langria.net/>
 
 ![Langria screenshot](assets/langria-screenshot.png)
 
@@ -34,9 +34,9 @@ The app needs no backend server. It is a static site made of HTML, CSS and JavaS
 
 ### Published version
 
-The web app is published with GitHub Pages at <https://shigeya-t.github.io/Langria/app/>, next to the project page and privacy policy in `docs/`. On every push to `master`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions"). The published copy shows a notice at the top saying it is a demo you can set up for yourself from this repository, and that other pages on the same origin could read the API keys, so they should be encrypted or the app self-hosted (close it with × and it stays closed in that browser); the notice stays hidden when you serve the repository yourself.
+The web app is published with GitHub Pages under the custom domain `langria.net` at <https://langria.net/app/>, next to the project page and privacy policy in `docs/`. On every push to `master`, `.github/workflows/pages.yml` runs `scripts/build-pages.sh`, which puts `docs/` at the site root and the web app files below under `app/`, and deploys the result (the repository's Pages source must be set to "GitHub Actions"). The published copy shows a notice at the top saying it is a demo you can set up for yourself from this repository, and that API keys stay in the browser and can be encrypted in Settings (close it with × and it stays closed in that browser); the notice stays hidden when you serve the repository yourself.
 
-Settings saved in the published version are stored in `localStorage` for `https://shigeya-t.github.io`, which is shared with any other GitHub Pages site under the same account. To keep API keys safe there, encrypt them with a passkey or passphrase (see [Encrypting API keys](#encrypting-api-keys)), or host the app yourself.
+The site is served from its own domain, `langria.net`, so settings saved in the published version are stored in `localStorage` for `https://langria.net` and are not shared with other sites. (Settings saved before the move to `langria.net`, under `https://shigeya-t.github.io`, are not carried over; enter them again.) To protect API keys on a shared computer, encrypt them with a passkey or passphrase (see [Encrypting API keys](#encrypting-api-keys)), or host the app yourself.
 
 ### Required files
 
@@ -124,7 +124,7 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 1. Install Langria from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa).
 2. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
 
-The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://shigeya-t.github.io/Langria/privacy/>).
+The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://langria.net/privacy/>).
 
 #### Loading from the repository (development)
 
