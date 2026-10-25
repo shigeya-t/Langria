@@ -6,12 +6,12 @@
 
 ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウザ翻訳ツールです。英語・日本語をはじめ、好きな言語へ翻訳できます。次の4つがあります。
 
-- **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://shigeya-t.github.io/Langria/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
+- **Webアプリ**: 入力・貼り付けた文章を翻訳します。<https://langria.net/app/> で試せます。インストールは不要で、ご自身のAPIキーを入力するだけで使えます。
 - **Chrome拡張機能**: 表示中のWebページや選択した文章を翻訳します。[Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)からインストールできます（[Chrome拡張機能](#chrome拡張機能webページ翻訳)を参照）。
 - **iOSアプリ**: Webアプリと同じ翻訳に加え、カメラで撮った写真や選んだ写真の文字を読み取って翻訳します。Apple Watch でも使えます（[iOSアプリ](#iosアプリiphone--ipad)を参照）。
 - **Androidアプリ**: iOSアプリと同じ機能を Android のスマホ・タブレットで使えます（ウォッチアプリはなし。[Androidアプリ](#androidアプリ)を参照）。
 
-紹介ページ: <https://shigeya-t.github.io/Langria/ja.html>
+紹介ページ: <https://langria.net/ja.html>
 
 ![Langria の画面](assets/langria-screenshot-ja.png)
 
@@ -34,9 +34,9 @@ ChatGPT、Claude、Gemini を切り替えて使える、シンプルなブラウ
 
 ### 公開版
 
-Webアプリは GitHub Pages で <https://shigeya-t.github.io/Langria/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`master` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。公開版では上部に「デモ用で、このリポジトリから自分用にセットアップできる」「APIキーは同じオリジンのほかのページから読み取れるため、暗号化か自分用のセットアップを勧める」という注意書きを出します（× で閉じると、そのブラウザでは以後表示しません）。リポジトリを自分で配信した場合は表示されません。
+Webアプリは GitHub Pages（独自ドメイン `langria.net`）で <https://langria.net/app/> に公開しています（`docs/` の紹介ページ・プライバシーポリシーと同じサイト）。`master` に push するたびに `.github/workflows/pages.yml` が `scripts/build-pages.sh` を実行し、`docs/` をサイトの直下に、下記のWebアプリのファイルを `app/` に置いて公開します（リポジトリの Pages の Source を「GitHub Actions」にしておく必要があります）。公開版では上部に「デモ用で、このリポジトリから自分用にセットアップできる」「APIキーはブラウザにだけ保存され、設定で暗号化できる」という注意書きを出します（× で閉じると、そのブラウザでは以後表示しません）。リポジトリを自分で配信した場合は表示されません。
 
-公開版で保存した設定は `https://shigeya-t.github.io` の `localStorage` に入り、同じアカウントのほかの GitHub Pages のサイトと共有されます。APIキーを守るため、パスキーかパスフレーズで暗号化する（[APIキーの暗号化](#apiキーの暗号化)）か、自分のサーバーに置いて使ってください。
+サイトは独自ドメイン `langria.net` で配信しているため、公開版で保存した設定は `https://langria.net` の `localStorage` に入り、ほかのサイトとは共有されません（`langria.net` に移る前に `https://shigeya-t.github.io` で保存した設定は引き継がれないので、入力し直してください）。共用のパソコンなどでAPIキーを守るには、パスキーかパスフレーズで暗号化する（[APIキーの暗号化](#apiキーの暗号化)）か、自分のサーバーに置いて使ってください。
 
 ### 必要なファイル
 
@@ -124,7 +124,7 @@ git config core.hooksPath .githooks && .githooks/write-version
 1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)から Langria をインストールします。
 2. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
 
-拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://shigeya-t.github.io/Langria/privacy/ja.html>）にあります。
+拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://langria.net/privacy/ja.html>）にあります。
 
 #### リポジトリから読み込む（開発用）
 
