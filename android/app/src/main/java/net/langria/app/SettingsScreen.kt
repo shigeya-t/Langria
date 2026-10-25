@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity

@@ -1,4 +1,4 @@
-package io.github.shigeya_t.langria
+package net.langria.app
 
 /**
  * A rough guess by script, used only by the swap button; the model itself
