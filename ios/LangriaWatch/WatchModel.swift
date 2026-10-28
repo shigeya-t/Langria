@@ -148,7 +148,7 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
 /// The watch's copy of the API keys, one JSON item in its keychain, this
 /// device only. The watch's passcode protects it; there is no lock of its own.
 private enum WatchKeys {
-  private static let query: [CFString: Any] = [kSecClass: kSecClassGenericPassword, kSecAttrService: "io.github.shigeya-t.Langria.api-keys", kSecAttrAccount: "keys"]
+  private static let query: [CFString: Any] = [kSecClass: kSecClassGenericPassword, kSecAttrService: "net.langria.app.api-keys", kSecAttrAccount: "keys"]
 
   static func load() -> [String: String] {
     var request = query

@@ -162,6 +162,8 @@ macOS の Xcode と [XcodeGen](https://github.com/yonaskolb/XcodeGen)（`brew in
 
 カメラのボタンは、カメラのある端末でだけ表示されます（シミュレーターでは出ません）。
 
+App Store に出すときは、`scripts/archive-ios.sh --upload` で Release ビルドをアーカイブして App Store Connect にアップロードします。手順と掲載テキストは [store/ios/README.md](store/ios/README.md) にあります。
+
 ## Androidアプリ
 
 `android/` フォルダーには、iOSアプリと同じ機能（ウォッチアプリを除く）を持つ、Android のスマホ・タブレット用の Jetpack Compose アプリ（Android 11 以降）が入っています。
@@ -220,8 +222,8 @@ JDK 17 以降と Android SDK（Android Studio、または `brew install --cask a
 ├── android/     # Androidアプリ（Jetpack Compose。Gradle のプロジェクト、app/src/main にコード、app/src/test にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
-├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順
-├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る
+├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順。ios/ は App Store
+├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る、archive-ios.sh: App Store 用のビルド
 └── extension/   # Chrome拡張機能（Webページ翻訳）
     ├── manifest.json
     ├── background.js    # API呼び出し・右クリックメニュー・ショートカット

@@ -40,6 +40,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `ios/Langria/Speech.swift` / `Speaker.swift` | 原文の音声入力（Speech。対応する言語は端末内で認識。間が空くと認識し直すので、発話ごとに文字をつなぐ）と訳文の読み上げ（AVSpeechSynthesizer。`Speaker.swift` は Apple Watch アプリと共用）。言語は `languages.js` の `locale` を使い、「その他」の読み上げは NaturalLanguage で文の言語を推定する。音声入力の「自動」は、端末の言語、翻訳先が端末の言語なら直前の翻訳先（UserDefaults の `langria-dictation-other`） |
 | `ios/Langria/WatchSync.swift` / `WatchSettings.swift` | Apple Watch への送信。設定の「Apple Watch で使う」（UserDefaults の `langria-watch`）がオンのとき、APIキー・設定・Watch が使う文言（`WatchSettings.messageKeys`）と言語名を WatchConnectivity の application context で送る。ロック中はキーを含めず、Watch は手元のキーを使い続ける。オフにすると Watch はキーを消す |
 | `ios/LangriaWatch/` | Apple Watch アプリ。`Translator.swift` と `WatchSettings.swift` を iOS と共用し、API へは Watch から直接リクエストする。キーは Watch のキーチェーン（このデバイスのみ）。watchOS には JavaScriptCore がないので、文言は iPhone が送ったもの（iPhone の表示言語）を使う。まだ何も届いていないときの案内だけは `LangriaWatch/*.lproj/Localizable.strings` に置く |
+| `ios/Langria/PrivacyInfo.xcprivacy` | プライバシーマニフェスト（UserDefaults を使う理由 `CA92.1`）。Apple Watch アプリは `LangriaWatch/PrivacyInfo.xcprivacy`。広告のデータは Google Mobile Ads SDK が自分のマニフェストで申告する。使う API を増やしたら（ファイルの日時・空き容量など）ここに理由を足す |
 | `ios/LangriaTests/` | XCTest。API はダミーの URLProtocol で差し替えるので APIキーは要らない |
 | `android/app/build.gradle.kts` | Androidアプリの Gradle 定義。`copySharedScripts` が `i18n.js`・`languages.js`・`version.js` をアプリの assets に入れる。リリース版の AdMob の ID と署名は `android/local.properties`（git管理外、`local.properties.example` を参照）。書かなければ Google のテスト用 ID。広告の SDK が古い WorkManager を持ち込み、R8 がそのデータベースを消してしまうので `work-runtime` を新しい版で入れている |
 | `android/app/src/main/java/.../Shared.kt` | `i18n.js` などを WebView で一度だけ実行し、`LangriaI18n.messages`・言語一覧・コミットハッシュを取り出して保存する（アプリを更新するまで再利用）。`t()`・`languageLabel()` は i18n.js と同じ動きを Kotlin で書いている。Android には JavaScriptCore のような JS エンジンがないため |
@@ -50,7 +51,8 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `android/app/src/test/` | JUnit のテスト。API はローカルの `HttpServer` で受けるので APIキーは要らない |
 | `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `#demoNotice`（デモ用の注意書き。× で閉じると `localStorage` の `langria-demo-notice-closed` に記録）の `hidden` を外す。`master` への push で動く |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
-| `store/` | Chrome ウェブストア（公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>）の掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`） |
+| `scripts/archive-ios.sh` | iOSアプリを Release でアーカイブし、`--upload` で App Store Connect に送る。ビルド番号はコミット数（`git rev-list --count HEAD`） |
+| `store/` | Chrome ウェブストア（公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>）の掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`）。`store/ios/` は App Store の掲載テキスト（`listing.md`。Appのプライバシーの申告・審査用のメモを含む）と公開手順（`README.md`） |
 | `docs/` | GitHub Pages のサイトの直下に置かれる（Webアプリは `app/`、上の `build-pages.sh` を参照）。`index.html` / `ja.html` は紹介ページ（ストアの Official URL・Homepage URL）で、Webアプリ（`app/`）への入口も兼ねる。`privacy/` はプライバシーポリシー（英語・日本語）。サイトは独自ドメイン `langria.net` で公開している（Pages の設定の Custom domain。Actions で公開しているので `CNAME` ファイルは要らない）。`app-ads.txt` は iOSアプリの AdMob 用で、サイトのドメインの直下（`https://langria.net/app-ads.txt`）にある必要があるため `docs/` に置いている。`lang.js` は英語のページをブラウザが日本語なら `ja.html` へ移す（言語のリンクで選んだ値は `localStorage` の `langria-page-language` に記録し、それを優先する。Webアプリの `langria-ui-language` とは別にして、Webアプリの表示言語には影響させない）。`theme.js` はヘッダーのボタンでライト / ダークを切り替える（選ぶまではOSの設定に従う。選んだ値は `localStorage` の `langria-page-theme` に記録し、Webアプリの `langria-theme` とは分ける）。ページが使うファビコン（`favicon.svg` / `favicon-32.png`）とスクリーンショット（`images/`）は `docs/` に置かず、`build-pages.sh` が `extension/icons/`・`store/images/`・`assets/` からコピーする（使う画像を増やしたらコピー対象にも足す）。`apple-touch-icon.png`（180×180）だけは元がないので `docs/` に置いている。ページの確認は `build-pages.sh` で `_site/` を作り、ローカルサーバーで開く |
 
 ### 共用ファイルの決まり
@@ -126,7 +128,7 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - ページ翻訳は `document.body` に加えて、Shadow DOM（閉じたものはカスタム要素だけ `chrome.dom.openOrClosedShadowRoot` で取得）と同一オリジンの iframe の `contentDocument` を、トップフレームの `content.js` から辿ります（`innerTree`）。それぞれに MutationObserver を付け、iframe は `load` で読み直します。別オリジンの iframe は対象外です。
 - 拡張機能のページへのアクセス権は `activeTab` だけです。広い `host_permissions` は追加しないでください。
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
-- 権限・送信先・保存するデータを変えたら、`store/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。審査ではコードの動作との一致を見られます。
+- 権限・送信先・保存するデータを変えたら、`store/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。iOSアプリなら `store/ios/listing.md` の「Appのプライバシー」と `PrivacyInfo.xcprivacy` もです。審査ではコードの動作との一致を見られます。
 - Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。
 - `extension/manifest.json` の `version` は、利用者から指示があったときだけ上げます（ストアに出す版を作るときなど）。指示がなければ、機能を変えても変更しないでください。
 

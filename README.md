@@ -162,6 +162,8 @@ You need macOS with Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen) 
 
 The camera button appears only on devices with a camera (not in the simulator).
 
+To publish on the App Store, `scripts/archive-ios.sh --upload` archives a Release build and uploads it to App Store Connect; the full steps and the listing text are in [store/ios/README.md](store/ios/README.md) (Japanese).
+
 ## Android app
 
 The `android/` folder contains a Jetpack Compose app for Android phones and tablets (Android 11 or later) with the same features as the iOS app, except the watch app.
@@ -220,8 +222,8 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── android/     # Android app (Jetpack Compose; Gradle project, app/src/main sources, app/src/test unit tests)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
-├── store/       # Chrome Web Store listing text, images and publishing steps
-├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site
+├── store/       # Chrome Web Store listing text, images and publishing steps; ios/: App Store
+├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site; archive-ios.sh: App Store build
 └── extension/   # Chrome extension (page translation)
     ├── manifest.json
     ├── background.js    # API calls, context menu, shortcut
