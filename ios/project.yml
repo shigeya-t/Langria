@@ -1,6 +1,6 @@
 name: Langria
 options:
-  bundleIdPrefix: io.github.shigeya-t
+  bundleIdPrefix: net.langria
   developmentLanguage: en
   deploymentTarget:
     iOS: "17.0"

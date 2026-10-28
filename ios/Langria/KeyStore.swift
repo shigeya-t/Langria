@@ -8,7 +8,7 @@ import Security
 /// passkey encryption (vault.js). The keys stay in memory until the app goes
 /// to the background.
 enum KeyStore {
-  private static let service = "io.github.shigeya-t.Langria.api-keys"
+  private static let service = "net.langria.app.api-keys"
   private static let account = "keys"
 
   enum Failure: Error {
