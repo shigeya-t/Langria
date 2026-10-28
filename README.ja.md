@@ -184,6 +184,8 @@ JDK 17 以降と Android SDK（Android Studio、または `brew install --cask a
 2. `android/` を Android Studio で開いて **app** を実行する。または端末・エミュレーターをつないで `./gradlew installDebug`
 3. テストは `./gradlew testDebugUnitTest`（API はローカルのダミーサーバーに送るので、APIキーは要らない）
 
+Google Play に出すときは、`./gradlew bundleRelease` で署名した AAB を作って Play Console にアップロードします。手順と掲載テキストは [store/android/README.md](store/android/README.md) にあります。
+
 ## APIキーについて
 
 このアプリはバックエンドを持たず、ブラウザから各AIサービスのAPIへ直接リクエストします。APIキーは `localStorage` に保存され、リポジトリに含まれることはありません。
@@ -222,7 +224,7 @@ JDK 17 以降と Android SDK（Android Studio、または `brew install --cask a
 ├── android/     # Androidアプリ（Jetpack Compose。Gradle のプロジェクト、app/src/main にコード、app/src/test にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
-├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順。ios/ は App Store
+├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順。ios/ は App Store、android/ は Google Play
 ├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る、archive-ios.sh: App Store 用のビルド
 └── extension/   # Chrome拡張機能（Webページ翻訳）
     ├── manifest.json
