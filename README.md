@@ -184,6 +184,8 @@ You need JDK 17 or later and the Android SDK (Android Studio, or `brew install -
 2. Open `android/` in Android Studio and run the **app** configuration, or run `./gradlew installDebug` with a device or emulator connected
 3. Tests: `./gradlew testDebugUnitTest` (the API calls go to a local stub server, so no API key is needed)
 
+To publish on Google Play, `./gradlew bundleRelease` builds a signed AAB to upload in Play Console; the full steps and the listing text are in [store/android/README.md](store/android/README.md) (Japanese).
+
 ## About API keys
 
 This app has no backend; the browser sends requests directly to each AI service's API. API keys are stored in `localStorage` and are never part of the repository.
@@ -222,7 +224,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── android/     # Android app (Jetpack Compose; Gradle project, app/src/main sources, app/src/test unit tests)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
-├── store/       # Chrome Web Store listing text, images and publishing steps; ios/: App Store
+├── store/       # Chrome Web Store listing text, images and publishing steps; ios/: App Store; android/: Google Play
 ├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site; archive-ios.sh: App Store build
 └── extension/   # Chrome extension (page translation)
     ├── manifest.json
