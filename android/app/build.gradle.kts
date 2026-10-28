@@ -43,7 +43,7 @@ android {
     release {
       isMinifyEnabled = true
       isShrinkResources = true
-      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.findByName("release")
       local.getProperty("admob.appId")?.let { manifestPlaceholders["admobAppId"] = it }
       local.getProperty("admob.bannerUnitId")?.let { buildConfigField("String", "BANNER_UNIT_ID", "\"$it\"") }
