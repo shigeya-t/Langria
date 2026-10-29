@@ -7,7 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // The web app's colors (styles.css): the lime accent, dark ink on light paper
-// and the reverse.
+// and the reverse. The panes stand a little further off the background than on
+// the web, since a phone screen has no other borders to separate them.
 private val light = lightColorScheme(
   primary = Color(0xFF5F8A1A),
   onPrimary = Color.White,
@@ -15,16 +16,16 @@ private val light = lightColorScheme(
   onPrimaryContainer = Color(0xFF17200B),
   secondaryContainer = Color(0xFFE6E9E1),
   onSecondaryContainer = Color(0xFF161A17),
-  background = Color(0xFFF5F6F2),
+  background = Color(0xFFECEEE8),
   onBackground = Color(0xFF161A17),
-  surface = Color(0xFFF5F6F2),
+  surface = Color(0xFFECEEE8),
   onSurface = Color(0xFF161A17),
   onSurfaceVariant = Color(0xFF69726C),
   surfaceContainer = Color(0xFFFFFFFF),
   surfaceContainerHigh = Color(0xFFEEF1EA),
   surfaceContainerHighest = Color(0xFFE6E9E1),
   outline = Color(0xFF8A938C),
-  outlineVariant = Color(0xFFDDE2D9),
+  outlineVariant = Color(0xFFD3D9CE),
   error = Color(0xFFC62828),
   inverseSurface = Color(0xFF2A3030),
   inverseOnSurface = Color(0xFFEDF0EA),
@@ -42,11 +43,11 @@ private val dark = darkColorScheme(
   surface = Color(0xFF111516),
   onSurface = Color(0xFFEDF0EA),
   onSurfaceVariant = Color(0xFF8F9894),
-  surfaceContainer = Color(0xFF171C1D),
-  surfaceContainerHigh = Color(0xFF1C2223),
-  surfaceContainerHighest = Color(0xFF202627),
+  surfaceContainer = Color(0xFF1D2324),
+  surfaceContainerHigh = Color(0xFF222829),
+  surfaceContainerHighest = Color(0xFF272D2E),
   outline = Color(0xFF66706D),
-  outlineVariant = Color(0xFF2A3233),
+  outlineVariant = Color(0xFF343D3E),
   error = Color(0xFFFF8F8F),
   inverseSurface = Color(0xFFE8EEE6),
   inverseOnSurface = Color(0xFF172017),
