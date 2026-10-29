@@ -72,7 +72,7 @@ scripts/package-extension.sh
 ## 画像を作り直すとき
 
 ```sh
-node store/capture.mjs
+node store/chrome/capture.mjs
 ```
 
 - 実際の拡張機能を Playwright（Chromium）で読み込み、デモ記事を翻訳した画面を撮影して `images/` に合成します。APIの呼び出しはスクリプト内のダミー応答に差し替えるので、APIキーは不要です。
