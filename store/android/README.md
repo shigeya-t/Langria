@@ -61,45 +61,40 @@ cd android
 **すべてのアプリ → アプリを作成**:
 
 - アプリ名: `Langria – AI Translator`
+- パッケージ名: `net.langria.app`（あとから変えられない）
 - デフォルトの言語: **英語（米国）– en-US**
 - アプリかゲームか: **アプリ** / 無料か有料か: **無料**
-- 申告（デベロッパー プログラム ポリシー、米国の輸出法）に同意する
+- 連絡先のメールアドレス: `support@langria.net`（ストアに公開される）
+- 申告（デベロッパー プログラム ポリシー、米国の輸出法）と Play アプリ署名の利用規約に同意する
 
 ## 4. 掲載情報とポリシーの申告を入れる
 
 [listing.md](listing.md) を見ながら、ダッシュボードの「アプリのセットアップ」の項目を順に埋めます。
 
-1. **アプリのコンテンツ**（**ポリシーとプログラム → アプリのコンテンツ**）: プライバシー ポリシー、広告、アプリのアクセス権（審査用の Gemini APIキー）、コンテンツのレーティング、ターゲット ユーザー、データ セーフティ、広告 ID、政府機関・金融・健康・ニュースのアプリかどうか。
+1. **アプリのコンテンツ**（**モニタリングと改善 → ポリシーとプログラム → アプリのコンテンツ**）: プライバシー ポリシー、広告、ログイン情報（審査用の Gemini APIキー）、コンテンツのレーティング、ターゲット ユーザー、データ セーフティ、広告 ID、政府機関・金融・健康・ニュースのアプリかどうか。
 2. **ストアの設定**: カテゴリ（ツール）、タグ、連絡先（メールアドレス・ウェブサイト `https://langria.net/`）。
 3. **メインのストアの掲載情報**: アプリ名・簡単な説明・詳しい説明（英語）、アイコン、フィーチャー グラフィック、スクリーンショット。**翻訳を管理 → 翻訳を追加 → 日本語** で、日本語の説明と画像も入れる。
 
-アプリのアクセス権の審査用キーは、審査が終わったら Google AI Studio で削除します（審査のたびに作り直す）。
+ログイン情報の審査用キーは、審査が終わったら Google AI Studio で削除します（審査のたびに作り直す）。
 
 ## 5. スクリーンショット
 
-エミュレーターで撮ります（`langria` の AVD。なければ Android Studio の Device Manager で Pixel を作る）。
+`store/android/capture.sh` が、エミュレーターで翻訳画面と設定画面を、英語・日本語 × ライト・ダークの8枚撮ります（`store/android/images/{en,ja}-{light,dark}-{1-translate,2-settings}.png`）。英語の画像は日本語の例文を英語に、日本語の画像は英語の例文を日本語に訳した画面です。
 
 ```sh
 export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools   # Android Studio の SDK なら $HOME/Library/Android/sdk
 export PATH=$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH   # adb と emulator（~/.zshrc に書いておくとよい）
-emulator -avd langria &
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -n net.langria.app/.MainActivity
-# 表示言語（英語 / 日本語）とテーマ（ライト / ダーク）は Langria の設定で切り替える
-# 自分の APIキーで翻訳した画面にしてから
-adb exec-out screencap -p > en-1.png
+emulator -avd langria &   # なければ Android Studio の Device Manager で Pixel を作る
+store/android/capture.sh --build   # 動画は --video、片方の言語だけなら --lang en / --lang ja も付ける。Gemini の APIキーを聞かれるので貼り付ける（GEMINI_API_KEY でも渡せる）
 ```
 
-- ステータスバーを整えるには、デモモードを使います:
-  ```sh
-  adb shell settings put global sysui_demo_allowed 1
-  adb shell am broadcast -a com.android.systemui.demo -e command clock -e hhmm 0941
-  adb shell am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false
-  adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false
-  ```
-- デバッグ版の広告は Google のテスト広告です。広告が写らない位置（ページの上の方）で撮ります。
-- 撮るとよい画面: 文章の翻訳、写真の文字の翻訳（文字の多い画像を `adb push` で `/sdcard/Pictures` に置き、写真ピッカーから選ぶ）、文字選択メニューの「Langria」、設定（サービスの切り替え・ロック）、タブレットの横並び（Pixel Tablet などの AVD）。
-- 英語・日本語、それぞれで撮り分けます。
+- 翻訳は本物の Gemini API で行います。キーはエミュレーターの Langria にだけ保存され、ファイルには残りません。
+- エミュレーターの Langria のデータは消えます（`pm clear`）。設定はデバッグ版の `run-as` で書き換え、例文はほかのアプリからの共有として渡します。
+- 撮る間だけ、画面を 1080 × 1920（9:16。Play の上限は 2:1 で、おすすめ枠に使われるのは 9:16）にし、ステータスバーをデモモード（9:41・電池満タン・通知なし）にします。通知は1時間スヌーズします。終わると画面の大きさとデモモードは元に戻ります。
+- デバッグ版は、設定に `langria-screenshots` があるとテスト広告を出しません（`Ads.kt`。リリース版には影響しない）。
+- `--video` を付けると、スクリーンショットの代わりに、初めて使うときの流れ（設定画面でキーを入力して保存 → 文章を入力して翻訳）を録画します（`store/android/images/{en,ja}-demo.mp4`、1080 × 1920）。英語の動画は日本語の文章を英語に、日本語の動画は英語の文章を日本語に訳します。`adb` は英数字しか入力できないので、英語の動画の日本語の文章は、貼り付けたように一度に入ります（共有で今の画面に渡す）。録画の間は、パスワードの最後の文字を表示する設定と、キーボードの手書き入力の案内を止めます（終わると戻る）。アニメーションは止めません。
+- Play の「プレビュー動画」は YouTube の URL で登録します。録画した動画を YouTube に（限定公開などで）アップロードし、**メインのストアの掲載情報** の動画欄にその URL を入れます。
+- 写真の文字の翻訳、文字選択メニューの「Langria」、タブレットの横並び（Pixel Tablet などの AVD）は手で撮ります。文字の多い画像は `adb push` で `/sdcard/Pictures` に置き、写真ピッカーから選びます。
 
 ## 6. テストして本番に出す
 
@@ -129,7 +124,7 @@ adb exec-out screencap -p > en-1.png
 
 ## 審査で指摘されやすい点
 
-- **機能を試せること（アプリのアクセス権）**: 審査担当者は APIキーを持っていないので、審査用のキーと手順を入れる。キーの上限に達していないか、提出前に確かめる。
+- **機能を試せること（ログイン情報）**: 審査担当者は APIキーを持っていないので、審査用のキーと手順を入れる。キーの上限に達していないか、提出前に確かめる。
 - **データ セーフティとアプリの動作の一致**: SDK が集めるデータ（AdMob・ML Kit）も申告する。ずれていると、アプリの更新が止められることがあります。
 - **他社の商標（なりすまし・メタデータのポリシー）**: アプリ名・簡単な説明・アイコンに ChatGPT / Claude / Gemini を使わない。詳しい説明で「対応サービス」として触れ、提携していない旨を書く（listing.md に記載済み）。
 - **AI が作るコンテンツのポリシー**: チャットボットや画像の生成アプリは、不快な出力を報告する手段をアプリ内に置く必要があります。Langria は利用者の文章を訳すだけの翻訳ツールなので対象外と考えていますが、審査で求められたら、設定に「問題を報告」（GitHub の Issues やメールへのリンク）を足して対応します。
