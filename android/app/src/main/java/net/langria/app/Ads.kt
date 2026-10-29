@@ -50,6 +50,8 @@ class Ads {
   /** Runs each time the app comes to the front, as consent can expire. */
   suspend fun gatherConsent(activity: Activity) {
     if (ready || gathering) return
+    // Debug builds leave the ads out for the store screenshots (store/android/capture.sh).
+    if (BuildConfig.DEBUG && Settings.prefs(activity).getBoolean("langria-screenshots", false)) return
     gathering = true
     try {
       val consent = UserMessagingPlatform.getConsentInformation(activity)
