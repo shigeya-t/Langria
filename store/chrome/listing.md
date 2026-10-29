@@ -93,7 +93,7 @@ Langria は個人による独立したプロジェクトであり、OpenAI・Ant
 | Support URL | `https://github.com/shigeya-t/Langria/issues` |
 | Mature content | なし |
 
-### 画像（`store/images/`）
+### 画像（`store/chrome/images/`）
 
 | 欄 | 英語 | 日本語 |
 | --- | --- | --- |

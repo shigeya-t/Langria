@@ -1,8 +1,8 @@
-// Regenerates the Chrome Web Store images in store/images/ from the real
+// Regenerates the Chrome Web Store images in store/chrome/images/ from the real
 // extension: screenshots (1280x800), promo tiles (440x280, 1400x560) and the
 // store icon (128x128), in English and Japanese.
 //
-//   node store/capture.mjs
+//   node store/chrome/capture.mjs
 //
 // Needs Playwright with Chromium (the global install is used when the repo has
 // none). No API key is needed: the service worker's fetch is replaced with a
@@ -20,8 +20,8 @@ let playwright;
 try { playwright = require('playwright'); } catch { playwright = require(join(execSync('npm root -g').toString().trim(), 'playwright')); }
 const { chromium } = playwright;
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const out = join(root, 'store', 'images');
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const out = join(root, 'store', 'chrome', 'images');
 
 // The demo article, as [English, Japanese] pairs. The English listing
 // translates the Japanese page into English and the Japanese listing the

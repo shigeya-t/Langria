@@ -224,7 +224,7 @@ Google Play に出すときは、`./gradlew bundleRelease` で署名した AAB �
 ├── android/     # Androidアプリ（Jetpack Compose。Gradle のプロジェクト、app/src/main にコード、app/src/test にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
 ├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
-├── store/       # Chrome ウェブストアの掲載情報・画像・公開手順。ios/ は App Store、android/ は Google Play
+├── store/       # 掲載情報・画像・公開手順。chrome/ は Chrome ウェブストア、ios/ は App Store、android/ は Google Play
 ├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る、archive-ios.sh: App Store 用のビルド
 └── extension/   # Chrome拡張機能（Webページ翻訳）
     ├── manifest.json

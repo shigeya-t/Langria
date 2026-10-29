@@ -224,7 +224,7 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── android/     # Android app (Jetpack Compose; Gradle project, app/src/main sources, app/src/test unit tests)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
 ├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
-├── store/       # Chrome Web Store listing text, images and publishing steps; ios/: App Store; android/: Google Play
+├── store/       # Listing text, images and publishing steps: chrome/: Chrome Web Store; ios/: App Store; android/: Google Play
 ├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site; archive-ios.sh: App Store build
 └── extension/   # Chrome extension (page translation)
     ├── manifest.json

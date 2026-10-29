@@ -16,7 +16,7 @@ cp extension/icons/icon.svg "$out/favicon.svg"
 cp extension/icons/icon-32.png "$out/favicon-32.png"
 mkdir -p "$out/images"
 for locale in en ja; do
-  for shot in 2-selection 3-layout; do cp "store/images/$locale-$shot.png" "$out/images/"; done
+  for shot in 2-selection 3-layout; do cp "store/chrome/images/$locale-$shot.png" "$out/images/"; done
 done
 cp assets/langria-screenshot.png "$out/images/en-web-app.png"
 cp assets/langria-screenshot-ja.png "$out/images/ja-web-app.png"
