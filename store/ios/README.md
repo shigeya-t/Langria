@@ -19,7 +19,7 @@ Langria の iOSアプリ（Apple Watch アプリを同梱）を App Store に公
 4. App Store Connect の **ビジネス**（Agreements, Tax, and Banking）で **無料 App 契約** を確認する。無料アプリで広告収入は AdMob から入るので、有料 App 契約・銀行口座は要りません。
 5. **EU のトレーダー申告**（Digital Services Act）: App Store Connect の **ビジネス** で、トレーダーか非トレーダーかを申告する。広告で収入を得るので、通常は **トレーダー** になります（住所・電話番号・メールアドレスが EU のストアに表示されます）。表示したくなければ、配信地域から EU を外します。
 
-バンドルID は `net.langria.app`（Apple Watch アプリは `net.langria.app.watchkitapp`）です。`archive-ios.sh` は `-allowProvisioningUpdates` で App ID とプロファイルを自動で作ります。先に [Identifiers](https://developer.apple.com/account/resources/identifiers/list) で **App IDs → App** を2つ（Explicit、Capabilities は既定のまま）登録しておいてもかまいません。
+バンドルID は `net.langria.ios`（Apple Watch アプリは `net.langria.ios.watchkitapp`）です。`archive-ios.sh` は `-allowProvisioningUpdates` で App ID とプロファイルを自動で作ります。先に [Identifiers](https://developer.apple.com/account/resources/identifiers/list) で **App IDs → App** を2つ（Explicit、Capabilities は既定のまま）登録しておいてもかまいません。
 
 ## 2. App Store Connect にアプリを作る
 
@@ -28,7 +28,7 @@ Langria の iOSアプリ（Apple Watch アプリを同梱）を App Store に公
 - プラットフォーム: **iOS**
 - 名前: `Langria – AI Translator`（他のアプリと重なると使えないので、そのときは変える）
 - プライマリ言語: **英語（米国）**
-- バンドルID: `net.langria.app`（一覧にないときは、先に 3 のアップロードか Identifiers の登録をする）
+- バンドルID: `net.langria.ios`（一覧にないときは、先に 3 のアップロードか Identifiers の登録をする）
 - SKU: `langria-ios`
 - ユーザアクセス: **フルアクセス**
 
@@ -76,7 +76,7 @@ xcodebuild -project Langria.xcodeproj -scheme Langria -destination 'platform=iOS
 xcrun simctl boot 'iPhone 18 Pro Max'
 xcrun simctl status_bar 'iPhone 18 Pro Max' override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
 xcrun simctl install 'iPhone 18 Pro Max' build/shots/Build/Products/Debug-iphonesimulator/Langria.app
-xcrun simctl launch 'iPhone 18 Pro Max' net.langria.app -langria-ui-language en -langria-theme light
+xcrun simctl launch 'iPhone 18 Pro Max' net.langria.ios -langria-ui-language en -langria-theme light
 # 自分の APIキーで翻訳した画面にしてから
 xcrun simctl io 'iPhone 18 Pro Max' screenshot en-1.png
 ```
