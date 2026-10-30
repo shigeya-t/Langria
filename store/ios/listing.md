@@ -8,7 +8,7 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 | --- | --- |
 | 名前（30） | 英語: `Langria – AI Translator` / 日本語: `Langria – AI翻訳` |
 | サブタイトル（30） | 英語: `Translate text, photos & voice` / 日本語: `文章・写真・音声をAIで翻訳` |
-| バンドルID | `net.langria.app`（Apple Watch: `net.langria.app.watchkitapp`） |
+| バンドルID | `net.langria.ios`（Apple Watch: `net.langria.ios.watchkitapp`） |
 | SKU | `langria-ios` |
 | プライマリ言語 | English (U.S.) |
 | カテゴリ | プライマリ: ユーティリティ（Utilities）、セカンダリ: 仕事効率化（Productivity） |
