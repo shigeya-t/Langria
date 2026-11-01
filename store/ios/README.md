@@ -69,23 +69,25 @@ App Store Connect で必須なのは次の3種類です（どれも英語・日�
 | iPad 13インチ | 2064 × 2752（縦） | iPad Pro 13-inch (M5) |
 | Apple Watch | 422 × 514 | Apple Watch Ultra 4 (49mm) |
 
+iPhone Duo（折りたたみ）の画像も撮ります（シミュレーターは iPhone Duo（iOS 27.1 以降））。閉じた画面（`duo`）は 1398 × 2034（縦）、開いた画面（`duo-open`）は 2853 × 2007（横）です。`capture.sh` からはシミュレーターを開けないので、開いた画面は手で開いてから `--device duo-open` で撮ります（既定では撮りません）。
+
 小さい画面のサイズは、大きい画面の画像から自動で作られます。
 
 `store/ios/capture.sh` が、シミュレーターで英語・日本語の画面を撮って `store/ios/images/` に保存します。英語の画像は日本語を英語に、日本語の画像は英語を日本語に訳した画面です。
 
-- iPhone・iPad: `{en,ja}-{iphone,ipad}-{1-translate,2-photo,3-dark,4-settings}.png`（文章の翻訳、写真の文字の翻訳、ダーク、設定）
+- iPhone・iPhone Duo・iPad: `{en,ja}-{iphone,duo,duo-open,ipad}-{1-translate,2-photo,3-dark,4-settings}.png`（文章の翻訳、写真の文字の翻訳、ダーク、設定）
 - Apple Watch: `{en,ja}-watch-1-translate.png`
 
 ```sh
-store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--device iphone / ipad / watch も付ける
+store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--device iphone / duo / duo-open / ipad / watch も付ける
 ```
 
 - Debug ビルドのスクリーンショットモード（`ios/Langria/Screenshots.swift`）を起動引数で使います。広告と同意の確認は出ず、仮のAPIキーが入り、原文と訳文は `capture.sh` に書いた文章が入ります（APIは呼ばないので、APIキーは要りません。サービスは Gemini を表示します）。Release ビルドでは起動引数があっても動きません。
 - 写真の画面は、`capture.sh` がその場で作るお知らせの画像を、アプリの文字認識で実際に読みます。訳文だけが固定です。
 - Apple Watch は iPhone とペアリングしなくても撮れます（iPhone が送る設定を、`i18n.js` などから作って起動引数で渡します）。
 - 例文や訳文を変えるときは `capture.sh` の上の方を直します。
-- シミュレーターの名前は `IPHONE` / `IPAD` / `WATCH` で変えられます。なければ Xcode の **Window → Devices and Simulators** で作る。
-- 時刻は iPhone・iPad では 9:41 に揃えます。Apple Watch は `simctl status_bar` が効かない（コマンドが返ってこない）ので、そのときの時刻になります。
+- シミュレーターの名前は `IPHONE` / `DUO` / `IPAD` / `WATCH` で変えられます。なければ Xcode の **Window → Devices and Simulators** で作る。
+- 時刻は iPhone・iPhone Duo・iPad では 9:41 に揃えます。Apple Watch は `simctl status_bar` が効かない（コマンドが返ってこない）ので、そのときの時刻になります。
 
 ## 6. 掲載情報を入力して審査に出す
 
