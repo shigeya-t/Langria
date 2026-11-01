@@ -1,9 +1,9 @@
 #!/bin/bash
-# Takes the App Store screenshots on the simulators: iPhone 6.9", iPad 13" and
-# Apple Watch, in English and Japanese. Japanese shots translate English into
+# Takes the App Store screenshots on the simulators: iPhone 6.9", iPhone Duo,
+# iPad 13" and Apple Watch, in English and Japanese. Japanese shots translate English into
 # Japanese; English shots the reverse.
 #
-#   store/ios/capture.sh [--build] [--lang en|ja] [--device iphone|ipad|watch]
+#   store/ios/capture.sh [--build] [--lang en|ja] [--device iphone|duo|duo-open|ipad|watch]
 #
 # The debug build's screenshot mode (ios/Langria/Screenshots.swift) does the
 # work: no ads, a stand-in API key, and the text and its translation (written
@@ -12,7 +12,7 @@
 # app's own text recognition.
 # Needs Xcode, XcodeGen and node. --build makes the debug build first
 # (ios/build/shots); without it the last one is used.
-# Simulators by name: IPHONE, IPAD and WATCH override the defaults below.
+# Simulators by name: IPHONE, DUO, IPAD and WATCH override the defaults below.
 # Images go to store/ios/images/.
 set -euo pipefail
 
@@ -20,15 +20,16 @@ root=$(cd "$(dirname "$0")/../.." && pwd)
 out="$root/store/ios/images"
 app="$root/ios/build/shots/Build/Products/Debug-iphonesimulator/Langria.app"
 iphone=${IPHONE:-iPhone 18 Pro Max}
+duo=${DUO:-iPhone Duo}
 ipad=${IPAD:-iPad Pro 13-inch (M5)}
 watch=${WATCH:-Apple Watch Ultra 4 (49mm)}
 
-build=false langs=(en ja) devices=(iphone ipad watch)
+build=false langs=(en ja) devices=(iphone duo ipad watch)
 while (($#)); do
   case $1 in
     --build) build=true ;;
     --lang) shift; [[ "${1:-}" == en || "${1:-}" == ja ]] || { echo "--lang takes en or ja" >&2; exit 1; }; langs=("$1") ;;
-    --device) shift; [[ "${1:-}" =~ ^(iphone|ipad|watch)$ ]] || { echo "--device takes iphone, ipad or watch" >&2; exit 1; }; devices=("$1") ;;
+    --device) shift; [[ "${1:-}" =~ ^(iphone|duo|duo-open|ipad|watch)$ ]] || { echo "--device takes iphone, duo, duo-open, ipad or watch" >&2; exit 1; }; devices=("$1") ;;
     *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
   shift
@@ -169,18 +170,22 @@ launch() {
     -langria-provider gemini -langria-mode natural "$@" >/dev/null
 }
 
-# Waits for the translation or the settings on screen (the app's marker file, see launch), up to 30 s.
+# Waits for the translation or the settings on screen (the app's marker file, see launch), up to 60 s
+# (the first launch on a freshly booted simulator can take over 30 s).
 wait_ready() {
-  for _ in $(seq 60); do
+  for _ in $(seq 120); do
     [[ -f "$ready" ]] && return
     sleep 0.5
   done
   echo "Timed out waiting for the app" >&2; exit 1
 }
 
+# The iPhone Duo has two displays: duo takes the outer one (folded), duo-open the inner one. Nothing here
+# can unfold the simulator, so duo-open is left out of the defaults and needs it unfolded by hand first.
+display=()
 shot() {
   sleep "$2"
-  xcrun simctl io "$1" screenshot --type png "$out/$3.png" >/dev/null 2>&1
+  xcrun simctl io "$1" screenshot --type png ${display[@]+"${display[@]}"} "$out/$3.png" >/dev/null 2>&1
   echo "Wrote store/ios/images/$3.png"
 }
 
@@ -199,7 +204,10 @@ for device in "${devices[@]}"; do
     done
     continue
   fi
-  if [[ $device == ipad ]]; then udid=$(boot "$ipad"); else udid=$(boot "$iphone"); fi
+  case $device in ipad) udid=$(boot "$ipad") ;; duo|duo-open) udid=$(boot "$duo") ;; *) udid=$(boot "$iphone") ;; esac
+  display=()
+  [[ $device == duo ]] && display=(--display=primary)
+  [[ $device == duo-open ]] && display=(--display=primary-1)
   prepare "$udid" "$app" "$bundle"
   photo="$(xcrun simctl get_app_container "$udid" "$bundle" data)/tmp/notice.png"
   for ui in "${langs[@]}"; do
