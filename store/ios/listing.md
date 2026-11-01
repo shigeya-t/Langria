@@ -151,6 +151,19 @@ SDK を更新したら、Google の案内とプライバシーレポート（Xco
 
 `ITSAppUsesNonExemptEncryption = NO` を Info.plist に入れているので、ビルドごとの質問は出ません（使う暗号は HTTPS と Apple のキーチェーンだけ）。
 
+App 情報の **App Encryption Documentation**（暗号化の書類）にも何もアップロードしません。書類（米国の CCATS、フランスの申告書など）が要るのは、免除されない暗号（独自の暗号や、OS 以外の暗号ライブラリ）を使うアプリだけです。そうした暗号を足したら見直します。
+
+## App 情報のそのほかの項目
+
+App 情報のページの下の方にある項目です。Digital Services Act のほかは、Langria では何もしません。
+
+| 項目 | 対応 |
+| --- | --- |
+| Digital Services Act | EU で配信するならトレーダーの申告が要る（[README.md](README.md) の「1. 初回だけ必要な準備」）。ここの **Set Up** からも始められる |
+| Regulated Medical Devices | 何もしない（医療・ヘルスケアのカテゴリーではなく、年齢制限で医療の情報を「なし」にしているため、申告の対象外） |
+| App Store Server Notifications | 何もしない（アプリ内課金がない） |
+| App-Specific Shared Secret | 何もしない（自動更新のサブスクリプションがない） |
+
 ## App Review に関する情報
 
 **サインインが必要**: いいえ（チェックを外す）
