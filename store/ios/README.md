@@ -18,7 +18,7 @@ Langria の iOSアプリ（Apple Watch アプリを同梱）を App Store に公
 2. Xcode の **Settings → Accounts** に同じ Apple アカウントでサインインする。`archive-ios.sh` はこのアカウントで署名・アップロードします。
 3. `ios/Local.xcconfig` の `DEVELOPMENT_TEAM` を、登録した Team ID にする（[Membership](https://developer.apple.com/account#MembershipDetailsCard) で確認）。
 4. App Store Connect の **ビジネス**（Agreements, Tax, and Banking）で **無料 App 契約** を確認する。無料アプリで広告収入は AdMob から入るので、有料 App 契約・銀行口座は要りません。
-5. **EU のトレーダー申告**（Digital Services Act）: App Store Connect の **ビジネス** で、トレーダーか非トレーダーかを申告する。広告で収入を得るので、通常は **トレーダー** になります（住所・電話番号・メールアドレスが EU のストアに表示されます）。表示したくなければ、配信地域から EU を外します。
+5. **EU のトレーダー申告**（Digital Services Act）: App Store Connect の **ビジネス** で、トレーダーか非トレーダーかを申告する。広告で収入を得るので、通常は **トレーダー** になります（住所・電話番号・メールアドレスが EU のストアに表示されます）。表示したくなければ、配信地域から EU を外します。アプリの **App 情報** の下の方にある **Digital Services Act → Set Up** からも始められます。
 
 バンドルID は `net.langria.ios`（Apple Watch アプリは `net.langria.ios.watchkitapp`）です。`archive-ios.sh` は `-allowProvisioningUpdates` で App ID とプロファイルを自動で作ります。先に [Identifiers](https://developer.apple.com/account/resources/identifiers/list) で **App IDs → App** を2つ（Explicit、Capabilities は既定のまま）登録しておいてもかまいません。
 
