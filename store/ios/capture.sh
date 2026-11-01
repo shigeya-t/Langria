@@ -1,5 +1,5 @@
 #!/bin/bash
-# Takes the App Store screenshots on the simulators: iPhone 6.9", iPhone Duo,
+# Takes the App Store screenshots on the simulators: iPhone 6.3", iPhone Duo,
 # iPad 13" and Apple Watch, in English and Japanese. Japanese shots translate English into
 # Japanese; English shots the reverse.
 #
@@ -19,7 +19,7 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 out="$root/store/ios/images"
 app="$root/ios/build/shots/Build/Products/Debug-iphonesimulator/Langria.app"
-iphone=${IPHONE:-iPhone 18 Pro Max}
+iphone=${IPHONE:-iPhone 18 Pro}
 duo=${DUO:-iPhone Duo}
 ipad=${IPAD:-iPad Pro 13-inch (M5)}
 watch=${WATCH:-Apple Watch Ultra 4 (49mm)}
@@ -182,11 +182,30 @@ wait_ready() {
 
 # The iPhone Duo has two displays: duo takes the outer one (folded), duo-open the inner one. Nothing here
 # can unfold the simulator, so duo-open is left out of the defaults and needs it unfolded by hand first.
-display=()
+display=() shots=()
 shot() {
   sleep "$2"
   xcrun simctl io "$1" screenshot --type png ${display[@]+"${display[@]}"} "$out/$3.png" >/dev/null 2>&1
+  shots+=("$out/$3.png")
   echo "Wrote store/ios/images/$3.png"
+}
+
+# Drops the alpha channel the simulator's PNGs have, which App Store Connect does not accept: the PNGs given.
+flatten() {
+  cat > "$work/flatten.swift" <<'EOF'
+import AppKit
+for path in CommandLine.arguments.dropFirst() {
+  let url = URL(fileURLWithPath: path)
+  let image = NSBitmapImageRep(data: try! Data(contentsOf: url))!.cgImage!
+  let context = CGContext(data: nil, width: image.width, height: image.height, bitsPerComponent: 8, bytesPerRow: 0,
+    space: image.colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
+  context.setFillColor(.black)
+  context.fill(CGRect(x: 0, y: 0, width: image.width, height: image.height))
+  context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+  try! NSBitmapImageRep(cgImage: context.makeImage()!).representation(using: .png, properties: [:])!.write(to: url)
+}
+EOF
+  swift "$work/flatten.swift" "$@"
 }
 
 for device in "${devices[@]}"; do
@@ -235,3 +254,4 @@ for device in "${devices[@]}"; do
   done
   xcrun simctl terminate "$udid" "$bundle" 2>/dev/null || true
 done
+flatten "${shots[@]}"

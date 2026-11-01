@@ -65,13 +65,13 @@ App Store Connect で必須なのは次の3種類です（どれも英語・日�
 
 | 端末 | サイズ | 撮るシミュレーター |
 | --- | --- | --- |
-| iPhone 6.9インチ | 1320 × 2868（縦） | iPhone 18 Pro Max |
+| iPhone（Dynamic Island、中サイズのディスプレイ） | 1206 × 2622（縦） | iPhone 18 Pro |
 | iPad 13インチ | 2064 × 2752（縦） | iPad Pro 13-inch (M5) |
 | Apple Watch | 422 × 514 | Apple Watch Ultra 4 (49mm) |
 
 iPhone Duo（折りたたみ）の画像も撮ります（シミュレーターは iPhone Duo（iOS 27.1 以降））。閉じた画面（`duo`）は 1398 × 2034（縦）、開いた画面（`duo-open`）は 2853 × 2007（横）です。`capture.sh` からはシミュレーターを開けないので、開いた画面は手で開いてから `--device duo-open` で撮ります（既定では撮りません）。
 
-小さい画面のサイズは、大きい画面の画像から自動で作られます。
+ほかのサイズは、これらの画像から自動で作られます。iPhone の大きいディスプレイ（Pro Max など、1320 × 2868）の枠は必須ではなく、ここに中サイズの画像を入れるとサイズが違うと言われます。iPhone Duo の画像は、2027年4月から iOS 27.1 SDK 以降でビルドしたアプリに必須になります（[Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)）。
 
 `store/ios/capture.sh` が、シミュレーターで英語・日本語の画面を撮って `store/ios/images/` に保存します。英語の画像は日本語を英語に、日本語の画像は英語を日本語に訳した画面です。
 
@@ -87,6 +87,7 @@ store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--de
 - Apple Watch は iPhone とペアリングしなくても撮れます（iPhone が送る設定を、`i18n.js` などから作って起動引数で渡します）。
 - 例文や訳文を変えるときは `capture.sh` の上の方を直します。
 - シミュレーターの名前は `IPHONE` / `DUO` / `IPAD` / `WATCH` で変えられます。なければ Xcode の **Window → Devices and Simulators** で作る。
+- シミュレーターの PNG にはアルファチャンネルがあり、App Store Connect が受け付けないので、撮ったあとに取り除きます。
 - 時刻は iPhone・iPhone Duo・iPad では 9:41 に揃えます。Apple Watch は `simctl status_bar` が効かない（コマンドが返ってこない）ので、そのときの時刻になります。
 
 ## 6. 掲載情報を入力して審査に出す
