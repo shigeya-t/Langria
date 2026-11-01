@@ -81,6 +81,7 @@ targets:
       - path: Langria/Translator.swift
       - path: Langria/Speaker.swift
       - path: Langria/WatchSettings.swift
+      - path: Langria/Screenshots.swift
     settings:
       PRODUCT_NAME: Langria
       PRODUCT_BUNDLE_IDENTIFIER: $(LANGRIA_BUNDLE_ID).watchkitapp

@@ -5,6 +5,7 @@ Langria の iOSアプリ（Apple Watch アプリを同梱）を App Store に公
 | ファイル | 内容 |
 | --- | --- |
 | `listing.md` | 名前・説明文（英語・日本語）、キーワード、Appのプライバシー、年齢制限、審査用のメモ |
+| `capture.sh` | App Store のスクリーンショット（`images/`）をシミュレーターで撮るスクリプト |
 | `../../scripts/archive-ios.sh` | Release ビルドをアーカイブし、App Store Connect にアップロードするスクリプト |
 | `../../ios/project.yml` | バージョン（`MARKETING_VERSION`）、バンドルID の接頭辞、広告ユニット ID |
 | `../../ios/Langria/PrivacyInfo.xcprivacy` | プライバシーマニフェスト（Apple Watch アプリは `LangriaWatch/` に別にある） |
@@ -62,30 +63,29 @@ scripts/archive-ios.sh --upload   # App Store Connect にアップロード
 
 App Store Connect で必須なのは次の3種類です（どれも英語・日本語のそれぞれに、1〜10枚）。
 
-| 端末 | サイズの例 | 撮るシミュレーター |
+| 端末 | サイズ | 撮るシミュレーター |
 | --- | --- | --- |
 | iPhone 6.9インチ | 1320 × 2868（縦） | iPhone 18 Pro Max |
 | iPad 13インチ | 2064 × 2752（縦） | iPad Pro 13-inch (M5) |
-| Apple Watch | 422 × 514 など | Apple Watch Ultra、Series の大きい方 |
+| Apple Watch | 422 × 514 | Apple Watch Ultra 4 (49mm) |
 
-小さい画面のサイズは、大きい画面の画像から自動で作られます。Apple Watch は App Store Connect が受け付けるサイズの一覧に合うものを1種類だけ上げれば足ります。
+小さい画面のサイズは、大きい画面の画像から自動で作られます。
+
+`store/ios/capture.sh` が、シミュレーターで英語・日本語の画面を撮って `store/ios/images/` に保存します。英語の画像は日本語を英語に、日本語の画像は英語を日本語に訳した画面です。
+
+- iPhone・iPad: `{en,ja}-{iphone,ipad}-{1-translate,2-photo,3-dark,4-settings}.png`（文章の翻訳、写真の文字の翻訳、ダーク、設定）
+- Apple Watch: `{en,ja}-watch-1-translate.png`
 
 ```sh
-cd ios
-xcodebuild -project Langria.xcodeproj -scheme Langria -destination 'platform=iOS Simulator,name=iPhone 18 Pro Max' -derivedDataPath build/shots build
-xcrun simctl boot 'iPhone 18 Pro Max'
-xcrun simctl status_bar 'iPhone 18 Pro Max' override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
-xcrun simctl install 'iPhone 18 Pro Max' build/shots/Build/Products/Debug-iphonesimulator/Langria.app
-xcrun simctl launch 'iPhone 18 Pro Max' net.langria.ios -langria-ui-language en -langria-theme light
-# 自分の APIキーで翻訳した画面にしてから
-xcrun simctl io 'iPhone 18 Pro Max' screenshot en-1.png
+store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--device iphone / ipad / watch も付ける
 ```
 
-- シミュレーターがなければ、Xcode の **Window → Devices and Simulators** で作る（`xcrun simctl create 'iPhone 18 Pro Max' com.apple.CoreSimulator.SimDeviceType.iPhone-18-Pro-Max`）。
-- Debug ビルドなので、広告は Google のテスト広告です。スクリーンショットには広告が入らないところ（ページの上の方）を使うか、テスト広告の表示が入らないように撮ります。
-- 日本語は `-langria-ui-language ja` で起動し直し、日本語の文章を翻訳した画面を撮ります。
-- 撮るとよい画面: 文章の翻訳、写真の文字の翻訳（文字の多い写真をシミュレーターの写真に入れておく: `xcrun simctl addmedia`）、iPad の横並び、設定（サービスの切り替え・ロック）、Apple Watch。
-- カメラはシミュレーターにないので、カメラのボタンは写りません。写真のボタンから選んだ画面で代わりにします。
+- Debug ビルドのスクリーンショットモード（`ios/Langria/Screenshots.swift`）を起動引数で使います。広告と同意の確認は出ず、仮のAPIキーが入り、原文と訳文は `capture.sh` に書いた文章が入ります（APIは呼ばないので、APIキーは要りません。サービスは Gemini を表示します）。Release ビルドでは起動引数があっても動きません。
+- 写真の画面は、`capture.sh` がその場で作るお知らせの画像を、アプリの文字認識で実際に読みます。訳文だけが固定です。
+- Apple Watch は iPhone とペアリングしなくても撮れます（iPhone が送る設定を、`i18n.js` などから作って起動引数で渡します）。
+- 例文や訳文を変えるときは `capture.sh` の上の方を直します。
+- シミュレーターの名前は `IPHONE` / `IPAD` / `WATCH` で変えられます。なければ Xcode の **Window → Devices and Simulators** で作る。
+- 時刻は iPhone・iPad では 9:41 に揃えます。Apple Watch は `simctl status_bar` が効かない（コマンドが返ってこない）ので、そのときの時刻になります。
 
 ## 6. 掲載情報を入力して審査に出す
 

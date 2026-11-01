@@ -17,7 +17,7 @@ final class Ads: ObservableObject {
   static let bannerUnitID = Bundle.main.object(forInfoDictionaryKey: "LangriaBannerUnitID") as? String ?? ""
 
   // The unit tests run inside the app; they should not reach the network for ads.
-  private static let disabled = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+  private static let disabled = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil || Screenshots.enabled
 
   /// Runs each time the app becomes active, as consent can expire and the
   /// forms and the tracking prompt are only shown to an active app.

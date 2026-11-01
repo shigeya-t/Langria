@@ -140,7 +140,7 @@ struct SettingsView: View {
       }
       .onChange(of: key) { _, _ in justSaved = false }
       .onChange(of: modelName) { _, _ in justSaved = false }
-      .onAppear { editing = model.provider; fill() }
+      .onAppear { editing = model.provider; fill(); Screenshots.ready() }
       .onChange(of: editing) { _, _ in fill() }
       .onChange(of: model.keys) { _, _ in fill() }
     }
