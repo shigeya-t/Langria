@@ -64,6 +64,7 @@ struct ContentView: View {
       }
     }
     .sheet(isPresented: $showSettings) { SettingsView() }
+    .onAppear { if Screenshots.screen == "settings" { showSettings = true } }
     .fullScreenCover(isPresented: $showCamera) {
       CameraPicker { image in Task { await model.read(image) } }.ignoresSafeArea()
     }

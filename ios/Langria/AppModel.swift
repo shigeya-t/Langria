@@ -63,7 +63,15 @@ final class AppModel: ObservableObject {
     let spoken = defaults.string(forKey: "langria-dictation-language") ?? ""
     dictationChoice = shared.targets.contains(spoken) ? spoken : Self.autoDictation
     speaker.onChange = { [weak self] in self?.speaking = $0 }
-    if !locked { Task { await loadKeys(quiet: true) } }
+    if Screenshots.enabled {
+      keys = Screenshots.keys
+      // didSet does not run inside init.
+      if let text = Screenshots.source { source = text; textChanged() }
+      // Loaded once the app is running: a UIImage made in App.init leaves the app without its accent color.
+      if let path = Screenshots.image { Task { if let picked = UIImage(contentsOfFile: path) { await read(picked) } } }
+    } else if !locked {
+      Task { await loadKeys(quiet: true) }
+    }
   }
 
   /// Stores the target, so it no longer follows the UI language.
@@ -154,6 +162,7 @@ final class AppModel: ObservableObject {
       pane = .result(trimmed)
       stale = false
       statusKey = "status.done"
+      Screenshots.ready()
     } catch is CancellationError {
     } catch {
       guard request == latestRequest else { return }

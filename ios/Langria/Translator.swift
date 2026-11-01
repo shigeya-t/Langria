@@ -87,6 +87,7 @@ struct Translator {
   @MainActor static var rejectsFastSettings = Set<String>()
 
   func translate(_ text: String) async throws -> String {
+    if let translation = Screenshots.translation { return translation }
     let id = "\(provider.rawValue):\(model)"
     let rejected = await MainActor.run { Self.rejectsFastSettings.contains(id) }
     let fast = !rejected && (provider == .openai ? reasoningEffort != nil : provider == .gemini && thinkingConfig != nil)

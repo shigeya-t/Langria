@@ -48,7 +48,8 @@ struct WatchView: View {
         }
       } footer: {
         // The system input decides the dictation language; the app cannot set it.
-        Text(model.t("watch.dictationHint"))
+        // Left out of the screenshots, where it would push the result off the screen.
+        if !Screenshots.enabled { Text(model.t("watch.dictationHint")) }
       }
       result
     }

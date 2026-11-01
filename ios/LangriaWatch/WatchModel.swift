@@ -35,6 +35,13 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
     picked = defaults.string(forKey: "langria-target")
     speaker.onChange = { [weak self] in self?.speaking = $0 }
     keys = WatchKeys.load()
+    if Screenshots.enabled {
+      settings = Screenshots.watchSettings.flatMap { try? JSONDecoder().decode(WatchSettings.self, from: $0) }
+      keys = Screenshots.keys
+      // didSet does not run inside init.
+      if let text = Screenshots.source { source = text; textChanged() }
+      return
+    }
     guard WCSession.isSupported() else { return }
     WCSession.default.delegate = self
     WCSession.default.activate()
@@ -98,6 +105,7 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
         let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty { throw TranslationError.empty }
         pane = .result(trimmed)
+        Screenshots.ready()
       } catch is CancellationError {
       } catch {
         guard request == latestRequest else { return }
