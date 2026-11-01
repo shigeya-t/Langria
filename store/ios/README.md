@@ -14,11 +14,11 @@ Langria の iOSアプリ（Apple Watch アプリを同梱）を App Store に公
 
 ## 1. 初回だけ必要な準備
 
-1. **Apple Developer Program** に登録する（年額 US$99 / 12,800円）。個人で登録すると、ストアの販売元には本名が出ます。
+1. **Apple Developer Program** に登録する（年額 US$99 / 12,800円）。個人で登録すると、ストアのデベロッパ名・販売元には本名が出ます（App Store Connect では変えられない。屋号や会社名にするには、D-U-N-S 番号を取って組織として登録し直すか、Apple に個人から組織への移行を申し込む）。
 2. Xcode の **Settings → Accounts** に同じ Apple アカウントでサインインする。`archive-ios.sh` はこのアカウントで署名・アップロードします。
 3. `ios/Local.xcconfig` の `DEVELOPMENT_TEAM` を、登録した Team ID にする（[Membership](https://developer.apple.com/account#MembershipDetailsCard) で確認）。
 4. App Store Connect の **ビジネス**（Agreements, Tax, and Banking）で **無料 App 契約** を確認する。無料アプリで広告収入は AdMob から入るので、有料 App 契約・銀行口座は要りません。
-5. **EU のトレーダー申告**（Digital Services Act）: App Store Connect の **ビジネス** で、トレーダーか非トレーダーかを申告する。広告で収入を得るので、通常は **トレーダー** になります（住所・電話番号・メールアドレスが EU のストアに表示されます）。表示したくなければ、配信地域から EU を外します。アプリの **App 情報** の下の方にある **Digital Services Act → Set Up** からも始められます。
+5. **EU のトレーダー申告**（Digital Services Act）: App Store Connect の **ビジネス** で、トレーダーか非トレーダーかを申告する。広告で収入を得るので、通常は **トレーダー** になります（住所・電話番号・メールアドレスが EU のストアに表示されます）。Langria は表示しないよう、配信地域から EU を外しているので申告していません（[listing.md](listing.md) の「価格および配信状況」）。アプリの **App 情報** の下の方にある **Digital Services Act → Set Up** からも始められます。
 
 バンドルID は `net.langria.ios`（Apple Watch アプリは `net.langria.ios.watchkitapp`）です。`archive-ios.sh` は `-allowProvisioningUpdates` で App ID とプロファイルを自動で作ります。先に [Identifiers](https://developer.apple.com/account/resources/identifiers/list) で **App IDs → App** を2つ（Explicit、Capabilities は既定のまま）登録しておいてもかまいません。
 
@@ -48,6 +48,8 @@ scripts/archive-ios.sh --upload   # App Store Connect にアップロード
 - Xcode の Organizer（**Window → Organizer**）で `ios/build/Langria.xcarchive` を開き、**Distribute App → App Store Connect** でアップロードしてもかまいません。
 
 アップロードから十数分で、App Store Connect の **TestFlight** にビルドが出ます（処理中のメールが届きます）。
+
+App Store Connect のアイコンは、バージョンにビルドを選ぶまで格子の仮アイコンです。アイコンは `ios/Langria/Assets.xcassets/AppIcon.appiconset/AppIcon.png`（1024×1024。Apple Watch は `ios/LangriaWatch/` の同じ場所）から取られ、App Store Connect に別の欄はありません。
 
 ## 4. TestFlight で確かめる
 
@@ -95,11 +97,11 @@ store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--de
 [listing.md](listing.md) を見ながら入力します。
 
 1. **App 情報**: サブタイトル、カテゴリ、コンテンツ配信権、年齢制限。右上の言語メニューで **日本語** を追加し、名前・サブタイトル・プライバシーポリシーURL を日本語でも入れる。
-2. **価格および配信状況**: **無料**。配信地域は、生成AIのサービスの提供に許可が要り、OpenAI などの API も使えない **中国本土を外す**（そのままだと審査で却下されます）。トレーダー申告をしない場合は EU も外す。
+2. **価格および配信状況**: 価格は「価格表」で **¥0（無料）** を選ぶ（選ばないと審査に追加できません）。配信地域は **EU の27か国と中国本土を外す**。中国本土は生成AIのサービスの提供に許可が要り、OpenAI などの API も使えないため（そのままだと審査で却下されます）。EU はトレーダー申告をしないため。外す国の一覧は [listing.md](listing.md) の「価格および配信状況」。
 3. **Appのプライバシー**: プライバシーポリシーの URL と、データの収集の申告を入れ、**公開** する。
 4. **バージョン 1.0**（英語・日本語のそれぞれ）: スクリーンショット、プロモーションテキスト、説明、キーワード、サポートURL、マーケティングURL、著作権。
 5. **ビルド**: TestFlight で確かめたビルドを選ぶ。
-6. **App Review に関する情報**: サインイン不要にし、連絡先とメモ（審査用の Gemini APIキー入り）を入れる。審査担当者はAPIキーを持っていないので、キーがないと「機能を確認できない」（ガイドライン 2.1）で戻されます。
+6. **App Review に関する情報**: サインイン不要にし、連絡先（名・姓・メール・`+81` から始まる電話番号）とメモ（審査用の Gemini APIキー入り）を入れる。審査担当者はAPIキーを持っていないので、キーがないと「機能を確認できない」（ガイドライン 2.1）で戻されます。
 7. **App Store バージョンのリリース**: 「承認後に手動でリリース」にしておくと、公開の時期を選べます。
 8. **審査へ提出**。審査は通常1〜2日です。
 
@@ -122,5 +124,5 @@ store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--de
 - **ATT とプライバシーの申告の一致（5.1.2）**: ATT を求めるなら、「トラッキングに使用」のデータを申告する。広告をやめるなら ATT も外す。
 - **権限の説明文（5.1.1）**: カメラ・マイク・音声認識・Face ID・トラッキングの説明文は `project.yml` の `INFOPLIST_KEY_*`。何に使うかを具体的に書いておく（日本語の説明は `ios/Langria/ja.lproj/InfoPlist.strings`）。
 - **他社の商標（4.1・5.2）**: 名前・サブタイトル・アイコン・キーワードに ChatGPT / Claude / Gemini を使わない。説明文で「対応サービス」として触れ、提携していない旨を書く（listing.md に記載済み）。
-- **生成AIの国・地域の制限**: 中国本土を配信地域から外す。
+- **生成AIの国・地域の制限**: 中国本土を配信地域から外す（[listing.md](listing.md) の「価格および配信状況」）。
 - **広告の位置（Apple の広告のガイドライン）**: 広告がボタンや入力欄に重ならず、誤ってタップしにくい位置にあること。今はページの最後に置いている。
