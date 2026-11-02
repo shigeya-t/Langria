@@ -131,12 +131,6 @@ final class AppModel: ObservableObject {
     }
   }
 
-  func translateNow() {
-    pending?.cancel()
-    let text = source.trimmingCharacters(in: .whitespacesAndNewlines)
-    if !text.isEmpty { Task { await translate(text) } }
-  }
-
   private func translate(_ text: String) async {
     latestRequest += 1
     let request = latestRequest
@@ -284,7 +278,8 @@ final class AppModel: ObservableObject {
     image = picked
     recognizing = true
     statusKey = "ios.reading"
-    defer { recognizing = false }
+    // Unless a newer photo is still being read.
+    defer { if image === picked || image == nil { recognizing = false } }
     do {
       let text = try await TextRecognizer.recognize(picked)
       guard image === picked else { return }
@@ -295,6 +290,7 @@ final class AppModel: ObservableObject {
       }
       source = text
     } catch {
+      guard image === picked else { return }
       show(shared.t("ios.ocrFailed"))
       statusKey = "status.error"
     }
@@ -339,10 +335,17 @@ final class AppModel: ObservableObject {
   }
 
   func save(key: String, model: String, for provider: Provider) throws {
-    if var keys {
-      keys[provider.rawValue] = key
-      try KeyStore.save(keys, locked: locked)
-      self.keys = keys
+    if let keys {
+      var next = keys
+      next[provider.rawValue] = key
+      do {
+        try KeyStore.save(next, locked: locked)
+      } catch {
+        // Saving deletes the old item first; put the keys back as they were.
+        try? KeyStore.save(keys, locked: locked)
+        throw error
+      }
+      self.keys = next
     }
     let trimmed = model.trimmingCharacters(in: .whitespaces)
     defaults.set(trimmed.isEmpty ? provider.defaultModel : trimmed, forKey: provider.modelKey)

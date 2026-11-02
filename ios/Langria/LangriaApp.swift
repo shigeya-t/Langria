@@ -28,7 +28,8 @@ struct LangriaApp: App {
         .preferredColorScheme(theme == "light" ? .light : theme == "dark" ? .dark : nil)
     }
     .onChange(of: scenePhase, initial: true) { _, phase in
-      if phase == .background { model.didEnterBackground() }
+      // Sent at once rather than after the usual wait, so that the keys leave the watch's context before the app is suspended.
+      if phase == .background { model.didEnterBackground(); watch.send() }
       if phase == .active { Task { await ads.gatherConsent() } }
     }
   }

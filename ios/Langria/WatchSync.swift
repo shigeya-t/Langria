@@ -1,4 +1,5 @@
 import Combine
+import CryptoKit
 import WatchConnectivity
 
 /// Sends the settings to the watch app and, while "Use on Apple Watch" is on,
@@ -17,9 +18,9 @@ final class WatchSync: NSObject, ObservableObject, WCSessionDelegate {
 
   private let model: AppModel
   private let shared: Shared
-  /// A hash of what was sent last, so the keys are not kept here after the
+  /// A digest of what was sent last, so the keys are not kept here after the
   /// app locks them again.
-  private var last: Int?
+  private var last: SHA256.Digest?
   private var observers = Set<AnyCancellable>()
 
   init(model: AppModel, shared: Shared) {
@@ -60,11 +61,15 @@ final class WatchSync: NSObject, ObservableObject, WCSessionDelegate {
     paired = session.activationState == .activated && session.isPaired
     installed = paired && session.isWatchAppInstalled
     guard installed else { return }
-    let next = settings
-    guard next.hashValue != last, let data = try? JSONEncoder().encode(next) else { return }
+    let encoder = JSONEncoder()
+    // Sorted, so the same settings always give the same digest.
+    encoder.outputFormatting = .sortedKeys
+    guard let data = try? encoder.encode(settings) else { return }
+    let digest = SHA256.hash(data: data)
+    guard digest != last else { return }
     do {
       try session.updateApplicationContext(["settings": data])
-      last = next.hashValue
+      last = digest
     } catch {
       // Sent again with the next change, or when the watch app is installed.
     }

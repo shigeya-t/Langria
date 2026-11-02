@@ -1,9 +1,22 @@
+import ImageIO
 import UIKit
 import Vision
 
 /// Reads the text in a photo on the device (Vision), so only the text, not the
 /// image, is sent to the AI service.
 enum TextRecognizer {
+  /// Decodes a picked photo at no more than text recognition needs, as the
+  /// Android app does, rather than at the camera's full size.
+  static func image(from data: Data) -> UIImage? {
+    guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
+    let options: [CFString: Any] = [
+      kCGImageSourceCreateThumbnailFromImageAlways: true,
+      kCGImageSourceCreateThumbnailWithTransform: true,
+      kCGImageSourceThumbnailMaxPixelSize: 2048,
+    ]
+    return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary).map { UIImage(cgImage: $0) }
+  }
+
   static func recognize(_ image: UIImage) async throws -> String {
     guard let cgImage = image.cgImage else { return "" }
     let orientation = CGImagePropertyOrientation(image.imageOrientation)

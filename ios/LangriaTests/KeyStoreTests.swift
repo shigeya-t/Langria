@@ -36,8 +36,8 @@ final class AppModelTests: XCTestCase {
     model.provider = .openai
     model.pickTarget("Japanese")
     await model.unlock(quiet: true)
+    // Translated after the usual wait.
     model.source = "Good morning"
-    model.translateNow()
     for _ in 0..<50 where model.result == nil { try await Task.sleep(for: .milliseconds(100)) }
     XCTAssertEqual(model.result, "おはようございます")
     model.swap()
