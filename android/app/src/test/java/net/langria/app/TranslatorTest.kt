@@ -49,6 +49,11 @@ class TranslatorTest {
     assertTrue(request.body.getString("instructions").contains("reads naturally"))
   }
 
+  @Test fun openAINullOutputText() = runBlocking {
+    handler = { 200 to JSONObject("""{"output_text":null,"output":[{"content":[{"type":"output_text","text":"こんにちは"}]}]}""") }
+    assertEquals("こんにちは", translator(Provider.OPENAI).translate("Hello"))
+  }
+
   @Test fun anthropic() = runBlocking {
     handler = { 200 to JSONObject("""{"content":[{"type":"text","text":"こんにちは"}],"stop_reason":"end_turn"}""") }
     assertEquals("こんにちは", translator(Provider.ANTHROPIC).translate("Hello"))

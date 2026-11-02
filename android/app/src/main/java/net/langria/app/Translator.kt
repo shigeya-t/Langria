@@ -147,7 +147,8 @@ class Translator(
       if (fast) reasoningEffort?.let { body.put("reasoning", JSONObject().put("effort", it)) }
       val data = post("/v1/responses", mapOf("Authorization" to "Bearer $key"), body)
       if (data.optJSONObject("incomplete_details")?.optString("reason") == "max_output_tokens") throw TranslationError.Truncated
-      val output = data.optString("output_text")
+      // optString turns a JSON null into "null".
+      val output = if (data.isNull("output_text")) "" else data.optString("output_text")
       if (output.isNotBlank()) output
       else data.optJSONArray("output").objects()
         .flatMap { it.optJSONArray("content").objects() }

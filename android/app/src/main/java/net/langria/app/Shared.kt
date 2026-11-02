@@ -57,8 +57,10 @@ class Shared private constructor(private val prefs: SharedPreferences, data: JSO
         webView.loadDataWithBaseURL(null, "<!doctype html><title></title>", "text/html", "utf-8", null)
         continuation.invokeOnCancellation { webView.destroy() }
       }
-      prefs.edit { putString(CACHE_KEY, json); putLong(CACHE_VERSION_KEY, version) }
-      return Shared(prefs, JSONObject(json))
+      val data = runCatching { JSONObject(json) }.getOrDefault(JSONObject())
+      // A failed run is not kept, so the next launch tries again.
+      if (data.has("messages")) prefs.edit { putString(CACHE_KEY, json); putLong(CACHE_VERSION_KEY, version) }
+      return Shared(prefs, data)
     }
   }
 

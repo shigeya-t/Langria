@@ -20,6 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import java.util.Locale
@@ -43,6 +44,8 @@ sealed interface Pane {
 class AppModel(private val context: Context, val shared: Shared, private val scope: CoroutineScope) {
   companion object {
     const val AUTO_DICTATION = "auto"
+    /** How long the keys stay readable while the camera or the photo picker is open. */
+    private const val OTHER_SCREEN_GRACE = 3 * 60 * 1000L
 
     private fun matches(locale: String?, device: String): Boolean {
       if (locale == null) return false
@@ -84,6 +87,8 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
   /** The decrypted keys, or null while locked. */
   var keys by mutableStateOf<Map<String, String>?>(null)
     private set
+  /** The key being typed in the settings; it survives a rotation and is dropped on locking. */
+  var keyDraft by mutableStateOf("")
   var locked by mutableStateOf(KeyStore.isLocked(context))
     private set
   /** The language picked for voice input, a target or AUTO_DICTATION. */
@@ -98,8 +103,9 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
 
   /** The activity in front, for the unlock prompt shown without a tap. */
   var activity: WeakReference<Activity> = WeakReference(null)
-  /** Set while another app's screen (the camera, the photo picker) is open for this one, so leaving for it does not lock the keys. */
+  /** Set while another app's screen (the camera, the photo picker) is open for this one, so leaving for it does not lock the keys at once. */
   var openingOtherScreen = false
+  private var lockLater: Job? = null
 
   private val dictation = Dictation(context)
   private val speaker = Speaker(context)
@@ -206,12 +212,6 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
       delay(700)
       translate(text)
     }
-  }
-
-  fun translateNow() {
-    pending?.cancel()
-    val text = source.trim()
-    if (text.isNotEmpty()) scope.launch { translate(text) }
   }
 
   private suspend fun translate(text: String) {
@@ -367,31 +367,41 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
       } catch (error: CancellationException) {
         throw error
       } catch (error: Exception) {
+        if (image !== picked) return@launch
         show(shared.t("ios.ocrFailed"))
         statusKey = "status.error"
       } finally {
-        recognizing = false
+        // Unless a newer photo is still being read.
+        if (image === picked || image == null) recognizing = false
       }
     }
   }
 
   /** Reads a photo from the camera or the photo picker. */
-  fun read(uri: Uri) {
+  fun read(uri: Uri, taken: File? = null) {
     scope.launch {
       val bitmap = withContext(Dispatchers.IO) {
-        runCatching {
-          ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
-            // ML Kit reads the pixels, which a hardware bitmap does not allow.
-            decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
-            // A camera photo is far larger than text recognition needs.
-            val longest = maxOf(info.size.width, info.size.height)
-            if (longest > 2048) decoder.setTargetSampleSize(longest / 2048 + 1)
-          }
-        }.getOrNull()
+        try {
+          readBitmap(uri)
+        } finally {
+          // A camera photo is not kept once it is read.
+          taken?.delete()
+        }
       }
       if (bitmap == null) show(shared.t("ios.imageFailed")) else read(bitmap)
     }
   }
+
+  private fun readBitmap(uri: Uri): Bitmap? =
+    runCatching {
+      ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
+        // ML Kit reads the pixels, which a hardware bitmap does not allow.
+        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+        // A camera photo is far larger than text recognition needs.
+        val longest = maxOf(info.size.width, info.size.height)
+        if (longest > 2048) decoder.setTargetSampleSize(longest / 2048 + 1)
+      }
+    }.getOrNull()
 
   fun removeImage() { image = null }
 
@@ -436,11 +446,29 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
 
   /** Locks again when the app goes to the background, if the lock is on. */
   fun didEnterBackground() {
-    if (openingOtherScreen) return
     if (listening) { dictation.stop(); listening = false }
     speaker.stop()
     if (!locked) return
+    // No callback comes if the user leaves the camera or the picker for another app,
+    // so the keys are kept only for a while to pick a photo and come back.
+    if (openingOtherScreen) {
+      lockLater?.cancel()
+      lockLater = scope.launch { delay(OTHER_SCREEN_GRACE); lock() }
+      return
+    }
+    lock()
+  }
+
+  /** Called when the app is in front again. */
+  fun didBecomeActive() {
+    openingOtherScreen = false
+    lockLater?.cancel()
+    lockLater = null
+  }
+
+  private fun lock() {
     keys = null
+    keyDraft = ""
     unlockPrompted = false
     if (pane is Pane.Result) return
     if (source.isEmpty()) pane = Pane.Empty else { pane = Pane.Locked; statusKey = "status.locked" }

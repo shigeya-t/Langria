@@ -77,7 +77,8 @@ fun SettingsScreen(model: AppModel, holder: AppHolder, onClose: () -> Unit) {
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
   var editing by rememberSaveable { mutableStateOf(model.provider) }
-  var key by rememberSaveable { mutableStateOf("") }
+  // Kept in the model rather than the saved state, which is written out unencrypted.
+  var key by model::keyDraft
   var modelName by rememberSaveable { mutableStateOf("") }
   var showKey by rememberSaveable { mutableStateOf(false) }
   var error by remember { mutableStateOf("") }
