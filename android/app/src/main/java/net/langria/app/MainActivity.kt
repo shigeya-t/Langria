@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
 
   override fun onResume() {
     super.onResume()
-    holder.model?.let { it.activity = WeakReference(this); it.openingOtherScreen = false }
+    holder.model?.let { it.activity = WeakReference(this); it.didBecomeActive() }
   }
 
   override fun onStop() {

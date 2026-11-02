@@ -240,7 +240,7 @@ private fun InputPane(model: AppModel, minHeight: Dp, modifier: Modifier = Modif
   val focus = LocalFocusManager.current
   val photo = remember { File(context.cacheDir, "photos/photo.jpg") }
   val photoUri = remember { FileProvider.getUriForFile(context, "${context.packageName}.photos", photo.also { it.parentFile?.mkdirs() }) }
-  val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { taken -> if (taken) model.read(photoUri) }
+  val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { taken -> if (taken) model.read(photoUri, photo) else photo.delete() }
   val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? -> uri?.let(model::read) }
   val microphone = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
     if (granted) model.toggleDictation() else model.dictationDenied()
