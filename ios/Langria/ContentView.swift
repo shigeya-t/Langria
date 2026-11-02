@@ -72,7 +72,7 @@ struct ContentView: View {
       guard let item else { return }
       photoItem = nil
       Task {
-        guard let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) else {
+        guard let data = try? await item.loadTransferable(type: Data.self), let image = TextRecognizer.image(from: data) else {
           model.show(shared.t("ios.imageFailed"))
           return
         }

@@ -98,7 +98,8 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
     guard !language.isEmpty else { pane = .failure(t("watch.noTarget")); return }
     let mode = TranslationMode(rawValue: settings?.mode ?? "") ?? .faithful
     pane = .translating
-    Task {
+    // Kept in `pending`, so that the next change cancels the request too.
+    pending = Task {
       do {
         let result = try await Translator(provider: provider, model: model, key: key, language: language, mode: mode).translate(text)
         guard request == latestRequest else { return }

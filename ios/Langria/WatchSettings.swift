@@ -4,7 +4,7 @@ import Foundation
 /// the WatchConnectivity application context. The watch has no
 /// JavaScriptCore to run i18n.js and languages.js, so the UI text and the
 /// language labels it needs come along in the UI language picked on the iPhone.
-struct WatchSettings: Codable, Hashable {
+struct WatchSettings: Codable {
   /// "Use on Apple Watch"; when off, the watch deletes its copy of the keys.
   var enabled: Bool
   /// The API keys, or nil to keep the ones the watch has (while the iPhone is locked).

@@ -40,7 +40,15 @@ final class Dictation {
       request.append(buffer)
     }
     engine.prepare()
-    try engine.start()
+    do {
+      try engine.start()
+    } catch {
+      // finish() only cleans up after a start that worked; a tap left on the bus makes the next start fail.
+      input.removeTap(onBus: 0)
+      self.request = nil
+      Task.detached { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
+      throw error
+    }
     isRecording = true
 
     var transcript = Transcript(separator: ["ja", "zh"].contains(locale.language.languageCode?.identifier ?? "") ? "" : " ")

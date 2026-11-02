@@ -19,8 +19,9 @@ final class Ads: ObservableObject {
   // The unit tests run inside the app; they should not reach the network for ads.
   private static let disabled = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil || Screenshots.enabled
 
-  /// Runs each time the app becomes active, as consent can expire and the
-  /// forms and the tracking prompt are only shown to an active app.
+  /// Runs each time the app becomes active, as the forms and the tracking
+  /// prompt are only shown to an active app. Consent is checked once per
+  /// launch, as UMP asks; a choice that expires is asked again on the next one.
   func gatherConsent() async {
     guard !Self.disabled, !gathering else { return }
     gathering = true
