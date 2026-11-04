@@ -238,6 +238,27 @@ SDK を更新したら、上の Google の案内を見直して、変わって�
 
 ## リリースノート（各版の「このリリースの新機能」、500）
 
+### versionCode 2（1.0）
+
+```text
+<en-US>
+- With the API key lock on, the keys now lock again a few minutes after you leave the app with the camera or photo picker open
+- Voice input and read-aloud now stop when you open the camera or photo picker
+- Photos taken for text recognition are no longer kept on the device
+- Fixed a case where reading two photos in a row could show the wrong status
+- Other stability fixes
+</en-US>
+<ja-JP>
+- APIキーのロックがオンのとき、カメラや写真の選択を開いたまま離れても、数分でロックが掛かるようにしました
+- カメラや写真の選択を開くと、音声入力と読み上げを止めるようにしました
+- 文字の読み取りのために撮った写真を、端末に残さないようにしました
+- 写真を続けて読み取ると、状態の表示が正しくないことがある問題を直しました
+- そのほか安定性を改善しました
+</ja-JP>
+```
+
+### versionCode 1（1.0）
+
 ```text
 <en-US>
 First release.
