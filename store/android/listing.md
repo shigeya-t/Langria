@@ -238,6 +238,21 @@ SDK を更新したら、上の Google の案内を見直して、変わって�
 
 ## リリースノート（各版の「このリリースの新機能」、500）
 
+### versionCode 3（1.1）
+
+```text
+<en-US>
+- The original and translation panes now share the screen, and long text scrolls inside each one, so you can see what you type and its translation together, even with the keyboard open
+- When a translation fails, tap "Translate again" to send it again. If the API key or model is wrong, "Open settings" appears instead
+- The banner ad now sits along the bottom of the screen
+</en-US>
+<ja-JP>
+- 原文と翻訳の欄が画面を分け合い、長い文章は欄の中でスクロールするようにしました。キーボードを開いていても、入力中の文と訳文を同時に見られます
+- 翻訳に失敗したとき、「もう一度翻訳」でその場で送り直せるようにしました。APIキーやモデルが正しくないときは「設定を開く」が出ます
+- バナー広告を画面の下端に置くようにしました
+</ja-JP>
+```
+
 ### versionCode 2（1.0）
 
 ```text
