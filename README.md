@@ -168,12 +168,13 @@ To publish on the App Store, `scripts/archive-ios.sh --upload` archives a Releas
 
 The `android/` folder contains a Jetpack Compose app for Android phones and tablets (Android 11 or later) with the same features as the iOS app, except the watch app.
 
-- Same as the iOS app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, translating text in photos (camera or the system photo picker), voice input with the language you speak (**Auto** works as on iOS) and reading aloud, the English / Japanese UI and light / dark appearance. On tablets and wide windows the panes sit side by side
+- Same as the iOS app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, translating text in photos (camera or the system photo picker), voice input with the language you speak (**Auto** works as on iOS) and reading aloud, the English / Japanese UI and light / dark appearance. On tablets and wide windows the panes sit side by side. The panes share the screen and long text scrolls inside each one, so what you type and its translation stay in view together, also with the keyboard open
+- When a translation fails, **Translate again** sends it again (for network errors, timeouts and rate limits); an invalid key or model shows **Open settings** instead
 - **Share to Langria**: text shared from another app, or picked with **Langria** in another app’s text selection menu, is put into the original pane and translated
 - Text in photos is read on the device with Google’s ML Kit, whose models come with Google Play services (the Latin, Japanese, Chinese and Korean models each read the photo; the one that reads it best is used). Only the text is sent to the AI service, never the image
 - Voice input uses the system’s speech recognition: on the device when the language’s model is installed, otherwise through the speech recognition service (Google’s, on most devices), as with keyboard voice typing. Reading aloud uses the system’s text to speech
 - API keys are stored on the device only, encrypted with a key in the Android Keystore (not backed up). Turn on **Unlock with your fingerprint, face or screen lock** in Settings to require it each time the app opens; the keys are locked again when the app moves to the background
-- A banner ad from Google AdMob is shown at the end of the page, as on iOS. The app asks for consent where the law requires it (Google’s consent form); Android has no tracking prompt. Debug builds show Google’s test ads
+- A banner ad from Google AdMob is shown along the bottom of the screen, under the panes (the keyboard covers it while typing). The app asks for consent where the law requires it (Google’s consent form); Android has no tracking prompt. Debug builds show Google’s test ads
 - The UI text and the target language list are the same files as the other apps (`extension/lib/i18n.js` and `languages.js`). The build copies them into the app, which reads them once in a WebView
 
 ### Building

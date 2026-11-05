@@ -83,12 +83,13 @@ class Ads {
   }
 }
 
-/** An inline adaptive banner across the width of the page. It takes no room until an ad arrives. */
+/** An anchored adaptive banner across the width of the screen. It takes no room until an ad arrives. */
 @Composable
 fun BannerAd(modifier: Modifier = Modifier) {
   BoxWithConstraints(modifier.fillMaxWidth()) {
     val width = maxWidth.value.toInt()
-    // Set by the ad that arrives: an inline adaptive ad picks its own height.
+    // Set by the ad that arrives (an anchored adaptive ad: a short strip that
+    // sits under the page, where an inline one could grow as tall as the screen).
     var height by remember { mutableIntStateOf(0) }
     val density = LocalDensity.current
     // A new width (rotation, a resized window) needs an ad of the new size.
@@ -100,7 +101,7 @@ fun BannerAd(modifier: Modifier = Modifier) {
           modifier = Modifier.fillMaxWidth().wrapContentHeight(Alignment.Top, unbounded = true),
           factory = { context ->
             AdView(context).apply {
-              setAdSize(AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(context, width))
+              setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, width))
               adUnitId = BuildConfig.BANNER_UNIT_ID
               adListener = object : AdListener() {
                 override fun onAdLoaded() { height = adSize?.getHeightInPixels(context) ?: 0 }

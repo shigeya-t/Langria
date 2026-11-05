@@ -249,6 +249,14 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
     }
   }
 
+  /** Sends the text again at once, after a failed translation. */
+  fun retry() {
+    val text = source.trim()
+    if (text.isEmpty()) return
+    pending?.cancel()
+    pending = scope.launch { translate(text) }
+  }
+
   val result: String? get() = (pane as? Pane.Result)?.text?.takeIf { !stale }
 
   fun message(failure: Pane.Failure) = failure.error.message(failure.provider, failure.model, shared::t)
