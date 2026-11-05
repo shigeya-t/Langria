@@ -22,8 +22,8 @@ android {
     applicationId = local.getProperty("applicationId") ?: "net.langria.app"
     minSdk = 30
     targetSdk = 37
-    versionCode = 2
-    versionName = "1.0"
+    versionCode = 3
+    versionName = "1.1"
     manifestPlaceholders["admobAppId"] = testAdMobAppId
     buildConfigField("String", "BANNER_UNIT_ID", "\"$testBannerUnitId\"")
   }
