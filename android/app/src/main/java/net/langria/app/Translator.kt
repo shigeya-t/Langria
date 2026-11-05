@@ -51,6 +51,15 @@ sealed class TranslationError : Exception() {
   data class Blocked(val reason: String) : TranslationError()
   data class Unexpected(val detail: String) : TranslationError()
 
+  /** What would fix it: the key or model in Settings, sending it again, or neither (the model's own answer). */
+  val remedy: Remedy get() = when (this) {
+    is Api -> if (status in setOf(400, 401, 403, 404)) Remedy.SETTINGS else Remedy.RETRY
+    Truncated, is Blocked -> Remedy.NONE
+    Empty, Network, Timeout, is Unexpected -> Remedy.RETRY
+  }
+
+  enum class Remedy { SETTINGS, RETRY, NONE }
+
   /** The text shown for the error; `t` looks up a message in the UI language. */
   fun message(provider: Provider, model: String, t: (String, Map<String, String>) -> String): String = when (this) {
     is Api -> {

@@ -18,6 +18,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -25,11 +26,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -49,6 +57,7 @@ import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.MicNone
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StopCircle
 import androidx.compose.material.icons.outlined.SwapHoriz
@@ -99,7 +108,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -107,7 +115,7 @@ import androidx.core.content.FileProvider
 import java.io.File
 import java.lang.ref.WeakReference
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ContentScreen(model: AppModel, ads: Ads, onOpenSettings: () -> Unit) {
   val shared = model.shared
@@ -134,43 +142,51 @@ fun ContentScreen(model: AppModel, ads: Ads, onOpenSettings: () -> Unit) {
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
       )
     },
+    // Under the page rather than in it, so the panes keep their height. The
+    // keyboard covers it while typing, instead of pushing it up beside the keys.
+    bottomBar = { if (ads.ready) BannerAd(Modifier.navigationBarsPadding()) },
   ) { padding ->
-    Box(Modifier.fillMaxSize().padding(padding).imePadding()) {
-      // The panes grow to fill the screen (sharing the height when stacked)
-      // and the page scrolls once their text needs more room.
+    val typing = WindowInsets.isImeVisible
+    // The banner's (or navigation bar's) space, or the keyboard's when that is taller.
+    val bottom = WindowInsets.ime.union(WindowInsets(bottom = padding.calculateBottomPadding()))
+    Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()).windowInsetsPadding(bottom)) {
+      // The panes share the screen and their text scrolls inside them, so the
+      // text being typed and its translation stay in view together. Only a
+      // screen too short for that (a small phone with the keyboard up) scrolls
+      // as a whole.
       BoxWithConstraints(Modifier.fillMaxSize()) {
         val wide = maxWidth >= 600.dp
-        val banner = if (ads.ready) 70.dp else 0.dp
-        val paneHeight = if (wide) (maxHeight - 340.dp - banner).coerceAtLeast(220.dp) else ((maxHeight - 420.dp - banner) / 2).coerceAtLeast(150.dp)
+        val pageHeight = maxOf(maxHeight, if (typing) 400.dp else if (wide) 460.dp else 520.dp)
+        val gap = if (typing) 10.dp else 14.dp
         Column(
-          Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp).navigationBarsPadding(),
-          verticalArrangement = Arrangement.spacedBy(14.dp),
+          Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          Column(Modifier.widthIn(max = 1100.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            ProviderPicker(model)
+          Column(Modifier.widthIn(max = 1100.dp).height(pageHeight).padding(horizontal = 16.dp, vertical = gap), verticalArrangement = Arrangement.spacedBy(gap)) {
+            // While typing the panes need the room more; the pane's header still names the model.
+            if (!typing) ProviderPicker(model)
             LanguageStrip(model, onSwap = { focus.clearFocus(); model.swap() })
             if (wide) {
-              Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                InputPane(model, paneHeight, Modifier.weight(1f))
-                OutputPane(model, paneHeight, Modifier.weight(1f), onOpenSettings)
+              Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(gap)) {
+                InputPane(model, Modifier.weight(1f).fillMaxHeight())
+                OutputPane(model, Modifier.weight(1f).fillMaxHeight(), onOpenSettings)
               }
             } else {
-              InputPane(model, paneHeight)
-              OutputPane(model, paneHeight, Modifier, onOpenSettings)
+              InputPane(model, Modifier.weight(1f))
+              OutputPane(model, Modifier.weight(1f), onOpenSettings)
             }
-            Text(
-              shared.t("ios.ocrNote"),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(horizontal = 4.dp),
-            )
-            // At the end of the page, so it scrolls with the text and never covers it.
-            if (ads.ready) BannerAd()
+            if (!typing) {
+              Text(
+                shared.t("ios.ocrNote"),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 4.dp),
+              )
+            }
           }
         }
       }
-      Toast(model.toast, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 24.dp))
+      Toast(model.toast, Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
     }
   }
 }
@@ -234,7 +250,7 @@ private fun LanguageStrip(model: AppModel, onSwap: () -> Unit) {
 }
 
 @Composable
-private fun InputPane(model: AppModel, minHeight: Dp, modifier: Modifier = Modifier) {
+private fun InputPane(model: AppModel, modifier: Modifier) {
   val shared = model.shared
   val context = LocalContext.current
   val focus = LocalFocusManager.current
@@ -258,8 +274,9 @@ private fun InputPane(model: AppModel, minHeight: Dp, modifier: Modifier = Modif
       }
     },
     content = {
+      // A photo takes at most half the pane, so the text below it stays usable.
       model.image?.let { image ->
-        Box(Modifier.padding(top = 6.dp)) {
+        Box(Modifier.padding(top = 6.dp).weight(1f, fill = false)) {
           Image(
             image.asImageBitmap(),
             contentDescription = null,
@@ -279,9 +296,10 @@ private fun InputPane(model: AppModel, minHeight: Dp, modifier: Modifier = Modif
         onValueChange = { model.source = it },
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface, fontSize = 18.sp, lineHeight = 28.sp),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-        modifier = Modifier.fillMaxWidth().heightIn(min = minHeight - if (model.image != null) 170.dp else 0.dp).padding(vertical = 10.dp),
+        // Fills the pane and scrolls its own text, keeping the cursor in view.
+        modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 10.dp),
         decorationBox = { field ->
-          Box {
+          Box(Modifier.fillMaxSize()) {
             if (model.source.isEmpty()) Text(shared.t("web.sourcePlaceholder"), style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp), color = MaterialTheme.colorScheme.outline)
             field()
           }
@@ -375,7 +393,7 @@ private fun DictationButton(model: AppModel, onToggle: () -> Unit) {
 }
 
 @Composable
-private fun OutputPane(model: AppModel, minHeight: Dp, modifier: Modifier, onOpenSettings: () -> Unit) {
+private fun OutputPane(model: AppModel, modifier: Modifier, onOpenSettings: () -> Unit) {
   val shared = model.shared
   val activity = LocalActivity.current
   Card(
@@ -394,22 +412,25 @@ private fun OutputPane(model: AppModel, minHeight: Dp, modifier: Modifier, onOpe
       )
     },
     content = {
-      Box(Modifier.fillMaxWidth().heightIn(min = minHeight).padding(vertical = 10.dp)) {
+      Box(Modifier.fillMaxWidth().weight(1f)) {
+        // Each new state starts at the top.
+        val scroll = remember(model.pane) { ScrollState(0) }
+        val scrolling = Modifier.fillMaxSize().verticalScroll(scroll).padding(vertical = 10.dp)
         when (val pane = model.pane) {
           Pane.Empty -> Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("✦", fontSize = 22.sp, color = MaterialTheme.colorScheme.outline)
             Text(shared.t("web.empty"), color = MaterialTheme.colorScheme.onSurfaceVariant)
           }
           Pane.Translating -> CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp))
-          is Pane.Result -> androidx.compose.foundation.text.selection.SelectionContainer {
+          is Pane.Result -> androidx.compose.foundation.text.selection.SelectionContainer(scrolling) {
             Text(pane.text, style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, lineHeight = 28.sp))
           }
-          Pane.NoKey -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+          Pane.NoKey -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(shared.t("web.noKey"))
             OutlinedButton(onClick = onOpenSettings) { Text(shared.t("web.openSettings")) }
           }
-          Pane.NoTarget -> Text(shared.t("web.enterTarget"))
-          Pane.Locked -> Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+          Pane.NoTarget -> Text(shared.t("web.enterTarget"), scrolling)
+          Pane.Locked -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(shared.t("web.locked"))
             Button(onClick = { activity?.let { model.unlock(it) } }, enabled = !model.unlocking) {
               Icon(Icons.Filled.Fingerprint, null, Modifier.padding(end = 8.dp))
@@ -417,8 +438,18 @@ private fun OutputPane(model: AppModel, minHeight: Dp, modifier: Modifier, onOpe
             }
             if (model.unlockError.isNotEmpty()) Text(model.unlockError, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
           }
-          is Pane.Failure -> androidx.compose.foundation.text.selection.SelectionContainer {
-            Text(model.message(pane), color = MaterialTheme.colorScheme.error)
+          is Pane.Failure -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            androidx.compose.foundation.text.selection.SelectionContainer {
+              Text(model.message(pane), color = MaterialTheme.colorScheme.error)
+            }
+            when (pane.error.remedy) {
+              TranslationError.Remedy.RETRY -> OutlinedButton(onClick = { model.retry() }) {
+                Icon(Icons.Outlined.Refresh, null, Modifier.padding(end = 8.dp).size(18.dp))
+                Text(shared.t("popup.retry"))
+              }
+              TranslationError.Remedy.SETTINGS -> OutlinedButton(onClick = onOpenSettings) { Text(shared.t("web.openSettings")) }
+              TranslationError.Remedy.NONE -> {}
+            }
           }
         }
       }
@@ -444,10 +475,10 @@ private fun Card(
   footer: @Composable RowScope.() -> Unit,
 ) {
   Surface(modifier, color = MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(14.dp), border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)) {
-    Column {
+    Column(Modifier.fillMaxSize()) {
       Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp), content = header)
       HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-      Column(Modifier.padding(horizontal = 14.dp), content = content)
+      Column(Modifier.weight(1f).padding(horizontal = 14.dp), content = content)
       HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
       androidx.compose.runtime.CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant, androidx.compose.material3.LocalTextStyle provides MaterialTheme.typography.bodySmall) {
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically, content = footer)
