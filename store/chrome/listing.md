@@ -19,6 +19,7 @@ HOW IT WORKS
 • Click the toolbar icon and press "Translate this page". Only the text is replaced; the layout stays the same.
 • What is on screen is translated first, and the rest as you scroll, so long pages start quickly and use less of your API quota.
 • Content that appears later (for example after "Show more") is translated too.
+• Parts embedded from another site, such as a job application form, are translated too once you allow Langria to access that site from the popup.
 • Press "Show original" or Alt+Shift+T to switch back at any time.
 • Select text, right-click and choose "Translate … with Langria" to see just that part in a small bubble.
 
@@ -57,6 +58,7 @@ Langria は、表示中のWebページや選択した文章を、選んだAIサ�
 ・ツールバーのアイコンを開いて「このページを翻訳」を押すだけ。レイアウトはそのままに、文章だけを差し替えます。
 ・画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。長いページでもすぐに読み始められ、APIの使用量も抑えられます。
 ・「もっと見る」などで後から表示された部分も翻訳します。
+・応募フォームなど、別のサイトから埋め込まれた部分も、ポップアップでそのサイトへのアクセスを許可すれば翻訳します。
 ・「原文に戻す」または Alt+Shift+T で、いつでも原文に戻せます。
 ・文章を選んで右クリックし「Langria で「…」を翻訳」を選ぶと、その部分の訳文を吹き出しで表示します。
 
@@ -115,7 +117,7 @@ Translates the web page the user is viewing, or text the user selects, into the 
 **activeTab**
 
 ```text
-Lets Langria read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No broad host access to websites is requested.
+Lets Langria read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No host access to websites is requested at install; see the optional host permissions below.
 ```
 
 **scripting**
@@ -134,6 +136,12 @@ Stores the user's settings (selected AI service, model names, target language, t
 
 ```text
 Adds "Translate this page with Langria" and "Translate “<selected text>” with Langria" to the right-click menu.
+```
+
+**Optional host permissions（https://\*/\* / http://\*/\*）**
+
+```text
+Requested only for a single site at a time, and only when the user clicks "Allow access" in the popup. Some pages embed part of their content (for example a job application form) in a frame from another site, which activeTab does not reach. When the page being translated has such a frame, the popup names its site; once the user allows it, Langria injects its bundled content script into that site's frames to translate their text the same way as the page. Nothing is requested at install, and the user can withdraw each site's access in chrome://extensions.
 ```
 
 **Host permissions（api.openai.com / api.anthropic.com / generativelanguage.googleapis.com）**

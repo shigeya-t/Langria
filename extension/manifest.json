@@ -30,6 +30,7 @@
     "https://api.anthropic.com/*",
     "https://generativelanguage.googleapis.com/*"
   ],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
   "commands": {
     "toggle-translation": {
       "suggested_key": { "default": "Alt+Shift+T" },

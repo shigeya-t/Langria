@@ -44,6 +44,7 @@ input::placeholder { color:var(--placeholder); }
 .hint { font-weight:500; color:var(--placeholder); margin-left:6px; letter-spacing:0; }
 .vault-status { margin:0 0 4px; font-size:13px; line-height:1.8; color:var(--muted); } .vault-status.ok { color:var(--lime-ink); } .vault-status.warn { color:var(--warn); }
 .vault-input { border:1px solid var(--line); border-radius:10px; background:var(--input-bg); color:var(--text); padding:11px 12px; outline:0; font-family:"DM Mono",ui-monospace,monospace; font-size:13px; } .vault-input:focus { border-color:var(--lime-border); }
+.frames-notice { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2); } .frames-notice[hidden] { display:none; } .frames-notice p { margin:0; font-size:12px; line-height:1.6; color:var(--text-secondary); word-break:break-word; }
 .vault-buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
 .vault-button { border:1px solid var(--line); border-radius:10px; padding:10px 14px; background:var(--input-btn-bg); color:var(--text-secondary); font-size:13px; font-weight:700; } .vault-button.primary { border-color:transparent; background:var(--lime); color:#111516; } .vault-button.primary:hover { background:var(--lime-dark); }
 .vault-button:disabled,.vault-link:disabled { opacity:.5; cursor:progress; }

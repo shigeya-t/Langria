@@ -36,6 +36,10 @@
     <button id="actionButton" class="primary-button" disabled>Translate this page</button>
     <div class="progress" id="progress" hidden><span id="progressBar"></span></div>
     <p class="status" id="status" aria-live="polite"></p>
+    <div class="frames-notice" id="framesNotice" hidden>
+      <p id="framesText"></p>
+      <button class="vault-button" id="allowFrames" data-i18n="popup.allowFrames">Allow access</button>
+    </div>
 
     <footer class="popup-footer"><span id="modelLabel" class="model-label"></span><span data-i18n="popup.shortcut">Alt+Shift+T toggles</span></footer>
     <script src="lib/vault.js"></script>

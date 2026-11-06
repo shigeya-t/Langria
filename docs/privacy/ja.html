@@ -80,6 +80,7 @@
       <h2>権限</h2>
       <ul>
         <li><code>activeTab</code>・<code>scripting</code>: 翻訳するタブの文章を読み取り、翻訳文に差し替えるため。そのタブで翻訳を指示したときにだけ使います。</li>
+        <li>Webサイトへの任意のアクセス: ページに別のサイトから埋め込まれた部分（応募フォームなど）があるとき、ポップアップでそのサイトだけへのアクセスを求めます。許可すると、そのサイトから埋め込まれた部分もページと同じように翻訳します。インストール時には求めず、<code>chrome://extensions</code> でいつでも取り消せます。</li>
         <li><code>storage</code>: APIキーと設定を端末内に保存するため。</li>
         <li><code>contextMenus</code>: 右クリックメニューに「Langria で翻訳」を追加するため。</li>
         <li><code>api.openai.com</code>・<code>api.anthropic.com</code>・<code>generativelanguage.googleapis.com</code> へのアクセス: 選択したサービスへ翻訳のリクエストを送るため。</li>
