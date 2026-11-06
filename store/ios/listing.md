@@ -72,6 +72,7 @@ TRANSLATE ANYTHING
 • Photograph a sign, menu or document, or pick a photo: the text is read on your device and translated. Only the text is sent, never the image.
 • Speak to type, and have the translation read aloud in the target language.
 • Swap the languages with one tap for a back-and-forth conversation.
+• Send text from other apps with the “Translate with Langria” action in Shortcuts, the Action button or Siri.
 • On Apple Watch, dictate or scribble a sentence and see — or hear — the translation on your wrist.
 
 FEATURES
@@ -103,6 +104,7 @@ Langria は、入力した文章・話した言葉・写真の文字を、選ん
 ・看板・メニュー・書類を撮影するか写真を選ぶと、文字を端末の中で読み取って翻訳します。送るのは文字だけで、画像は送りません。
 ・話して入力し、訳文を翻訳先の言語で読み上げられます。
 ・入れ替えボタンで言語をすぐに切り替えられるので、会話にも使えます。
+・ショートカット・アクションボタン・Siri の「Langriaで翻訳」で、ほかのアプリの文章を送って翻訳できます。
 ・Apple Watch では、音声入力や手書きで文章を入れ、訳文を手元で読んだり聞いたりできます。
 
 主な機能
@@ -194,7 +196,8 @@ To test:
    (a key created only for this review, on Google's free tier)
 3. Type or paste text in the top box; the translation appears below after a moment.
 4. Camera / photo buttons: the text in the photo is read on the device (Vision) and translated. The microphone button turns speech into text.
-5. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
+5. Shortcuts: the app provides a “Translate with Langria” action; running it opens the app with the given text in the top box and translates it.
+6. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
 
 Ads: a Google AdMob banner is shown at the end of the page. On first launch the app shows Google's consent form where required by law (EEA/UK), then the App Tracking Transparency prompt. Declining tracking does not limit any feature.
 
