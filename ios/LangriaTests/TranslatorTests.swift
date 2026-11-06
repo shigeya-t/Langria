@@ -99,6 +99,7 @@ final class TranslatorTests: XCTestCase {
     } catch TranslationError.api(let status, let detail) {
       XCTAssertEqual(status, 401)
       XCTAssertEqual(detail, "Invalid key")
+      XCTAssertEqual(TranslationError.api(status: status, detail: detail).remedy, .settings)
     } catch { XCTFail("\(error)") }
 
     StubProtocol.handler = { _, _ in (200, ["content": [["type": "text", "text": "途中"]], "stop_reason": "max_tokens"]) }
@@ -107,5 +108,15 @@ final class TranslatorTests: XCTestCase {
       XCTFail("expected an error")
     } catch TranslationError.truncated {
     } catch { XCTFail("\(error)") }
+  }
+
+  func testRemedies() {
+    XCTAssertEqual(TranslationError.api(status: 429, detail: "").remedy, .retry)
+    XCTAssertEqual(TranslationError.api(status: 500, detail: "").remedy, .retry)
+    XCTAssertEqual(TranslationError.api(status: 404, detail: "").remedy, .settings)
+    XCTAssertEqual(TranslationError.timeout.remedy, .retry)
+    XCTAssertEqual(TranslationError.network.remedy, .retry)
+    XCTAssertEqual(TranslationError.blocked(reason: "SAFETY").remedy, .none)
+    XCTAssertEqual(TranslationError.truncated.remedy, .none)
   }
 }

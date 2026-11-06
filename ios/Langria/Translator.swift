@@ -54,6 +54,18 @@ enum TranslationError: Error {
   case blocked(reason: String)
   case unexpected(String)
 
+  /// What would fix it: the key or model in Settings, sending it again, or
+  /// neither (the model's own answer). Same as `remedy` in the Android app.
+  enum Remedy { case settings, retry, none }
+
+  var remedy: Remedy {
+    switch self {
+    case .api(let status, _): [400, 401, 403, 404].contains(status) ? .settings : .retry
+    case .truncated, .blocked: .none
+    case .empty, .network, .timeout, .unexpected: .retry
+    }
+  }
+
   /// The text shown for the error; `t` looks up a message in the UI language.
   func message(provider: Provider, model: String, t: (String, [String: String]) -> String) -> String {
     switch self {

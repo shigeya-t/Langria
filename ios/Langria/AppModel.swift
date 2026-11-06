@@ -165,6 +165,14 @@ final class AppModel: ObservableObject {
     }
   }
 
+  /// Sends the text again at once, after a failed translation.
+  func retry() {
+    let text = source.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !text.isEmpty else { return }
+    pending?.cancel()
+    pending = Task { [weak self] in await self?.translate(text) }
+  }
+
   var result: String? { if !stale, case .result(let text) = pane { text } else { nil } }
 
   func message(for error: TranslationError, provider: Provider, model: String) -> String {
