@@ -38,6 +38,22 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 マーケティングURL・サポートURLは `langria.net` にしておきます。AdMob はストアに載っているデベロッパーのWebサイトのドメインで `app-ads.txt` を探します。
 
+### このバージョンの最新情報（4000）
+
+#### 1.1
+
+```text
+英語:
+- Send text from other apps: the new "Translate with Langria" action works in Shortcuts, with the Action button and with Siri. It opens Langria with the text in the original pane and translates it right away
+- When a translation fails, tap "Translate again" to send it again. If the API key or model is wrong, "Open settings" appears instead
+- Small fixes and improvements
+
+日本語:
+- ほかのアプリから文章を送れるようにしました。新しい「Langriaで翻訳」のアクションを、ショートカット・アクションボタン・Siri から使えます。Langria が開き、文章を原文欄に入れてすぐ翻訳します
+- 翻訳に失敗したとき、「もう一度翻訳」でその場で送り直せるようにしました。APIキーやモデルが正しくないときは「設定を開く」が出ます
+- 細かな修正と改善
+```
+
 ### キーワード（100、カンマ区切り・空白なし）
 
 名前とサブタイトルの語は重ねて入れなくても検索されます。他社の商標（ChatGPT・Claude・Gemini など）は入れません（審査で却下されます）。
