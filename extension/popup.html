@@ -34,12 +34,13 @@
 
     <input id="unlockPassphrase" class="model-input" type="password" autocomplete="current-password" placeholder="Passphrase" aria-label="Passphrase" data-i18n-attr="placeholder:passphrase;aria-label:passphrase" hidden />
     <button id="actionButton" class="primary-button" disabled>Translate this page</button>
+    <div class="frames-notice" id="framesNotice" role="status" hidden>
+      <p class="frames-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="popup.framesTitle">Part of this page can’t be translated yet</span></p>
+      <p id="framesText"></p>
+      <button class="warn-button" id="allowFrames" data-i18n="popup.allowFrames">Allow access</button>
+    </div>
     <div class="progress" id="progress" hidden><span id="progressBar"></span></div>
     <p class="status" id="status" aria-live="polite"></p>
-    <div class="frames-notice" id="framesNotice" hidden>
-      <p id="framesText"></p>
-      <button class="vault-button" id="allowFrames" data-i18n="popup.allowFrames">Allow access</button>
-    </div>
 
     <footer class="popup-footer"><span id="modelLabel" class="model-label"></span><span data-i18n="popup.shortcut">Alt+Shift+T toggles</span></footer>
     <script src="lib/vault.js"></script>
