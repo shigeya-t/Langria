@@ -46,4 +46,21 @@ final class AppModelTests: XCTestCase {
     XCTAssertEqual(model.result, "Good morning")
     XCTAssertEqual(model.toast, "Swapped original and translation (target: English)")
   }
+
+  func testReceivesTextWithoutWaiting() async throws {
+    URLProtocol.registerClass(StubProtocol.self)
+    defer { URLProtocol.unregisterClass(StubProtocol.self); StubProtocol.handler = nil }
+    StubProtocol.handler = { _, _ in (200, ["output_text": "こんにちは"]) }
+    try KeyStore.save(["openai": "sk-test"], locked: false)
+    defer { try? KeyStore.save([:], locked: false) }
+    let model = AppModel(shared: Shared())
+    model.provider = .openai
+    model.pickTarget("Japanese")
+    await model.unlock(quiet: true)
+    model.receive("Hello")
+    XCTAssertEqual(model.source, "Hello")
+    // Well within the 700 ms the pane waits after typing.
+    for _ in 0..<5 where model.result == nil { try await Task.sleep(for: .milliseconds(100)) }
+    XCTAssertEqual(model.result, "こんにちは")
+  }
 }

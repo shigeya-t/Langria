@@ -1,0 +1,6 @@
+"Translate with Langria" = "Langriaで翻訳";
+"Opens Langria with the text in the original pane and translates it." = "Langria を開き、文章を原文欄に入れて翻訳します。";
+"Text" = "文章";
+"What would you like to translate?" = "何を翻訳しますか？";
+"Translate ${text} with Langria" = "${text} を Langria で翻訳";
+"Translate" = "翻訳";

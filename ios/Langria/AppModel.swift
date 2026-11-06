@@ -184,6 +184,18 @@ final class AppModel: ObservableObject {
     image = nil
   }
 
+  /// Puts text from another app (the Translate with Langria action) into the
+  /// original pane and translates it without the usual wait.
+  func receive(_ text: String) {
+    if listening { dictation.stop(); listening = false }
+    image = nil
+    source = text
+    let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return }
+    pending?.cancel()
+    pending = Task { [weak self] in await self?.translate(trimmed) }
+  }
+
   /// Only a finished translation can be swapped; while one is pending the
   /// pane would still hold the previous result.
   func swap() {
