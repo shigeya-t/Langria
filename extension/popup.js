@@ -4,6 +4,8 @@ const $ = (selector) => document.querySelector(selector);
 const t = (key, params) => LangriaI18n.t(key, params);
 let tabId = null;
 let pageState = null;
+let missingSites = []; // Frame sites on the page that Langria has no access to.
+let framesRender = 0;
 
 function fillSelect(select, entries, value) {
   select.innerHTML = '';
@@ -34,8 +36,20 @@ function showStatus(message, tone = '') {
   $('#status').className = `status ${tone}`;
 }
 
+// Frames from other sites are translated only once the user allows each site.
+async function renderFrames(sites = []) {
+  const run = ++framesRender;
+  const missing = [];
+  for (const site of sites) if (!(await chrome.permissions.contains({ origins: [site] }))) missing.push(site);
+  if (run !== framesRender) return;
+  missingSites = missing;
+  $('#framesNotice').hidden = !missing.length;
+  $('#framesText').textContent = t('popup.framesNotice', { sites: missing.map((site) => site.split('//')[1].slice(0, -2)).join(', ') });
+}
+
 function renderPage(state) {
   pageState = state;
+  renderFrames(state.frameSites);
   const button = $('#actionButton');
   button.disabled = false;
   const progress = $('#progress');
@@ -133,6 +147,14 @@ async function init() {
     else $('#actionButton').click();
   });
   $('#openOptions').addEventListener('click', () => chrome.runtime.openOptionsPage());
+  $('#allowFrames').addEventListener('click', () => {
+    // Asked first, while the click still counts as a user gesture. Chrome may
+    // close the popup when it asks, so the service worker starts the frames
+    // (permissions.onAdded) for the tab saved here.
+    const request = chrome.permissions.request({ origins: missingSites });
+    chrome.storage.session.set({ framesTab: tabId });
+    request.then((granted) => { if (granted) renderFrames(pageState?.frameSites); }, () => {});
+  });
   $('#unlockPassphrase').addEventListener('keydown', (event) => { if (event.key === 'Enter') $('#actionButton').click(); });
   $('#actionButton').addEventListener('click', async () => {
     const restore = pageTranslated();

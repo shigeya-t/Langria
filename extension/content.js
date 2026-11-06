@@ -35,6 +35,17 @@ if (!window.__langriaLoaded) {
   let observerTimer = null;
   let bubbleHost = null;
 
+  // Frames from other sites cannot be reached from the page. Each one Langria
+  // may access (a site the user allowed in the popup) gets its own copy of
+  // this script, started through the service worker; the top frame starts
+  // and stops them and adds their progress to its own.
+  const isTop = window === window.top;
+  // A frame its parent can reach (same site) is translated from the parent.
+  const reachedByParent = !isTop && Boolean(window.frameElement);
+  const otherSiteFrames = new Set(); // Frame elements whose document cannot be reached.
+  const frameStates = new Map(); // Frame id -> state of a frame translated on its own.
+  let framesTimer = null;
+
   // UI text follows the language picked in the extension (lib/i18n.js is
   // injected before this script).
   const { t } = LangriaI18n;
@@ -45,7 +56,57 @@ if (!window.__langriaLoaded) {
 
   function setState(patch) {
     state = { ...state, ...patch };
-    chrome.runtime.sendMessage({ type: 'status', ...state }).catch(() => {});
+    publish();
+  }
+
+  function publish() {
+    if (isTop) chrome.runtime.sendMessage({ type: 'status', ...overall() }).catch(() => {});
+    else chrome.runtime.sendMessage({ type: 'frameStatus', state: { ...state, frameSites: frameSites() } }).catch(() => {});
+  }
+
+  // This document's state with the frames translated on their own added in.
+  function overall() {
+    const frames = [...frameStates.values()];
+    const result = { ...state, frameSites: [...new Set([...frameSites(), ...frames.flatMap((frame) => frame.frameSites || [])])] };
+    const running = frames.filter((frame) => frame.status !== 'idle');
+    if (state.status === 'idle' || !running.length) return result;
+    const all = [state, ...running];
+    const failed = all.find((item) => item.status === 'error');
+    const status = failed ? 'error' : all.some((item) => item.status === 'translating') ? 'translating' : state.status;
+    const sum = (key) => all.reduce((total, item) => total + (item[key] || 0), 0);
+    return { ...result, status, error: failed?.error || '', done: sum('done'), total: sum('total') };
+  }
+
+  // The match pattern for a frame's site, which the popup asks access for.
+  // Patterns cannot hold a port, so one covers every port of the host.
+  function sitePattern(frame) {
+    try {
+      const url = new URL(frame.src, frame.baseURI);
+      return /^https?:$/.test(url.protocol) ? `${url.protocol}//${url.hostname}/*` : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // Sites of the frames that need their own access. Small or hidden frames
+  // (trackers, captcha badges and the like) are not worth asking about.
+  function frameSites() {
+    for (const frame of document.querySelectorAll('iframe, frame')) if (!frame.contentDocument && !skipFrame(frame)) otherSiteFrames.add(frame);
+    const sites = new Set();
+    for (const frame of otherSiteFrames) {
+      if (!frame.isConnected || frame.offsetWidth < 200 || frame.offsetHeight < 100 || !frame.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+      const site = sitePattern(frame);
+      if (site) sites.add(site);
+    }
+    return [...sites];
+  }
+
+  // Asks the service worker to inject into and start the frames from other
+  // sites. Only frames Langria has access to are reached; it does nothing
+  // for the rest.
+  function translateFrames() {
+    clearTimeout(framesTimer);
+    framesTimer = setTimeout(() => chrome.runtime.sendMessage({ type: 'translateFrames' }).catch(() => {}), 300);
   }
 
   function alreadyInTarget(text, target) {
@@ -79,10 +140,15 @@ if (!window.__langriaLoaded) {
     const shadow = element.shadowRoot || (element.localName.includes('-') && chrome.dom?.openOrClosedShadowRoot?.(element));
     if (shadow) return shouldSkipElement(element) ? null : shadow;
     if (element.localName !== 'iframe' && element.localName !== 'frame') return null;
-    if (element.getAttribute('translate') === 'no' || element.classList.contains('notranslate') || shouldSkipElement(parentOf(element))) return null;
+    if (skipFrame(element)) return null;
     watchFrameLoads(element);
-    return element.contentDocument?.body || null;
+    if (element.contentDocument) return element.contentDocument.body || null;
+    otherSiteFrames.add(element);
+    if (visibility) translateFrames();
+    return null;
   }
+
+  const skipFrame = (frame) => frame.getAttribute('translate') === 'no' || frame.classList.contains('notranslate') || shouldSkipElement(parentOf(frame));
 
   // A frame that loads or navigates after translation started gets a new
   // document, which is collected and watched like the first one.
@@ -268,16 +334,18 @@ if (!window.__langriaLoaded) {
     queue = [];
     inFlight = 0;
     clearTimeout(pumpTimer);
+    clearTimeout(framesTimer);
   }
 
   async function translatePage() {
-    if (state.status === 'translating' || state.status === 'translated') return state;
+    if (state.status === 'translating' || state.status === 'translated') return overall();
     const { settings } = await chrome.runtime.sendMessage({ type: 'getSettings' });
     await languageReady;
     const { target, mode } = settings;
     if (!target) return failStart(new Error(t('ext.missingTargetPopup')));
     seen = new WeakSet(); // Lets a retry after an error pick up segments that failed.
     firstBatch = true;
+    frameStates.clear();
     setState({ status: 'translating', done: 0, total: 0, error: '', target, mode });
     visibility = new IntersectionObserver(onVisibility, { rootMargin: VIEWPORT_MARGIN });
     // The observer comes first so shadow roots and frames found while
@@ -285,12 +353,12 @@ if (!window.__langriaLoaded) {
     startObserver();
     watchNodes(collectTextNodes(document.body, target));
     schedulePump();
-    return state;
+    return overall();
   }
 
   function failStart(error) {
     setState({ status: 'error', done: 0, error: error?.message || t('ext.startFailed') });
-    return state;
+    return overall();
   }
 
   function restorePage() {
@@ -306,8 +374,12 @@ if (!window.__langriaLoaded) {
     }
     copies.clear();
     sources.clear();
+    if (isTop) {
+      frameStates.clear();
+      chrome.runtime.sendMessage({ type: 'restoreFrames' }).catch(() => {});
+    }
     setState({ status: 'idle', done: 0, total: 0, error: '' });
-    return state;
+    return overall();
   }
 
   // ---- Selection translation bubble ----------------------------------------
@@ -381,15 +453,29 @@ if (!window.__langriaLoaded) {
   }
 
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.type === 'getStatus') sendResponse(state);
+    if (message.type === 'translateSelection') {
+      translateSelection(message.text);
+      sendResponse({});
+      return true;
+    }
+    // Page-wide messages reach every frame of the tab; only the top frame
+    // answers them. The other frames follow it through the service worker.
+    if (!isTop) {
+      if (message.type === 'translateFrame' && !reachedByParent) translatePage().then(() => sendResponse({}), (error) => { failStart(error); sendResponse({}); });
+      else if (message.type === 'restoreFrame') { restorePage(); sendResponse({}); }
+      else return false;
+      return true;
+    }
+    if (message.type === 'frameStatus') {
+      frameStates.set(message.frameId, message.state);
+      publish();
+      sendResponse({});
+    } else if (message.type === 'getStatus') sendResponse(overall());
     else if (message.type === 'translatePage') translatePage().then(sendResponse, (error) => sendResponse(failStart(error)));
     else if (message.type === 'restorePage') sendResponse(restorePage());
     else if (message.type === 'toggle') {
       if (state.status === 'translating' || state.status === 'translated' || originals.size) sendResponse(restorePage());
       else translatePage().then(sendResponse, (error) => sendResponse(failStart(error)));
-    } else if (message.type === 'translateSelection') {
-      translateSelection(message.text);
-      sendResponse({});
     } else return false;
     return true;
   });

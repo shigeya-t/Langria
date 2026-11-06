@@ -125,8 +125,8 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 拡張機能の `content.js` は（`lib/i18n.js` と一緒に）何度でも注入されます。`window.__langriaLoaded` で二重登録を防いでいます。
 - 翻訳済みテキストの復元は `originals`（ノード→原文）と `sources`（翻訳文→原文）の両方で行います。ページ側が翻訳済みの文をコピーしても原文に戻せるようにするためです。`sources` で戻すのは、翻訳開始後に追加されて訳文と一致したノード（`copies`）だけです。最初からページにあった文は、たまたま訳文と同じでも書き換えません。
 - Webアプリでは、古いリクエストの応答が新しい入力を上書きしないよう、`latestRequest` で古い応答を捨てています。非同期処理を足すときは同じ配慮をしてください。
-- ページ翻訳は `document.body` に加えて、Shadow DOM（閉じたものはカスタム要素だけ `chrome.dom.openOrClosedShadowRoot` で取得）と同一オリジンの iframe の `contentDocument` を、トップフレームの `content.js` から辿ります（`innerTree`）。それぞれに MutationObserver を付け、iframe は `load` で読み直します。別オリジンの iframe は対象外です。
-- 拡張機能のページへのアクセス権は `activeTab` だけです。広い `host_permissions` は追加しないでください。
+- ページ翻訳は `document.body` に加えて、Shadow DOM（閉じたものはカスタム要素だけ `chrome.dom.openOrClosedShadowRoot` で取得）と同一オリジンの iframe の `contentDocument` を、トップフレームの `content.js` から辿ります（`innerTree`）。それぞれに MutationObserver を付け、iframe は `load` で読み直します。別オリジンの iframe には、利用者がポップアップで許可したサイト（`optional_host_permissions`）だけ、Service Worker が `allFrames` で `content.js` を注入し（`translateFrames`）、各フレームが自分の文書を翻訳します。開始・原文に戻す操作はトップフレームから Service Worker 経由で伝え、各フレームの進み具合（`frameStatus`）はトップフレームが合算してポップアップとバッジに出します。タブ全体に送るメッセージは全フレームに届くので、`getStatus` などに答えるのはトップフレームだけです
+- 拡張機能のページへのアクセス権は `activeTab` と、利用者がサイトごとに許可する `optional_host_permissions` だけです。常に持つ広い `host_permissions` は追加しないでください。
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/chrome/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
 - 権限・送信先・保存するデータを変えたら、`store/chrome/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。iOSアプリなら `store/ios/listing.md` の「Appのプライバシー」と `PrivacyInfo.xcprivacy` も、Androidアプリなら `store/android/listing.md` の「データ セーフティ」と「権限」もです。審査ではコードの動作との一致を見られます。
 - Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。

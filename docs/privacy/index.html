@@ -80,6 +80,7 @@
       <h2>Permissions</h2>
       <ul>
         <li><code>activeTab</code> and <code>scripting</code>: to read and replace the text of the tab you are translating, only after you ask for a translation in that tab.</li>
+        <li>Optional access to a website: when a page embeds content from another site (for example a job application form), the popup asks for access to that one site. Once you allow it, the embedded content from that site is translated like the rest of the page. Nothing is requested at install, and you can withdraw the access in <code>chrome://extensions</code>.</li>
         <li><code>storage</code>: to keep your API keys and settings on your device.</li>
         <li><code>contextMenus</code>: to add “Translate with Langria” to the right-click menu.</li>
         <li>Access to <code>api.openai.com</code>, <code>api.anthropic.com</code> and <code>generativelanguage.googleapis.com</code>: to send translation requests to the service you choose.</li>

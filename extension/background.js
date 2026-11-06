@@ -5,6 +5,28 @@ async function injectContentScript(tabId, frameIds) {
   await chrome.scripting.executeScript({ target: frameIds ? { tabId, frameIds } : { tabId }, files: contentScripts });
 }
 
+// Frames from other sites need host access of their own, which the user
+// grants per site from the popup (optional_host_permissions). Injecting into
+// all frames reaches exactly those frames and the ones activeTab covers;
+// the rest are skipped. Frames the page can reach ignore translateFrame,
+// since the top frame translates them itself.
+async function translateFrames(tabId) {
+  const results = await chrome.scripting.executeScript({ target: { tabId, allFrames: true }, files: contentScripts }).catch(() => []);
+  const frameIds = new Set(results.map((result) => result.frameId).filter((frameId) => frameId !== 0));
+  await Promise.all([...frameIds].map((frameId) => chrome.tabs.sendMessage(tabId, { type: 'translateFrame' }, { frameId }).catch(() => {})));
+}
+
+// Chrome may close the popup while it asks for access, so the popup leaves
+// the tab here and the frames are started once access is granted.
+chrome.permissions.onAdded.addListener(async ({ origins }) => {
+  if (!origins?.length) return;
+  const { framesTab } = await chrome.storage.session.get('framesTab');
+  await chrome.storage.session.remove('framesTab');
+  if (!framesTab) return;
+  const state = await chrome.tabs.sendMessage(framesTab, { type: 'getStatus' }, { frameId: 0 }).catch(() => null);
+  if (['translating', 'translated'].includes(state?.status) || state?.done) await translateFrames(framesTab);
+});
+
 // Menu items and the toolbar title follow the UI language, so they are
 // rebuilt when it changes and at startup (the browser's language may have).
 // Runs are chained so overlapping rebuilds cannot create an item twice.
@@ -59,6 +81,13 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 });
 
 async function handleMessage(message, sender) {
+  const tabId = sender.tab?.id;
+  if (message.type === 'translateFrames' && tabId) { await translateFrames(tabId); return {}; }
+  if (message.type === 'restoreFrames' && tabId) { await chrome.tabs.sendMessage(tabId, { type: 'restoreFrame' }).catch(() => {}); return {}; }
+  if (message.type === 'frameStatus' && tabId) {
+    await chrome.tabs.sendMessage(tabId, { type: 'frameStatus', frameId: sender.frameId, state: message.state }, { frameId: 0 }).catch(() => {});
+    return {};
+  }
   const settings = await loadSettings();
   if (message.type === 'translateSegments') {
     return { translations: await translateSegments(settings, message.segments, message.target) };
@@ -79,7 +108,7 @@ async function handleMessage(message, sender) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (!['translateSegments', 'translateText', 'getSettings', 'status'].includes(message?.type)) return false;
+  if (!['translateSegments', 'translateText', 'getSettings', 'status', 'translateFrames', 'restoreFrames', 'frameStatus'].includes(message?.type)) return false;
   handleMessage(message, sender)
     .then(sendResponse)
     .catch((error) => sendResponse({ error: error.message || LangriaI18n.t('error.unexpected') }));
