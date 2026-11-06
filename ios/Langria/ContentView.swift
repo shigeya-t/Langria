@@ -349,9 +349,19 @@ struct ContentView: View {
         }
       }
     case .failure(let error, let provider, let modelName):
-      Text(model.message(for: error, provider: provider, model: modelName))
-        .foregroundStyle(.red)
-        .textSelection(.enabled)
+      VStack(alignment: .leading, spacing: 12) {
+        Text(model.message(for: error, provider: provider, model: modelName))
+          .foregroundStyle(.red)
+          .textSelection(.enabled)
+        switch error.remedy {
+        case .retry:
+          Button { model.retry() } label: { Label(shared.t("popup.retry"), systemImage: "arrow.clockwise") }.buttonStyle(.bordered)
+        case .settings:
+          Button(shared.t("web.openSettings")) { showSettings = true }.buttonStyle(.bordered)
+        case .none:
+          EmptyView()
+        }
+      }
     }
   }
 }
