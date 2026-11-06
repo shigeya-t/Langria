@@ -117,19 +117,19 @@ Translates the web page the user is viewing, or text the user selects, into the 
 **activeTab**
 
 ```text
-Lets Langria read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No host access to websites is requested at install; see the optional host permissions below.
+Lets Langria read and replace the text of the current tab only after the user asks to translate it (toolbar popup, context menu or keyboard shortcut). No host access to websites is granted at install; access to frames embedded from other sites is optional and asked for per site (see the host permission).
 ```
 
 **scripting**
 
 ```text
-Injects Langria's own bundled content script (content.js and lib/i18n.js) into the tab the user chose to translate, to extract its text, replace it with the translation, and restore the original. No remote code is injected.
+Injects Langria's own bundled content script (content.js and lib/i18n.js) into the tab the user chose to translate, and into frames embedded from other sites the user has allowed (see the host permission), to extract their text, replace it with the translation, and restore the original. No remote code is injected.
 ```
 
 **storage**
 
 ```text
-Stores the user's settings (selected AI service, model names, target language, translation mode, UI language) and the API keys the user enters, locally in chrome.storage.local. When encryption is enabled, only the encrypted keys are stored; unlocked keys are kept in chrome.storage.session until the browser closes. A per-minute request limit reported by a service (e.g. the Gemini free tier) is also kept there, to space out requests.
+Stores the user's settings (selected AI service, model names, target language, translation mode, UI language) and the API keys the user enters, locally in chrome.storage.local. When encryption is enabled, only the encrypted keys are stored; unlocked keys are kept in chrome.storage.session until the browser closes. A per-minute request limit reported by a service (e.g. the Gemini free tier) is also kept there, to space out requests. While the popup asks for access to a site, the tab's ID is kept there briefly, so that the site's frames can be translated once access is granted.
 ```
 
 **contextMenus**
@@ -138,16 +138,14 @@ Stores the user's settings (selected AI service, model names, target language, t
 Adds "Translate this page with Langria" and "Translate “<selected text>” with Langria" to the right-click menu.
 ```
 
-**Optional host permissions（https://\*/\* / http://\*/\*）**
+**Host permission**
+
+ダッシュボードの欄は1つで、`host_permissions`（AIサービスのAPI）と `optional_host_permissions`（https://\*/\* / http://\*/\*）の両方をここで説明する。
 
 ```text
-Requested only for a single site at a time, and only when the user clicks "Allow access" in the popup. Some pages embed part of their content (for example a job application form) in a frame from another site, which activeTab does not reach. When the page being translated has such a frame, the popup names its site; once the user allows it, Langria injects its bundled content script into that site's frames to translate their text the same way as the page. Nothing is requested at install, and the user can withdraw each site's access in chrome://extensions.
-```
+api.openai.com, api.anthropic.com and generativelanguage.googleapis.com: sends the text to be translated, with the user's own API key, directly to the AI service the user selected. These are the only hosts Langria contacts; it has no server of its own.
 
-**Host permissions（api.openai.com / api.anthropic.com / generativelanguage.googleapis.com）**
-
-```text
-Sends the text to be translated, with the user's own API key, directly to the AI service the user selected (OpenAI, Anthropic or Google Gemini). These are the only hosts Langria contacts; it has no server of its own.
+Optional https://*/* and http://*/*: nothing is granted at install. Some pages embed part of their content (for example a job application form) in a frame from another site, which activeTab does not reach. When the page being translated has such a frame, the popup names that site, and access is granted for that one site only after the user clicks "Allow access to translate it" and approves Chrome's prompt. Langria then injects its bundled content script into that site's frames to translate their text the same way as the page. The user can withdraw each site's access in chrome://extensions.
 ```
 
 ### Remote code（リモートコード）
