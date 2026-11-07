@@ -65,6 +65,7 @@ final class Ads: ObservableObject {
 
 /// An inline adaptive banner across the width of the page. It takes no room until an ad arrives.
 struct BannerAd: View {
+  @Environment(\.scenePhase) private var scenePhase
   @State private var width: CGFloat = 0
   /// Set by the ad that arrives: an inline adaptive ad picks its own height.
   @State private var height: CGFloat = 0
@@ -76,7 +77,7 @@ struct BannerAd: View {
       // Given room even before an ad arrives: the SDK will not load into a zero-height view.
       .overlay(alignment: .top) {
         if width > 0 {
-          BannerViewRepresentable(size: currentOrientationInlineAdaptiveBanner(width: width), height: $height)
+          BannerViewRepresentable(size: currentOrientationInlineAdaptiveBanner(width: width), active: scenePhase == .active, height: $height)
             .frame(height: max(height, AdSizeBanner.size.height))
         }
       }
@@ -87,6 +88,7 @@ struct BannerAd: View {
 
 private struct BannerViewRepresentable: UIViewRepresentable {
   let size: AdSize
+  let active: Bool
   @Binding var height: CGFloat
 
   func makeUIView(context: Context) -> BannerView {
@@ -100,19 +102,34 @@ private struct BannerViewRepresentable: UIViewRepresentable {
   // A new width (rotation, iPad split view) needs an ad of the new size.
   // Compared with the width asked for, as the loaded ad's own size differs.
   func updateUIView(_ banner: BannerView, context: Context) {
-    guard context.coordinator.width != size.size.width else { return }
-    context.coordinator.width = size.size.width
-    banner.adSize = size
-    banner.load(Request())
+    let coordinator = context.coordinator
+    let becameActive = active && !coordinator.active
+    coordinator.active = active
+    if coordinator.width != size.size.width {
+      coordinator.width = size.size.width
+      banner.adSize = size
+      banner.load(Request())
+    } else if becameActive && !coordinator.hasAd {
+      // A load that failed (such as one made as the app left or came back
+      // to the foreground) may not be tried again, and the banner would
+      // otherwise stay empty until the next launch.
+      banner.load(Request())
+    }
   }
 
-  func makeCoordinator() -> Coordinator { Coordinator(height: $height, width: size.size.width) }
+  func makeCoordinator() -> Coordinator { Coordinator(height: $height, width: size.size.width, active: active) }
 
   final class Coordinator: NSObject, BannerViewDelegate {
     @Binding var height: CGFloat
     var width: CGFloat
-    init(height: Binding<CGFloat>, width: CGFloat) { _height = height; self.width = width }
-    func bannerViewDidReceiveAd(_ bannerView: BannerView) { height = bannerView.adSize.size.height }
-    func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) { height = 0 }
+    var active: Bool
+    /// Whether an ad is on show. A failed refresh leaves the last ad in place, so it stays visible.
+    var hasAd = false
+    init(height: Binding<CGFloat>, width: CGFloat, active: Bool) { _height = height; self.width = width; self.active = active }
+    func bannerViewDidReceiveAd(_ bannerView: BannerView) { hasAd = true; height = bannerView.adSize.size.height }
+    func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
+      guard !hasAd else { return }
+      height = 0
+    }
   }
 }
