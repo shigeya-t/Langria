@@ -40,6 +40,18 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.1.1
+
+```text
+英語:
+- Fixed an issue where the ad at the bottom of the page could disappear after returning to the app until it was restarted
+- Small fixes and improvements
+
+日本語:
+- アプリに戻ったとき、ページの下の広告が消えたまま、再起動するまで出なくなることがある問題を直しました
+- 細かな修正と改善
+```
+
 #### 1.1
 
 ```text
