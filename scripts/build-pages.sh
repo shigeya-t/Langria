@@ -20,6 +20,11 @@ for locale in en ja; do
 done
 cp assets/langria-screenshot.png "$out/images/en-web-app.png"
 cp assets/langria-screenshot-ja.png "$out/images/ja-web-app.png"
+for locale in en ja; do
+  cp "store/ios/images/$locale-iphone-1-translate.png" "$out/images/$locale-ios-translate.png"
+  cp "store/ios/images/$locale-iphone-2-photo.png" "$out/images/$locale-ios-photo.png"
+  cp "store/ios/images/$locale-watch-1-translate.png" "$out/images/$locale-ios-watch.png"
+done
 
 app="$out/app"
 mkdir -p "$app/extension/lib" "$app/extension/icons"

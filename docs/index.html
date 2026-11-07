@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Langria – AI Web Page Translator</title>
-    <meta name="description" content="Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key. Available as a Chrome extension and a web app." />
+    <meta name="description" content="Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key. Available as a Chrome extension, a web app and an iPhone / iPad app." />
     <meta name="google-site-verification" content="jzSWXyYKKLvUwDRIymO8sKCNanj96cgn7cov-4KLkT0" />
     <link rel="alternate" hreflang="ja" href="ja.html" />
     <script src="lang.js"></script>
@@ -23,7 +23,7 @@
       </header>
 
       <h1>Langria – AI Web Page Translator</h1>
-      <p>Translate with the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Langria comes in two forms:</p>
+      <p>Translate with the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Langria comes in three forms:</p>
 
       <div class="editions">
         <section class="edition">
@@ -36,12 +36,17 @@
           <p>Translates text you type or paste. Runs in any browser, nothing to install.</p>
           <a class="button" href="app/">Try the web app</a>
         </section>
+        <section class="edition">
+          <h2>iPhone / iPad app</h2>
+          <p>Translates text you type, speak or photograph. Also works on Apple Watch.</p>
+          <a class="button" href="https://apps.apple.com/app/id6828902876">Get it on the App Store</a>
+        </section>
       </div>
 
       <div class="summary">
         <ul>
-          <li>Uses your own API key. Your text goes straight from your browser to the service you choose.</li>
-          <li>No Langria server, no analytics, no tracking, no ads.</li>
+          <li>Uses your own API key. Your text goes straight from your browser or device to the service you choose.</li>
+          <li>No Langria server and no analytics. The extension and the web app have no ads; the iOS app shows a banner ad, which never sees the text you translate.</li>
           <li>A free Gemini API key from Google AI Studio is enough to get started.</li>
         </ul>
       </div>
@@ -107,9 +112,37 @@
         <p><strong>The web app on this site is a demo for trying Langria out.</strong> For regular use, we recommend hosting your own copy: it is a static site with no build step, so you can put the files from the <a href="https://github.com/shigeya-t/Langria">GitHub repository</a> on any web server or simply run it on <code>localhost</code>. See the <a href="https://github.com/shigeya-t/Langria#about-the-server">README</a> for how to set it up.</p>
       </div>
 
+      <h2 class="section" id="ios">iPhone / iPad app</h2>
+      <p>The web app’s translation on iPhone and iPad (iOS 17 or later), plus text from photos and your voice. Install <a href="https://apps.apple.com/app/id6828902876">Langria from the App Store</a> (free), enter your API key in Settings and start typing.</p>
+
+      <div class="shots phones">
+        <figure class="shot">
+          <img src="images/en-ios-translate.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" />
+          <figcaption>Translates shortly after you stop typing.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/en-ios-photo.png" width="1206" height="2622" loading="lazy" alt="Text read from a photo and translated" />
+          <figcaption>Reads the text in a photo on the device and translates it.</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/en-ios-watch.png" width="422" height="514" loading="lazy" alt="A translation on Apple Watch" />
+          <figcaption>Speak or scribble on Apple Watch.</figcaption>
+        </figure>
+      </div>
+
+      <ul>
+        <li>The same services, target languages and translation modes as the web app, and the swap button.</li>
+        <li>Take or choose a photo: the text is read on the device and only the text is sent, never the image.</li>
+        <li>Voice input, and reading the translation aloud.</li>
+        <li>Send text from other apps with Shortcuts, the Action button or Siri (“Translate with Langria”).</li>
+        <li>API keys are kept in the device’s keychain and can be locked with Face ID.</li>
+        <li>Apple Watch: turn on “Use on Apple Watch” in Settings, and the watch translates on its own.</li>
+      </ul>
+
       <h2 class="section">Links</h2>
       <ul>
         <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Chrome Web Store</a></li>
+        <li><a href="https://apps.apple.com/app/id6828902876">App Store</a></li>
         <li><a href="app/">Web app</a></li>
         <li><a href="privacy/">Privacy policy</a></li>
         <li><a href="https://github.com/shigeya-t/Langria">Source code</a></li>
