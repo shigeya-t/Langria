@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Langria – AI Webページ翻訳</title>
-    <meta name="description" content="ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。Chrome拡張機能とWebアプリがあります。" />
+    <meta name="description" content="ChatGPT・Claude・Gemini で、表示中のWebページや選んだ文章を好きな言語に翻訳します。APIキーはご自身のものを使います。Chrome拡張機能・Webアプリ・iPhone / iPad アプリがあります。" />
     <link rel="alternate" hreflang="en" href="./" />
     <script src="lang.js"></script>
     <script src="theme.js"></script>
@@ -22,7 +22,7 @@
       </header>
 
       <h1>Langria – AI Webページ翻訳</h1>
-      <p>選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Langria には次の2つがあります。</p>
+      <p>選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Langria には次の3つがあります。</p>
 
       <div class="editions">
         <section class="edition">
@@ -35,12 +35,17 @@
           <p>入力・貼り付けた文章を翻訳します。インストール不要で、ブラウザですぐ使えます。</p>
           <a class="button" href="app/">Webアプリを試す</a>
         </section>
+        <section class="edition">
+          <h2>iPhone / iPad アプリ</h2>
+          <p>入力した文章、話した言葉、写真の文字を翻訳します。Apple Watch でも使えます。</p>
+          <a class="store-badge" href="https://apps.apple.com/jp/app/id6828902876"><img class="on-light" src="images/app-store-ja-black.svg" width="109" height="40" alt="App Store からダウンロード" /><img class="on-dark" src="images/app-store-ja-white.svg" width="109" height="40" alt="App Store からダウンロード" /></a>
+        </section>
       </div>
 
       <div class="summary">
         <ul>
-          <li>ご自身のAPIキーを使い、文章はブラウザから選んだサービスへ直接送られます。</li>
-          <li>Langria 独自のサーバー、アクセス解析、トラッキング、広告はありません。</li>
+          <li>ご自身のAPIキーを使い、文章はブラウザや端末から選んだサービスへ直接送られます。</li>
+          <li>Langria 独自のサーバーやアクセス解析はありません。拡張機能とWebアプリには広告もありません（iOSアプリにはバナー広告が出ますが、翻訳する文章が広告に使われることはありません）。</li>
           <li>Google AI Studio で取得できる無料の Gemini APIキーがあれば、すぐに試せます。</li>
         </ul>
       </div>
@@ -106,9 +111,37 @@
         <p><strong>このサイトのWebアプリは、お試し用のデモです。</strong>普段使いには、ご自身の環境に置いて使う（セルフホストする）ことをおすすめします。ビルド不要の静的サイトなので、<a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>のファイルを好きなWebサーバーに置くか、<code>localhost</code> で開くだけで使えます。手順は <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#サーバーについて">README</a> をご覧ください。</p>
       </div>
 
+      <h2 class="section" id="ios">iPhone / iPad アプリ</h2>
+      <p>Webアプリと同じ翻訳を iPhone・iPad（iOS 17 以降）で使え、写真の文字や音声も翻訳できます。<a href="https://apps.apple.com/jp/app/id6828902876">App Store の Langria</a>（無料）を入れ、設定でAPIキーを入力すれば使い始められます。</p>
+
+      <div class="shots phones">
+        <figure class="shot">
+          <img src="images/ja-ios-translate.png" width="1206" height="2622" loading="lazy" alt="Langria の iPhone アプリで文章を翻訳した画面" />
+          <figcaption>入力の手を止めると、少し後に翻訳します。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/ja-ios-photo.png" width="1206" height="2622" loading="lazy" alt="写真から読み取った文字を翻訳した画面" />
+          <figcaption>写真の文字を端末内で読み取って翻訳します。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="images/ja-ios-watch.png" width="422" height="514" loading="lazy" alt="Apple Watch で翻訳した画面" />
+          <figcaption>Apple Watch でも、話したり手書きしたりして翻訳できます。</figcaption>
+        </figure>
+      </div>
+
+      <ul>
+        <li>使えるサービス・翻訳先の言語・翻訳モード、入れ替えボタンはWebアプリと同じです。</li>
+        <li>写真を撮るか選ぶと、文字を端末内で読み取ります。送るのは文字だけで、画像は送りません。</li>
+        <li>音声入力と、訳文の読み上げができます。</li>
+        <li>ショートカット・アクションボタン・Siri（「Langriaで翻訳」）から、ほかのアプリの文章を送って翻訳できます。</li>
+        <li>APIキーは端末のキーチェーンに保存し、Face ID でロックできます。</li>
+        <li>Apple Watch: 設定で「Apple Watch で使う」をオンにすると、Watch だけで翻訳できます。</li>
+      </ul>
+
       <h2 class="section">リンク</h2>
       <ul>
         <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a></li>
+        <li><a href="https://apps.apple.com/jp/app/id6828902876">App Store</a></li>
         <li><a href="app/">Webアプリ</a></li>
         <li><a href="privacy/ja.html">プライバシーポリシー</a></li>
         <li><a href="https://github.com/shigeya-t/Langria">ソースコード</a></li>

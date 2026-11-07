@@ -142,7 +142,7 @@ The extension extracts the page's text element by element and sends only the par
 
 ## iOS app (iPhone / iPad)
 
-The `ios/` folder contains a SwiftUI app for iPhone and iPad (iOS 17 or later) with the same features as the web app, plus translating text from photos.
+The `ios/` folder contains a SwiftUI app for iPhone and iPad (iOS 17 or later) with the same features as the web app, plus translating text from photos. It is available free on the [App Store](https://apps.apple.com/app/id6828902876).
 
 - Same as the web app: switching between ChatGPT / Claude / Gemini, target language (including “Other”), translation modes, automatic translation a moment after typing, the swap button, copying, the English / Japanese UI (follows the device unless chosen in Settings) and light / dark appearance
 - When a translation fails, **Translate again** sends it again (for network errors, timeouts and rate limits); an invalid key or model shows **Open settings** instead
