@@ -33,6 +33,9 @@ code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; 
 .editions { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px; margin:24px 0; }
 .edition { display:flex; flex-direction:column; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 20px 20px; }
 .edition h2 { margin:0 0 4px; }
+.edition-shot { align-self:stretch; aspect-ratio:16 / 9; margin:-16px -20px 16px; overflow:hidden; border-bottom:1px solid var(--line); border-radius:12px 12px 0 0; background:var(--bg); }
+.edition-shot img { display:block; width:100%; height:100%; object-fit:cover; }
+.edition-shot.phone img { width:42%; height:auto; margin:16px auto 0; border:1px solid var(--line); border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,.12); }
 .edition p { margin:0 0 16px; flex:1; }
 .button { display:inline-block; padding:8px 18px; border-radius:999px; background:var(--accent); color:var(--bg); border:1px solid var(--accent); font-weight:700; text-decoration:none; }
 .button.secondary { background:transparent; color:var(--accent); }

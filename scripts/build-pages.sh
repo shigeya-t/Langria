@@ -24,6 +24,7 @@ for locale in en ja; do
   cp "store/ios/images/$locale-iphone-1-translate.png" "$out/images/$locale-ios-translate.png"
   cp "store/ios/images/$locale-iphone-2-photo.png" "$out/images/$locale-ios-photo.png"
   cp "store/ios/images/$locale-watch-1-translate.png" "$out/images/$locale-ios-watch.png"
+  cp "store/android/images/$locale-light-1-translate.png" "$out/images/$locale-android-translate.png"
   # Apple's official badges, unmodified (black for light pages, white for dark).
   for color in black white; do cp "assets/app-store/$locale-$color.svg" "$out/images/app-store-$locale-$color.svg"; done
 done
