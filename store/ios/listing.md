@@ -40,6 +40,20 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.2
+
+```text
+英語:
+- Translate from the share sheet: select text in any app, tap Share and choose Langria to read the translation right there, without leaving the app you are in. Copy it or have it read aloud, and change the target language on the spot
+- Fixed an issue where the ad at the bottom of the page could disappear after returning to the app until it was restarted
+- Small fixes and improvements
+
+日本語:
+- 共有シートから翻訳できるようにしました。ほかのアプリで文章を選んで「共有」→「Langria」を選ぶと、そのアプリを離れずに訳文を読めます。コピーや読み上げ、翻訳先の切り替えもその場でできます
+- アプリに戻ったとき、ページの下の広告が消えたまま、再起動するまで出なくなることがある問題を直しました
+- 細かな修正と改善
+```
+
 #### 1.1.1
 
 ```text
