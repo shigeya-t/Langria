@@ -14,8 +14,12 @@ struct ShareView: View {
           }
         }
         if !model.source.isEmpty {
-          Section(t("web.original", [:])) {
+          Section {
             Text(model.source).textSelection(.enabled).lineLimit(8)
+          } header: {
+            Text(t("web.original", [:]))
+          } footer: {
+            if model.clipped { Text(t("ios.shareClipped", ["count": ShareViewController.pageLimit.formatted()])) }
           }
         }
         Section {

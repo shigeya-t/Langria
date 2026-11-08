@@ -9,12 +9,16 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<!-- Shown for shared text only (selected text, notes, messages), not for a page's URL -->
+			<!-- Shown for shared text, and for a page shared from Safari, whose text Preprocess.js reads. Not for other URLs. -->
 			<key>NSExtensionActivationRule</key>
 			<dict>
 				<key>NSExtensionActivationSupportsText</key>
 				<true/>
+				<key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+				<integer>1</integer>
 			</dict>
+			<key>NSExtensionJavaScriptPreprocessingFile</key>
+			<string>Preprocess</string>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>

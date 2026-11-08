@@ -246,6 +246,7 @@
       'ios.shareNoText': 'There is no text to translate.',
       'ios.shareNoKey': 'Set an API key in the Langria app to translate.',
       'ios.shareFixInApp': 'Check the API key and model in the Langria app.',
+      'ios.shareClipped': 'The page is long, so only its first {count} characters are translated. Select text before sharing to translate another part.',
 
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': 'Speak or type',
@@ -492,6 +493,7 @@
       'ios.shareNoText': '翻訳する文章がありません。',
       'ios.shareNoKey': '翻訳するには、Langria アプリで APIキーを設定してください。',
       'ios.shareFixInApp': 'Langria アプリで APIキーとモデルを確認してください。',
+      'ios.shareClipped': 'ページが長いため、最初の {count} 文字だけを翻訳します。ほかの部分を翻訳するには、文章を選んでから共有してください。',
 
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': '話すか入力する',

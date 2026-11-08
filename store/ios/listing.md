@@ -46,7 +46,7 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ```text
 英語:
-- Translate from the share sheet: select text in any app, tap Share and choose Langria to read the translation right there. Copy it, have it read aloud, or change the target language on the spot
+- Translate from the share sheet: select text in any app, or share a page from Safari, and choose Langria to read the translation right there. Copy it, have it read aloud, or change the target language on the spot
 - New "Translate with Langria" action for Shortcuts, the Action button and Siri: it opens Langria with the text and translates it right away
 - When a translation fails, tap "Translate again" to send it again. If the API key or model is wrong, "Open settings" appears instead
 - Fixed an issue where the ad at the bottom of the page could stay blank after returning to the app
@@ -54,7 +54,7 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 - Small fixes and improvements to voice input, reading text from photos and syncing with Apple Watch
 
 日本語:
-- 共有シートから翻訳できるようにしました。ほかのアプリで文章を選んで「共有」→「Langria」を選ぶと、その場で訳文を読めます。コピーや読み上げ、翻訳先の切り替えもできます
+- 共有シートから翻訳できるようにしました。ほかのアプリで選んだ文章や Safari のページを「共有」→「Langria」で、その場で訳文を読めます。コピーや読み上げ、翻訳先の切り替えもできます
 - ショートカット・アクションボタン・Siri で使える「Langriaで翻訳」のアクションを追加しました。Langria が開き、渡した文章をすぐ翻訳します
 - 翻訳に失敗したとき、「もう一度翻訳」でその場で送り直せるようにしました。APIキーやモデルが正しくないときは「設定を開く」が出ます
 - アプリに戻ったとき、ページの下の広告が空白のままになることがある問題を直しました
@@ -248,7 +248,7 @@ To test:
    (a key created only for this review, on Google's free tier)
 3. Type or paste text in the top box; the translation appears below after a moment.
 4. Camera / photo buttons: the text in the photo is read on the device (Vision) and translated. The microphone button turns speech into text.
-5. Share sheet: select text in Safari (or any app) → Share → Langria. The share extension translates it in the sheet with the key entered in step 2.
+5. Share sheet: select text in Safari (or any app) → Share → Langria, or share a whole page with Safari’s Share button (the selected text, or the first 5,000 characters of the page, is translated). The share extension translates it in the sheet with the key entered in step 2.
 6. Shortcuts: the app provides a “Translate with Langria” action; running it opens the app with the given text in the top box and translates it.
 7. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
 
