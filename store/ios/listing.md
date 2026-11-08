@@ -42,16 +42,24 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 #### 1.2
 
+公開中の 1.0（ビルド 72）からの更新。1.1・1.1.1 は公開していない。
+
 ```text
 英語:
-- Translate from the share sheet: select text in any app, tap Share and choose Langria to read the translation right there, without leaving the app you are in. Copy it or have it read aloud, and change the target language on the spot
-- Fixed an issue where the ad at the bottom of the page could disappear after returning to the app until it was restarted
-- Small fixes and improvements
+- Translate from the share sheet: select text in any app, tap Share and choose Langria to read the translation right there. Copy it, have it read aloud, or change the target language on the spot
+- New "Translate with Langria" action for Shortcuts, the Action button and Siri: it opens Langria with the text and translates it right away
+- When a translation fails, tap "Translate again" to send it again. If the API key or model is wrong, "Open settings" appears instead
+- Fixed an issue where the ad at the bottom of the page could stay blank after returning to the app
+- The Apple Watch app icon now fits neatly inside the circle
+- Small fixes and improvements to voice input, reading text from photos and syncing with Apple Watch
 
 日本語:
-- 共有シートから翻訳できるようにしました。ほかのアプリで文章を選んで「共有」→「Langria」を選ぶと、そのアプリを離れずに訳文を読めます。コピーや読み上げ、翻訳先の切り替えもその場でできます
-- アプリに戻ったとき、ページの下の広告が消えたまま、再起動するまで出なくなることがある問題を直しました
-- 細かな修正と改善
+- 共有シートから翻訳できるようにしました。ほかのアプリで文章を選んで「共有」→「Langria」を選ぶと、その場で訳文を読めます。コピーや読み上げ、翻訳先の切り替えもできます
+- ショートカット・アクションボタン・Siri で使える「Langriaで翻訳」のアクションを追加しました。Langria が開き、渡した文章をすぐ翻訳します
+- 翻訳に失敗したとき、「もう一度翻訳」でその場で送り直せるようにしました。APIキーやモデルが正しくないときは「設定を開く」が出ます
+- アプリに戻ったとき、ページの下の広告が空白のままになることがある問題を直しました
+- Apple Watch のアイコンの文字が円の内側に収まるようにしました
+- 音声入力・写真の文字の読み取り・Apple Watch との同期の細かな不具合を直しました
 ```
 
 #### 1.1.1
