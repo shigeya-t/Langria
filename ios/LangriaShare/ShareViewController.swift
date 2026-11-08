@@ -18,16 +18,44 @@ final class ShareViewController: UIViewController {
     view.addSubview(host.view)
     host.didMove(toParent: self)
     let items = extensionContext?.inputItems as? [NSExtensionItem] ?? []
-    Task { await model.start(with: Self.text(in: items)) }
+    Task {
+      let (text, clipped) = await Self.text(in: items)
+      await model.start(with: text, clipped: clipped)
+    }
   }
 
-  private static func text(in items: [NSExtensionItem]) async -> String {
+  /// The most of a page that is translated when nothing on it is selected.
+  static let pageLimit = 5000
+
+  /// The shared text, and whether it was cut to `pageLimit`.
+  private static func text(in items: [NSExtensionItem]) async -> (String, Bool) {
+    let providers = items.flatMap { $0.attachments ?? [] }
+    // A page from Safari's share button: what Preprocess.js read from it.
+    let list = UTType.propertyList.identifier
+    for provider in providers where provider.hasItemConformingToTypeIdentifier(list) {
+      guard let item = try? await provider.loadItem(forTypeIdentifier: list) as? [String: Any],
+            let page = item[NSExtensionJavaScriptPreprocessingResultsKey] as? [String: Any] else { continue }
+      let selection = (page["selection"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+      if !selection.isEmpty { return (selection, false) }
+      return clip(page["text"] as? String ?? "")
+    }
     let type = UTType.plainText.identifier
-    for provider in items.flatMap({ $0.attachments ?? [] }) where provider.hasItemConformingToTypeIdentifier(type) {
-      if let text = try? await provider.loadItem(forTypeIdentifier: type) as? String, !text.isEmpty { return text }
+    for provider in providers where provider.hasItemConformingToTypeIdentifier(type) {
+      if let text = try? await provider.loadItem(forTypeIdentifier: type) as? String, !text.isEmpty { return (text, false) }
     }
     // Some apps put the text in the item itself rather than in an attachment.
-    return items.lazy.compactMap { $0.attributedContentText?.string }.first { !$0.isEmpty } ?? ""
+    return (items.lazy.compactMap { $0.attributedContentText?.string }.first { !$0.isEmpty } ?? "", false)
+  }
+
+  /// Cuts a page's text to `pageLimit`, at the end of a paragraph when one is near.
+  static func clip(_ text: String) -> (String, Bool) {
+    let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard text.count > pageLimit else { return (text, false) }
+    let head = String(text.prefix(pageLimit))
+    if let end = head.range(of: "\n", options: .backwards), head.distance(from: head.startIndex, to: end.lowerBound) > pageLimit * 4 / 5 {
+      return (String(head[..<end.lowerBound]), true)
+    }
+    return (head, true)
   }
 }
 
@@ -47,6 +75,8 @@ final class ShareModel: ObservableObject {
   let theme: String
   let close: () -> Void
   @Published private(set) var source = ""
+  /// The source is the start of a longer page.
+  @Published private(set) var clipped = false
   @Published private(set) var state: State = .loading
   /// Changed only for this sheet; the app's target stays as it is.
   @Published var target: String { didSet { if target != oldValue { translate() } } }
@@ -81,8 +111,9 @@ final class ShareModel: ObservableObject {
 
   var result: String? { if case .result(let text) = state { text } else { nil } }
 
-  func start(with text: String) async {
+  func start(with text: String, clipped: Bool) async {
     source = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    self.clipped = clipped
     guard !source.isEmpty else { state = .noText; return }
     await unlock()
   }
