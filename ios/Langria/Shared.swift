@@ -21,7 +21,8 @@ final class Shared: ObservableObject {
   private let context = JSContext()!
   private let i18n: JSValue
 
-  init() {
+  /// `stored` is the language picked in Settings; the share extension passes the app's copy.
+  init(stored: String? = UserDefaults.standard.string(forKey: "langria-ui-language")) {
     // i18n.js falls back to `navigator.language` when no language is picked.
     context.evaluateScript("globalThis.navigator = { language: \(Self.jsString(Locale.preferredLanguages.first ?? "en")) };")
     for name in ["version", "i18n", "languages"] {
@@ -33,12 +34,12 @@ final class Shared: ObservableObject {
     locales = context.evaluateScript("Object.fromEntries(Object.entries(LangriaLanguages.targets).map(([name, labels]) => [name, labels.locale]))").toDictionary() as? [String: String] ?? [:]
     let hash = context.evaluateScript("globalThis.LANGRIA_COMMIT || ''").toString() ?? ""
     commit = hash == "undefined" ? "" : hash
-    setChoice(UserDefaults.standard.string(forKey: "langria-ui-language"))
+    setChoice(stored)
   }
 
   func setChoice(_ next: String?) {
     choice = next
-    UserDefaults.standard.set(next, forKey: "langria-ui-language")
+    if !ShareSettings.isExtension { UserDefaults.standard.set(next, forKey: "langria-ui-language") }
     language = i18n.invokeMethod("setLanguage", withArguments: [next ?? ""]).toString() ?? "en"
   }
 
