@@ -40,6 +40,28 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.2
+
+公開中の 1.0（ビルド 72）からの更新。1.1・1.1.1 は公開していない。
+
+```text
+英語:
+- Translate from the share sheet: select text in any app, tap Share and choose Langria to read the translation right there. Copy it, have it read aloud, or change the target language on the spot
+- New "Translate with Langria" action for Shortcuts, the Action button and Siri: it opens Langria with the text and translates it right away
+- When a translation fails, tap "Translate again" to send it again. If the API key or model is wrong, "Open settings" appears instead
+- Fixed an issue where the ad at the bottom of the page could stay blank after returning to the app
+- The Apple Watch app icon now fits neatly inside the circle
+- Small fixes and improvements to voice input, reading text from photos and syncing with Apple Watch
+
+日本語:
+- 共有シートから翻訳できるようにしました。ほかのアプリで文章を選んで「共有」→「Langria」を選ぶと、その場で訳文を読めます。コピーや読み上げ、翻訳先の切り替えもできます
+- ショートカット・アクションボタン・Siri で使える「Langriaで翻訳」のアクションを追加しました。Langria が開き、渡した文章をすぐ翻訳します
+- 翻訳に失敗したとき、「もう一度翻訳」でその場で送り直せるようにしました。APIキーやモデルが正しくないときは「設定を開く」が出ます
+- アプリに戻ったとき、ページの下の広告が空白のままになることがある問題を直しました
+- Apple Watch のアイコンの文字が円の内側に収まるようにしました
+- 音声入力・写真の文字の読み取り・Apple Watch との同期の細かな不具合を直しました
+```
+
 #### 1.1.1
 
 ```text
@@ -100,6 +122,7 @@ TRANSLATE ANYTHING
 • Photograph a sign, menu or document, or pick a photo: the text is read on your device and translated. Only the text is sent, never the image.
 • Speak to type, and have the translation read aloud in the target language.
 • Swap the languages with one tap for a back-and-forth conversation.
+• Share text from any app to Langria and read the translation right in the share sheet.
 • Send text from other apps with the “Translate with Langria” action in Shortcuts, the Action button or Siri.
 • On Apple Watch, dictate or scribble a sentence and see — or hear — the translation on your wrist.
 
@@ -132,6 +155,7 @@ Langria は、入力した文章・話した言葉・写真の文字を、選ん
 ・看板・メニュー・書類を撮影するか写真を選ぶと、文字を端末の中で読み取って翻訳します。送るのは文字だけで、画像は送りません。
 ・話して入力し、訳文を翻訳先の言語で読み上げられます。
 ・入れ替えボタンで言語をすぐに切り替えられるので、会話にも使えます。
+・ほかのアプリで文章を共有して「Langria」を選ぶと、共有シートの中で訳文を読めます。
 ・ショートカット・アクションボタン・Siri の「Langriaで翻訳」で、ほかのアプリの文章を送って翻訳できます。
 ・Apple Watch では、音声入力や手書きで文章を入れ、訳文を手元で読んだり聞いたりできます。
 
@@ -224,8 +248,9 @@ To test:
    (a key created only for this review, on Google's free tier)
 3. Type or paste text in the top box; the translation appears below after a moment.
 4. Camera / photo buttons: the text in the photo is read on the device (Vision) and translated. The microphone button turns speech into text.
-5. Shortcuts: the app provides a “Translate with Langria” action; running it opens the app with the given text in the top box and translates it.
-6. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
+5. Share sheet: select text in Safari (or any app) → Share → Langria. The share extension translates it in the sheet with the key entered in step 2.
+6. Shortcuts: the app provides a “Translate with Langria” action; running it opens the app with the given text in the top box and translates it.
+7. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
 
 Ads: a Google AdMob banner is shown at the end of the page. On first launch the app shows Google's consent form where required by law (EEA/UK), then the App Tracking Transparency prompt. Declining tracking does not limit any feature.
 

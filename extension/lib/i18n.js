@@ -242,6 +242,10 @@
       'ios.watchNote': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain. Turning this off deletes them from the watch.',
       'ios.watchNotInstalled': 'Langria is not installed on your Apple Watch yet. Install it in the Watch app on this iPhone, under My Watch → Available Apps.',
       'ios.watchNoteLocked': 'Sends your API keys and settings to Langria on your Apple Watch, which keeps a copy of the keys in its keychain (protected by the watch’s passcode, without Face ID). The keys are sent while they are unlocked. Turning this off deletes them from the watch.',
+      'ios.shareClose': 'Close',
+      'ios.shareNoText': 'There is no text to translate.',
+      'ios.shareNoKey': 'Set an API key in the Langria app to translate.',
+      'ios.shareFixInApp': 'Check the API key and model in the Langria app.',
 
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': 'Speak or type',
@@ -484,6 +488,10 @@
       'ios.watchNote': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます。オフにすると Apple Watch から削除します。',
       'ios.watchNotInstalled': 'Apple Watch に Langria がまだ入っていません。この iPhone の Watch アプリの「マイウォッチ」→「利用可能なApp」からインストールしてください。',
       'ios.watchNoteLocked': 'APIキーと設定を Apple Watch の Langria に送ります。キーの複製は Apple Watch のキーチェーンに保存されます（Face ID ではなく Apple Watch のパスコードで保護されます）。キーはロックを解除している間に送ります。オフにすると Apple Watch から削除します。',
+      'ios.shareClose': '閉じる',
+      'ios.shareNoText': '翻訳する文章がありません。',
+      'ios.shareNoKey': '翻訳するには、Langria アプリで APIキーを設定してください。',
+      'ios.shareFixInApp': 'Langria アプリで APIキーとモデルを確認してください。',
 
       // Apple Watch app (the iPhone app sends it these messages)
       'watch.input': '話すか入力する',

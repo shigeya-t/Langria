@@ -18,9 +18,10 @@ enum KeyStore {
   }
 
   /// Whether the stored item needs authentication to read. Kept in
-  /// UserDefaults only to draw the UI before reading the keychain.
+  /// UserDefaults only to draw the UI before reading the keychain (the share
+  /// extension reads the app's copy in ShareSettings).
   static var isLocked: Bool {
-    get { UserDefaults.standard.bool(forKey: "langria-lock") }
+    get { ShareSettings.isExtension ? ShareSettings.load()["langria-lock"] == "true" : UserDefaults.standard.bool(forKey: "langria-lock") }
     set { UserDefaults.standard.set(newValue, forKey: "langria-lock") }
   }
 
@@ -81,7 +82,11 @@ enum KeyStore {
     isLocked = locked
   }
 
+  /// In the app's own keychain group (where the item has always been), which
+  /// the share extension can read too.
   private static var baseQuery: [CFString: Any] {
-    [kSecClass: kSecClassGenericPassword, kSecAttrService: service, kSecAttrAccount: account]
+    var query: [CFString: Any] = [kSecClass: kSecClassGenericPassword, kSecAttrService: service, kSecAttrAccount: account]
+    if let group = ShareSettings.accessGroup { query[kSecAttrAccessGroup] = group }
+    return query
   }
 }

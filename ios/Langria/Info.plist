@@ -5,6 +5,9 @@
 <dict>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-1566635098782317~1904181907</string>
+	<!-- The keychain group shared with the share extension (ShareSettings.swift) -->
+	<key>LangriaKeychainGroup</key>
+	<string>$(AppIdentifierPrefix)$(LANGRIA_BUNDLE_ID)</string>
 	<key>LangriaBannerUnitID</key>
 	<string>$(ADMOB_BANNER_UNIT_ID)</string>
 	<!-- Google and the third-party buyers listed at https://developers.google.com/admob/ios/3p-skadnetworks -->

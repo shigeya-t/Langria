@@ -21,7 +21,7 @@ configFiles:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    MARKETING_VERSION: "1.1.1"
+    MARKETING_VERSION: "1.2"
     CURRENT_PROJECT_VERSION: "1"
     DEAD_CODE_STRIPPING: YES
     ENABLE_USER_SCRIPT_SANDBOXING: YES
@@ -50,10 +50,12 @@ targets:
         optional: true
     dependencies:
       - target: LangriaWatch
+      - target: LangriaShare
       - package: GoogleMobileAds
       - package: GoogleUserMessagingPlatform
     settings:
       PRODUCT_NAME: Langria
+      CODE_SIGN_ENTITLEMENTS: Langria/Langria.entitlements
       GENERATE_INFOPLIST_FILE: true
       INFOPLIST_FILE: Langria/Info.plist
       INFOPLIST_KEY_CFBundleDisplayName: Langria
@@ -93,6 +95,36 @@ targets:
       SKIP_INSTALL: true
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+  # "Langria" in the share sheet. It translates in the sheet with the app's
+  # API keys and the settings the app copies (ShareSettings.swift), both in
+  # the app's keychain group, which the two targets list in their entitlements.
+  LangriaShare:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: LangriaShare
+      - path: Langria/Translator.swift
+      - path: Langria/Shared.swift
+      - path: Langria/KeyStore.swift
+      - path: Langria/ShareSettings.swift
+      - path: Langria/Speaker.swift
+      - path: Langria/Screenshots.swift
+      - path: ../extension/lib/i18n.js
+        buildPhase: resources
+      - path: ../extension/lib/languages.js
+        buildPhase: resources
+    settings:
+      PRODUCT_NAME: LangriaShare
+      PRODUCT_BUNDLE_IDENTIFIER: $(LANGRIA_BUNDLE_ID).share
+      CODE_SIGN_ENTITLEMENTS: LangriaShare/LangriaShare.entitlements
+      GENERATE_INFOPLIST_FILE: true
+      INFOPLIST_FILE: LangriaShare/Info.plist
+      INFOPLIST_KEY_CFBundleDisplayName: Langria
+      INFOPLIST_KEY_NSFaceIDUsageDescription: Langria uses Face ID to unlock your API keys.
+      INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: false
+      TARGETED_DEVICE_FAMILY: "1,2"
+      SKIP_INSTALL: true
+      APPLICATION_EXTENSION_API_ONLY: YES
   LangriaTests:
     type: bundle.unit-test
     platform: iOS

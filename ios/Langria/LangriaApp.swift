@@ -18,6 +18,7 @@ struct LangriaApp: App {
     _watch = StateObject(wrappedValue: WatchSync(model: model, shared: shared))
     // For TranslateIntent, which runs in the app once it is open.
     AppDependencyManager.shared.add(dependency: model)
+    ShareSettings.startCopying()
   }
 
   var body: some Scene {

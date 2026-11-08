@@ -63,4 +63,13 @@ final class AppModelTests: XCTestCase {
     for _ in 0..<5 where model.result == nil { try await Task.sleep(for: .milliseconds(100)) }
     XCTAssertEqual(model.result, "こんにちは")
   }
+
+  func testCopiesSettingsForTheShareExtension() {
+    UserDefaults.standard.set("anthropic", forKey: "langria-provider")
+    UserDefaults.standard.set("Korean", forKey: "langria-target")
+    ShareSettings.save()
+    let copied = ShareSettings.load()
+    XCTAssertEqual(copied["langria-provider"], "anthropic")
+    XCTAssertEqual(copied["langria-target"], "Korean")
+  }
 }
