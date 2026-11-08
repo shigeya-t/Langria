@@ -18,13 +18,15 @@ mkdir -p "$out/images"
 for locale in en ja; do
   for shot in 2-selection 3-layout; do cp "store/chrome/images/$locale-$shot.png" "$out/images/"; done
 done
-cp assets/langria-screenshot.png "$out/images/en-web-app.png"
-cp assets/langria-screenshot-ja.png "$out/images/ja-web-app.png"
+# Light and dark versions for the page (made by scripts/capture-site.mjs and store/chrome/capture.mjs).
+cp assets/site/*.png "$out/images/"
 for locale in en ja; do
   cp "store/ios/images/$locale-iphone-1-translate.png" "$out/images/$locale-ios-translate.png"
+  cp "store/ios/images/$locale-iphone-3-dark.png" "$out/images/$locale-ios-translate-dark.png"
   cp "store/ios/images/$locale-iphone-2-photo.png" "$out/images/$locale-ios-photo.png"
   cp "store/ios/images/$locale-watch-1-translate.png" "$out/images/$locale-ios-watch.png"
   cp "store/android/images/$locale-light-1-translate.png" "$out/images/$locale-android-translate.png"
+  cp "store/android/images/$locale-dark-1-translate.png" "$out/images/$locale-android-translate-dark.png"
   # Apple's official badges, unmodified (black for light pages, white for dark).
   for color in black white; do cp "assets/app-store/$locale-$color.svg" "$out/images/app-store-$locale-$color.svg"; done
 done

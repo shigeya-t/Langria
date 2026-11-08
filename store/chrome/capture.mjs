@@ -1,6 +1,8 @@
 // Regenerates the Chrome Web Store images in store/chrome/images/ from the real
 // extension: screenshots (1280x800), promo tiles (440x280, 1400x560) and the
-// store icon (128x128), in English and Japanese.
+// store icon (128x128), in English and Japanese. Light versions of the
+// selection and layout slides, for the project page in light mode, go to
+// assets/site/.
 //
 //   node store/chrome/capture.mjs
 //
@@ -22,6 +24,7 @@ const { chromium } = playwright;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const out = join(root, 'store', 'chrome', 'images');
+const siteOut = join(root, 'assets', 'site');
 
 // The demo article, as [English, Japanese] pairs. The English listing
 // translates the Japanese page into English and the Japanese listing the
@@ -227,12 +230,13 @@ async function main() {
   const composer = await context.newPage();
   // The SVG, not icon-128.png, which has transparent padding around the artwork.
   const icon = `data:image/svg+xml;base64,${(await readFile(join(root, 'extension', 'icons', 'icon.svg'))).toString('base64')}`;
-  const render = async (width, height, body, file, transparent = false) => {
+  const render = async (width, height, body, file, transparent = false, dir = out) => {
     await composer.setViewportSize({ width, height });
     await composer.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body style="width:${width}px;height:${height}px">${body}</body></html>`);
     await composer.evaluate(() => Promise.all([document.fonts.ready, ...[...document.images].map((img) => img.decode())]));
-    await composer.screenshot({ path: join(out, file), omitBackground: transparent });
+    await composer.screenshot({ path: join(dir, file), omitBackground: transparent });
   };
+  await mkdir(siteOut, { recursive: true });
   const frame = (src, extra = '') => `<div class="window ${extra}"><div class="chrome"><i></i><i></i><i></i><span class="url"></span></div><img src="${src}"></div>`;
   const brand = `<img class="mark" src="${icon}" alt="">Langria`;
 
@@ -245,9 +249,13 @@ async function main() {
 
     await render(1280, 800, `<div class="slide" ${lang}><div class="caption"><div class="brand">${brand}</div><h1>${c.hero[0]}<br><em>${c.hero[1]}</em></h1><p>${c.heroSub}</p></div>
       <div class="stage">${frame(after, 'hero')}<img class="popup" src="${popup}"></div></div>`, `${locale}-1-page.png`);
-    await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.bubble[0]}</h1><p>${c.bubble[1]}</p></div>${frame(bubble, 'center')}</div>`, `${locale}-2-selection.png`);
-    await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.compare[0]}</h1><p>${c.compare[1]}</p></div>
-      <div class="pair"><figure>${frame(before)}<figcaption>${c.before}</figcaption></figure><figure>${frame(after)}<figcaption>${c.after}</figcaption></figure></div></div>`, `${locale}-3-layout.png`);
+    const selection = (theme) => `<div class="slide wide ${theme}" ${lang}><div class="caption top"><h1>${c.bubble[0]}</h1><p>${c.bubble[1]}</p></div>${frame(bubble, 'center')}</div>`;
+    const layout = (theme) => `<div class="slide wide ${theme}" ${lang}><div class="caption top"><h1>${c.compare[0]}</h1><p>${c.compare[1]}</p></div>
+      <div class="pair"><figure>${frame(before)}<figcaption>${c.before}</figcaption></figure><figure>${frame(after)}<figcaption>${c.after}</figcaption></figure></div></div>`;
+    await render(1280, 800, selection(''), `${locale}-2-selection.png`);
+    await render(1280, 800, layout(''), `${locale}-3-layout.png`);
+    await render(1280, 800, selection('light'), `${locale}-extension-selection-light.png`, false, siteOut);
+    await render(1280, 800, layout('light'), `${locale}-extension-layout-light.png`, false, siteOut);
     await render(1280, 800, `<div class="slide wide" ${lang}><div class="caption top"><h1>${c.options[0]}</h1><p>${c.options[1]}</p></div>${frame(options, 'center')}</div>`, `${locale}-4-settings.png`);
 
     const step = (n, img) => `<figure><figcaption><b>${n + 1}</b>${c.steps[n]}</figcaption><div class="shot"><img src="${img}"></div></figure>`;
@@ -296,6 +304,10 @@ const css = `
   .marquee > div:first-child { position:absolute; left:72px; top:0; bottom:0; width:500px; display:flex; flex-direction:column; justify-content:center; gap:24px; }
   .marquee h1 { font-size:44px; line-height:1.25; } .marquee p { margin:0; font-size:19px; line-height:1.6; color:#cbd1cd; } .marquee .stage { position:absolute; left:740px; top:70px; width:760px; } .marquee .stage .hero { width:760px; }
   .marquee .stage .popup { width:250px; right:auto; left:-60px; top:170px; }
+  .slide.light { background:radial-gradient(1200px 600px at 85% 110%, #e1edc6 0%, transparent 60%), #f5f6f2; color:#161a17; }
+  .light .caption p { color:#5c6660; } .light .pair figcaption { color:#5f8a1a; }
+  .light .window { border-color:#dde2d9; box-shadow:0 30px 80px rgba(22,26,23,.16); }
+  .light .chrome { background:#e9ece6; } .light .chrome i { background:#cdd3c8; } .light .chrome .url { background:#dde2d9; }
 `;
 
 main().catch((error) => { console.error(error); process.exit(1); });
