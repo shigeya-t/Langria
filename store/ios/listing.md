@@ -40,6 +40,18 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.2.1
+
+```text
+英語:
+- Sharing a page from Safari now translates the article itself, not the menus at the top of the page
+- When the AI sends the text back untranslated, Langria now asks it once more
+
+日本語:
+- Safari からページを共有したとき、ページ上部のメニューではなく記事の本文を翻訳するようにしました
+- AI が原文を翻訳せずにそのまま返したとき、もう一度頼み直すようにしました
+```
+
 #### 1.2
 
 公開中の 1.0（ビルド 72）からの更新。1.1・1.1.1 は公開していない。

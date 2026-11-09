@@ -238,6 +238,17 @@ SDK を更新したら、上の Google の案内を見直して、変わって�
 
 ## リリースノート（各版の「このリリースの新機能」、500）
 
+### versionCode 4（1.1.1）
+
+```text
+<en-US>
+- When the AI sends the text back untranslated, Langria now asks it once more
+</en-US>
+<ja-JP>
+- AI が原文を翻訳せずにそのまま返したとき、もう一度頼み直すようにしました
+</ja-JP>
+```
+
 ### versionCode 3（1.1）
 
 ```text
