@@ -81,6 +81,7 @@ targets:
     sources:
       - path: LangriaWatch
       - path: Langria/Translator.swift
+      - path: Langria/LanguageDetector.swift
       - path: Langria/Speaker.swift
       - path: Langria/WatchSettings.swift
       - path: Langria/Screenshots.swift
@@ -104,6 +105,7 @@ targets:
     sources:
       - path: LangriaShare
       - path: Langria/Translator.swift
+      - path: Langria/LanguageDetector.swift
       - path: Langria/Shared.swift
       - path: Langria/KeyStore.swift
       - path: Langria/ShareSettings.swift

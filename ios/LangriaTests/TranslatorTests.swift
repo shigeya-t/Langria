@@ -91,6 +91,26 @@ final class TranslatorTests: XCTestCase {
     XCTAssertTrue(remembered)
   }
 
+  func testRetriesWhenTheTextComesBackUnchanged() async throws {
+    StubProtocol.handler = { _, body in
+      let thinking = (body["generationConfig"] as? [String: Any])?["thinkingConfig"]
+      return (200, ["candidates": [["content": ["parts": [["text": thinking == nil ? "新華通訊社主催" : "新华通讯社 主办"]]], "finishReason": "STOP"]]])
+    }
+    let result = try await translator(.gemini).translate("新华通讯社主办")
+    XCTAssertEqual(result, "新華通訊社主催")
+    XCTAssertEqual(StubProtocol.requests.count, 2)
+    let contents = try XCTUnwrap(StubProtocol.requests.last?.1["contents"] as? [[String: Any]])
+    let parts = try XCTUnwrap(contents.first?["parts"] as? [[String: String]])
+    XCTAssertTrue(parts.first?["text"]?.hasPrefix("The previous reply returned this text untranslated.") == true)
+  }
+
+  func testKeepsTextAlreadyInTheTarget() async throws {
+    StubProtocol.handler = { _, _ in (200, ["content": [["type": "text", "text": "こんにちは、世界"]], "stop_reason": "end_turn"]) }
+    let result = try await translator(.anthropic).translate("こんにちは、世界")
+    XCTAssertEqual(result, "こんにちは、世界")
+    XCTAssertEqual(StubProtocol.requests.count, 1)
+  }
+
   func testErrors() async {
     StubProtocol.handler = { _, _ in (401, ["error": ["message": "Invalid key"]]) }
     do {

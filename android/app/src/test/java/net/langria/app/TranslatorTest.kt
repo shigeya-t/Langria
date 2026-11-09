@@ -86,6 +86,23 @@ class TranslatorTest {
     assertTrue("openai:gpt-5.9-test" in Translator.rejectsFastSettings)
   }
 
+  @Test fun retriesWhenTheTextComesBackUnchanged() = runBlocking {
+    handler = { body ->
+      val thinking = body.getJSONObject("generationConfig").has("thinkingConfig")
+      200 to JSONObject().put("candidates", org.json.JSONArray().put(JSONObject().put("finishReason", "STOP").put("content", JSONObject().put("parts", org.json.JSONArray().put(JSONObject().put("text", if (thinking) "新华通讯社 主办" else "新華通訊社主催"))))))
+    }
+    assertEquals("新華通訊社主催", translator(Provider.GEMINI).translate("新华通讯社主办"))
+    assertEquals(2, requests.size)
+    val text = requests.last().body.getJSONArray("contents").getJSONObject(0).getJSONArray("parts").getJSONObject(0).getString("text")
+    assertTrue(text, text.startsWith("The previous reply returned this text untranslated."))
+  }
+
+  @Test fun keepsTextAlreadyInTheTarget() = runBlocking {
+    handler = { 200 to JSONObject("""{"content":[{"type":"text","text":"こんにちは、世界"}],"stop_reason":"end_turn"}""") }
+    assertEquals("こんにちは、世界", translator(Provider.ANTHROPIC).translate("こんにちは、世界"))
+    assertEquals(1, requests.size)
+  }
+
   @Test fun errors() = runBlocking {
     handler = { 401 to JSONObject("""{"error":{"message":"Invalid key"}}""") }
     try {

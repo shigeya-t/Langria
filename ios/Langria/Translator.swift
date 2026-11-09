@@ -103,12 +103,28 @@ struct Translator {
     let id = "\(provider.rawValue):\(model)"
     let rejected = await MainActor.run { Self.rejectsFastSettings.contains(id) }
     let fast = !rejected && (provider == .openai ? reasoningEffort != nil : provider == .gemini && thinkingConfig != nil)
+    var result: String
     do {
-      return try await call(text, fast: fast)
+      result = try await call(text, fast: fast)
     } catch TranslationError.api(400, let detail) where fast && detail.range(of: "reason|think|effort", options: [.regularExpression, .caseInsensitive]) != nil {
       _ = await MainActor.run { Self.rejectsFastSettings.insert(id) }
-      return try await call(text, fast: false)
+      result = try await call(text, fast: false)
     }
+    // Asked once more, with thinking on and the echo pointed out.
+    if echoed(text, result) {
+      try Task.checkCancellation()
+      result = try await call(text, fast: false, again: true)
+    }
+    return result
+  }
+
+  /// Some models, given a long run of menu items or a language they handle
+  /// poorly, send the text back as it is. That is taken as an answer only
+  /// when the text already looks like the target language (or has no
+  /// letters). Same as `echoed` in app.js.
+  func echoed(_ text: String, _ result: String) -> Bool {
+    let squeeze = { (value: String) in value.unicodeScalars.filter { !CharacterSet.whitespacesAndNewlines.contains($0) }.map(String.init).joined() }
+    return squeeze(text) == squeeze(result) && text.unicodeScalars.contains { CharacterSet.letters.contains($0) } && LanguageDetector.detect(text) != language
   }
 
   private var systemPrompt: String {
@@ -118,9 +134,10 @@ struct Translator {
   // A closing tag inside the text would end the source early; a zero-width
   // space breaks it up. The language is repeated for models that otherwise
   // echo the text back (see app.js).
-  private func wrapSource(_ text: String) -> String {
+  private func wrapSource(_ text: String, again: Bool) -> String {
     let escaped = text.replacingOccurrences(of: "<(/source)", with: "<\u{200B}$1", options: [.regularExpression, .caseInsensitive])
-    return "Translate into \(language):\n<source>\n\(escaped)\n</source>"
+    let lead = again ? "The previous reply returned this text untranslated. Translate all of it into \(language):" : "Translate into \(language):"
+    return "\(lead)\n<source>\n\(escaped)\n</source>"
   }
 
   private func maxOutputTokens(_ text: String) -> Int { min(16000, 1024 + text.utf16.count * 3) }
@@ -143,10 +160,10 @@ struct Translator {
     return nil
   }
 
-  private func call(_ text: String, fast: Bool) async throws -> String {
+  private func call(_ text: String, fast: Bool, again: Bool = false) async throws -> String {
     switch provider {
     case .openai:
-      var body: [String: Any] = ["model": model, "instructions": systemPrompt, "input": wrapSource(text)]
+      var body: [String: Any] = ["model": model, "instructions": systemPrompt, "input": wrapSource(text, again: again)]
       if fast, let effort = reasoningEffort { body["reasoning"] = ["effort": effort] }
       let data = try await post("https://api.openai.com/v1/responses", headers: ["Authorization": "Bearer \(key)"], body: body)
       if (data["incomplete_details"] as? [String: Any])?["reason"] as? String == "max_output_tokens" { throw TranslationError.truncated }
@@ -154,7 +171,7 @@ struct Translator {
       let parts = (data["output"] as? [[String: Any]] ?? []).flatMap { $0["content"] as? [[String: Any]] ?? [] }
       return parts.filter { ["output_text", "text"].contains($0["type"] as? String) }.compactMap { $0["text"] as? String }.joined()
     case .anthropic:
-      let body: [String: Any] = ["model": model, "max_tokens": maxOutputTokens(text), "system": systemPrompt, "messages": [["role": "user", "content": wrapSource(text)]]]
+      let body: [String: Any] = ["model": model, "max_tokens": maxOutputTokens(text), "system": systemPrompt, "messages": [["role": "user", "content": wrapSource(text, again: again)]]]
       let data = try await post("https://api.anthropic.com/v1/messages", headers: ["x-api-key": key, "anthropic-version": "2023-06-01"], body: body)
       if data["stop_reason"] as? String == "max_tokens" { throw TranslationError.truncated }
       if data["stop_reason"] as? String == "refusal" { throw TranslationError.blocked(reason: "refusal") }
@@ -165,7 +182,7 @@ struct Translator {
       var config: [String: Any] = ["maxOutputTokens": maxOutputTokens(text)]
       if !((geminiMajor ?? 0) >= 3) { config["temperature"] = 0.2 }
       if fast, let thinking = thinkingConfig { config["thinkingConfig"] = thinking }
-      let body: [String: Any] = ["systemInstruction": ["parts": [["text": systemPrompt]]], "contents": [["parts": [["text": wrapSource(text)]]]], "generationConfig": config]
+      let body: [String: Any] = ["systemInstruction": ["parts": [["text": systemPrompt]]], "contents": [["parts": [["text": wrapSource(text, again: again)]]]], "generationConfig": config]
       let path = model.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed.subtracting(CharacterSet(charactersIn: "/:"))) ?? model
       let data = try await post("https://generativelanguage.googleapis.com/v1beta/models/\(path):generateContent", headers: ["x-goog-api-key": key], body: body)
       let candidate = (data["candidates"] as? [[String: Any]])?.first
