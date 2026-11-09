@@ -33,7 +33,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `ios/Langria/Info.plist` | ビルド設定で書けない Info.plist の項目（AdMob の App ID `GADApplicationIdentifier`、`SKAdNetworkItems`、広告ユニット ID）。`INFOPLIST_KEY_*` から作られる項目とまとめられる |
 | `ios/Langria/Ads.swift` | 広告。起動して前面に来るたびに UMP で同意を確認し（必要な地域では同意フォーム）、ATT の許可を求めてから SDK を始める。バナー（インラインのアダプティブバナー）はページの最後（`ContentView` の `BannerAd`）に置き、文章と一緒にスクロールする。ATT は前面に来るたびに、まだ決めていなければ求め直す（前面になりきる前に求めると、ダイアログが出ずに終わるため）。同意フォームを出し直す入口が必要な地域では、設定に「広告のプライバシー設定」が出る |
 | `ios/Langria/Shared.swift` | `i18n.js`・`languages.js`・`version.js` を JavaScriptCore で実行し、文言（`t()`）・言語一覧・コミットハッシュを Swift から使う。3つはビルド時にアプリへ同梱される（`project.yml`） |
-| `ios/Langria/Translator.swift` | iOS の API 呼び出しとプロンプト（`app.js` の移植）。`LanguageDetector.swift` は入れ替えボタン用の `detectLanguage` の移植 |
+| `ios/Langria/Translator.swift` | iOS の API 呼び出しとプロンプト（`app.js` の移植）。`LanguageDetector.swift` は入れ替えボタンと、原文がそのまま返ってきたときの再試行（`echoed`）に使う `detectLanguage` の移植（Apple Watch・共有シートも使う） |
 | `ios/Langria/AppModel.swift` | 翻訳画面の状態。設定は UserDefaults に Webアプリの localStorage と同じ名前（`langria-provider` など）で保存。700ms 待って翻訳、古い応答は `latestRequest` で捨てる |
 | `ios/Langria/KeyStore.swift` | APIキーをキーチェーン（このデバイスのみ）に JSON 1件で保存。ロックをオンにすると `.userPresence` のアクセス制御を付け、読み出しに Face ID / パスコードが要る。Webアプリの vault.js の代わり |
 | `ios/Langria/TranslateIntent.swift` | App Intent「Langriaで翻訳」と App Shortcut。アプリを開き、`AppModel.receive` で文章を原文欄に入れて待たずに翻訳する（`AppModel` は `AppDependencyManager` で渡す）。タイトルなどはシステムがアプリを動かさずに読むので、`i18n.js` ではなく `Langria/*.lproj/Localizable.strings`（Siri のフレーズは `AppShortcuts.strings`）に英語・日本語で書く |

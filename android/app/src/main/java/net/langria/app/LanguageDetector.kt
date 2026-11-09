@@ -1,7 +1,7 @@
 package net.langria.app
 
 /**
- * A rough guess by script, used only by the swap button; the model itself
+ * A rough guess by script, used by the swap button and to tell an echoed reply (`echoed`); the model itself
  * works out the source language. A port of `detectLanguage` in app.js (and
  * LanguageDetector.swift): keep them in step. Returns a target language name,
  * or null when the script does not point to one language.

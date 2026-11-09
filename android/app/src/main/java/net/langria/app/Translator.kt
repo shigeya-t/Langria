@@ -109,13 +109,26 @@ class Translator(
   suspend fun translate(text: String): String {
     val id = "${provider.id}:$model"
     val fast = id !in rejectsFastSettings && (if (provider == Provider.OPENAI) reasoningEffort != null else provider == Provider.GEMINI && thinkingConfig != null)
-    return try {
+    val result = try {
       call(text, fast)
     } catch (error: TranslationError.Api) {
       if (!(fast && error.status == 400 && Regex("reason|think|effort", RegexOption.IGNORE_CASE).containsMatchIn(error.detail))) throw error
       rejectsFastSettings.add(id)
       call(text, false)
     }
+    // Asked once more, with thinking on and the echo pointed out.
+    return if (echoed(text, result)) call(text, false, again = true) else result
+  }
+
+  /**
+   * Some models, given a long run of menu items or a language they handle
+   * poorly, send the text back as it is. That is taken as an answer only when
+   * the text already looks like the target language (or has no letters).
+   * Same as `echoed` in app.js.
+   */
+  fun echoed(text: String, result: String): Boolean {
+    val squeeze = { value: String -> value.replace(Regex("\\s+"), "") }
+    return squeeze(text) == squeeze(result) && text.any { it.isLetter() } && LanguageDetector.detect(text) != language
   }
 
   private val systemPrompt: String
@@ -124,9 +137,10 @@ class Translator(
   // A closing tag inside the text would end the source early; a zero-width
   // space breaks it up. The language is repeated for models that otherwise
   // echo the text back (see app.js).
-  private fun wrapSource(text: String): String {
+  private fun wrapSource(text: String, again: Boolean): String {
     val escaped = text.replace(Regex("<(/source)", RegexOption.IGNORE_CASE), "<​$1")
-    return "Translate into $language:\n<source>\n$escaped\n</source>"
+    val lead = if (again) "The previous reply returned this text untranslated. Translate all of it into $language:" else "Translate into $language:"
+    return "$lead\n<source>\n$escaped\n</source>"
   }
 
   // Counted in UTF-16 units, as `text.length` in app.js.
@@ -150,9 +164,9 @@ class Translator(
       else -> null
     }
 
-  private suspend fun call(text: String, fast: Boolean): String = when (provider) {
+  private suspend fun call(text: String, fast: Boolean, again: Boolean = false): String = when (provider) {
     Provider.OPENAI -> {
-      val body = JSONObject().put("model", model).put("instructions", systemPrompt).put("input", wrapSource(text))
+      val body = JSONObject().put("model", model).put("instructions", systemPrompt).put("input", wrapSource(text, again))
       if (fast) reasoningEffort?.let { body.put("reasoning", JSONObject().put("effort", it)) }
       val data = post("/v1/responses", mapOf("Authorization" to "Bearer $key"), body)
       if (data.optJSONObject("incomplete_details")?.optString("reason") == "max_output_tokens") throw TranslationError.Truncated
@@ -169,7 +183,7 @@ class Translator(
         .put("model", model)
         .put("max_tokens", maxOutputTokens(text))
         .put("system", systemPrompt)
-        .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", wrapSource(text))))
+        .put("messages", JSONArray().put(JSONObject().put("role", "user").put("content", wrapSource(text, again))))
       val data = post("/v1/messages", mapOf("x-api-key" to key, "anthropic-version" to "2023-06-01"), body)
       when (data.optString("stop_reason")) {
         "max_tokens" -> throw TranslationError.Truncated
@@ -185,7 +199,7 @@ class Translator(
       if (fast) thinkingConfig?.let { config.put("thinkingConfig", it) }
       val body = JSONObject()
         .put("systemInstruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
-        .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", wrapSource(text))))))
+        .put("contents", JSONArray().put(JSONObject().put("parts", JSONArray().put(JSONObject().put("text", wrapSource(text, again))))))
         .put("generationConfig", config)
       val path = URLEncoder.encode(model, "UTF-8").replace("+", "%20")
       val data = post("/v1beta/models/$path:generateContent", mapOf("x-goog-api-key" to key), body)

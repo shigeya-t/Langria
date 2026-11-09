@@ -42,7 +42,7 @@ function initTheme() {
   applyTheme(stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
 }
 
-// A rough guess by script, used only by the swap button; the
+// A rough guess by script, used by the swap button and to tell an echoed reply (`echoed`); the
 // model itself works out the source language. Returns a targetLanguages key,
 // or null when the script does not point to one language. The script with the
 // most text wins, so a Latin brand name or URL in Chinese text does not make
@@ -140,8 +140,9 @@ function systemPrompt(language) {
 // past a backslash and still see the tag. The target language is repeated
 // here because, with only the bare text in the user turn, some models echo
 // it back instead of translating into a language other than English.
-function wrapSource(text, language) {
-  return `Translate into ${language}:\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`;
+function wrapSource(text, language, again) {
+  const lead = again ? `The previous reply returned this text untranslated. Translate all of it into ${language}:` : `Translate into ${language}:`;
+  return `${lead}\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`;
 }
 
 // Room for the translation, which can be longer than the original.
@@ -203,15 +204,23 @@ function generationConfig(model, maxTokens, fast) {
 
 const rejectsFastSettings = new Set(); // "provider:model" that returned 400 with them.
 
+// Some models, given a long run of menu items or a language they handle
+// poorly, send the text back as it is. That is taken as an answer only when
+// the text already looks like the target language (or has no letters).
+function sameText(a, b) { return a.replace(/\s+/g, '') === b.replace(/\s+/g, ''); }
+function echoed(text, result, language) {
+  return sameText(text, result) && /\p{L}/u.test(text) && detectLanguage(text) !== language;
+}
+
 // Keeps the HTTP status and the service's own message so the caller can
 // react to specific API rejections.
 class ApiError extends Error {
   constructor(status, detail) { super(friendlyApiError(status, detail)); this.status = status; this.detail = detail || ''; }
 }
 
-async function callProvider(key, model, language, text, fast) {
+async function callProvider(key, model, language, text, fast, again) {
   if (provider === 'openai') {
-    const body = { model, instructions: systemPrompt(language), input: wrapSource(text, language) };
+    const body = { model, instructions: systemPrompt(language), input: wrapSource(text, language, again) };
     if (fast) body.reasoning = { effort: reasoningEffort(model) };
     const response = await fetch('https://api.openai.com/v1/responses', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` }, body: JSON.stringify(body) });
     const data = await response.json();
@@ -220,7 +229,7 @@ async function callProvider(key, model, language, text, fast) {
     return getOpenAIText(data);
   }
   if (provider === 'anthropic') {
-    const response = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model, max_tokens: maxOutputTokens(text), system: systemPrompt(language), messages: [{ role: 'user', content: wrapSource(text, language) }] }) });
+    const response = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model, max_tokens: maxOutputTokens(text), system: systemPrompt(language), messages: [{ role: 'user', content: wrapSource(text, language, again) }] }) });
     const data = await response.json();
     if (!response.ok) throw new ApiError(response.status, data.error?.message);
     if (data.stop_reason === 'max_tokens') throw new Error(t('error.truncated'));
@@ -229,7 +238,7 @@ async function callProvider(key, model, language, text, fast) {
       .map((part) => part.text || '')
       .join('');
   }
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: systemPrompt(language) }] }, contents: [{ parts: [{ text: wrapSource(text, language) }] }], generationConfig: generationConfig(model, maxOutputTokens(text), fast) }) });
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: systemPrompt(language) }] }, contents: [{ parts: [{ text: wrapSource(text, language, again) }] }], generationConfig: generationConfig(model, maxOutputTokens(text), fast) }) });
   const data = await response.json();
   if (!response.ok) throw new ApiError(response.status, data.error?.message);
   const candidate = data.candidates?.[0];
@@ -278,6 +287,11 @@ async function requestTranslation(text) {
       if (!fast || !(error instanceof ApiError) || error.status !== 400 || !/reason|think|effort/i.test(error.detail)) throw error;
       rejectsFastSettings.add(id);
       result = await callProvider(key, model, language, text, false);
+    }
+    // Asked once more, with thinking on and the echo pointed out.
+    if (result && echoed(text, result, language)) {
+      if (request !== latestRequest) return;
+      result = await callProvider(key, model, language, text, false, true);
     }
     if (request !== latestRequest) return;
     if (!result) throw new Error(t('error.emptyWeb'));

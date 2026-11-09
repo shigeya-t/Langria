@@ -1,6 +1,6 @@
 import Foundation
 
-/// A rough guess by script, used only by the swap button; the model itself
+/// A rough guess by script, used by the swap button and to tell an echoed reply (`echoed`); the model itself
 /// works out the source language. A port of `detectLanguage` in app.js: keep
 /// the two in step. Returns a target language name, or nil when the script
 /// does not point to one language.
