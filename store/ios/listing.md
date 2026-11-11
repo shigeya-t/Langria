@@ -40,6 +40,20 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.3
+
+```text
+英語:
+- New to Langria? Until you add an API key, the translation pane now shows three steps to get started, with a link to get a free Gemini API key
+- The settings now link to each AI service's API key page
+- You can rate Langria from the settings
+
+日本語:
+- はじめての方へ: APIキーを入れるまで、翻訳欄に3ステップの案内を出すようにしました。無料の Gemini APIキーを取得するページへのリンクもあります
+- 設定に、各 AI サービスの APIキー取得ページへのリンクを加えました
+- 設定から Langria を評価できるようにしました
+```
+
 #### 1.2.1
 
 ```text
@@ -102,14 +116,14 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### キーワード（100、カンマ区切り・空白なし）
 
-名前とサブタイトルの語は重ねて入れなくても検索されます。他社の商標（ChatGPT・Claude・Gemini など）は入れません（審査で却下されます）。
+名前とサブタイトルの語（英語: translator・translate・text・photos・voice、日本語: 翻訳・文章・写真・音声・AI）は、重ねて入れなくても検索されるので入れません。空いた分は、使う場面（旅行・メニュー・看板・ビジネス）と機能（スキャン・ショートカット）の語に使います。空白を含む語（`Apple Watch`）は入れず、他社の商標（ChatGPT・Claude・Gemini など）も入れません（審査で却下されます）。
 
 ```text
-translate,translation,ocr,camera,photo,voice,speech,language,english,japanese,chinese,korean,watch
+translation,ocr,camera,scan,speech,dictate,language,english,japanese,chinese,korean,travel,menu,sign
 ```
 
 ```text
-翻訳,通訳,翻訳機,カメラ,写真,OCR,音声,読み上げ,英語,中国語,韓国語,外国語,Apple Watch
+通訳,翻訳機,和訳,英訳,OCR,スキャン,読み上げ,英語,中国語,韓国語,外国語,旅行,海外,メニュー,看板,会話,ビジネス,メール,APIキー,ウォッチ,ショートカット
 ```
 
 ### プロモーションテキスト（170、審査なしでいつでも変えられる）

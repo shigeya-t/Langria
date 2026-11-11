@@ -18,6 +18,14 @@ enum Provider: String, CaseIterable, Identifiable {
     case .gemini: "gemini-3.5-flash-lite"
     }
   }
+  /// The page where the service issues API keys.
+  var keysURL: URL {
+    switch self {
+    case .openai: URL(string: "https://platform.openai.com/api-keys")!
+    case .anthropic: URL(string: "https://console.anthropic.com/settings/keys")!
+    case .gemini: URL(string: "https://aistudio.google.com/apikey")!
+    }
+  }
   var orb: String {
     switch self {
     case .openai: "✦"

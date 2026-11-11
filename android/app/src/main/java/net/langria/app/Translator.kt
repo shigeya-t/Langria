@@ -13,10 +13,11 @@ import java.net.URI
 import java.net.URLEncoder
 import java.util.Collections
 
-enum class Provider(val title: String, val defaultModel: String, val orb: String) {
-  OPENAI("ChatGPT", "gpt-6-luna", "✦"),
-  ANTHROPIC("Claude", "claude-haiku-5-5", "A"),
-  GEMINI("Gemini", "gemini-3.5-flash-lite", "✧");
+/** `keysUrl` is the page where the service issues API keys. */
+enum class Provider(val title: String, val defaultModel: String, val orb: String, val keysUrl: String) {
+  OPENAI("ChatGPT", "gpt-6-luna", "✦", "https://platform.openai.com/api-keys"),
+  ANTHROPIC("Claude", "claude-haiku-5-5", "A", "https://console.anthropic.com/settings/keys"),
+  GEMINI("Gemini", "gemini-3.5-flash-lite", "✧", "https://aistudio.google.com/apikey");
 
   /** The name stored in settings and used for the keys, as in the web app. */
   val id: String get() = name.lowercase()

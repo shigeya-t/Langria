@@ -92,6 +92,20 @@ store/ios/capture.sh --build   # 片方だけなら --lang en / --lang ja、--de
 - シミュレーターの PNG にはアルファチャンネルがあり、App Store Connect が受け付けないので、撮ったあとに取り除きます。
 - 時刻は iPhone・iPhone Duo・iPad では 9:41 に揃えます。Apple Watch は `simctl status_bar` が効かない（コマンドが返ってこない）ので、そのときの時刻になります。
 
+### 見出しを付ける
+
+App Store Connect に入れるのは、撮った画像そのものではなく、上に見出しを付けた画像です（最初の2〜3枚で何ができるかが伝わると、インストールされやすくなります）。`store/caption.mjs` が、`store/ios/images/` の画像から `store/ios/images/captioned/` に同じ大きさで作ります。
+
+```sh
+node store/caption.mjs ios   # Playwright（Chromium）が要る。見出しは Mac では Hiragino Sans で描かれる
+```
+
+- 並べる順は、iPhone が「翻訳 → 写真 → 共有シート → Apple Watch → 設定（登録なし・自分のAPIキー）→ 翻訳モード（ダーク）」、iPad と iPhone Duo は Apple Watch を除いた同じ順です（ファイル名の番号の順に入れる）。
+- 共有シートの画像は `capture.sh` では撮れません。シミュレーターの Safari で文章を選んで「共有」→「Langria」を開き、`xcrun simctl io booted screenshot store/ios/images/ja-iphone-5-share.png` のように `{en,ja}-{iphone,duo,ipad}-5-share.png` で保存すると、次から見出し付きで入ります（なければ飛ばします）。
+- 見出しの文言は `caption.mjs` の `captions` にあります。他社の商標（ChatGPT・Claude・Gemini）は入れません。
+- 元の画像（`store/ios/images/` 直下）は紹介ページ（`scripts/build-pages.sh`）も使うので、消さないでください。
+- 比べたいときは、App Store Connect の **プロダクトページの最適化** で、見出しの違う画像を並べて試せます。
+
 ## 6. 掲載情報を入力して審査に出す
 
 [listing.md](listing.md) を見ながら入力します。

@@ -38,6 +38,8 @@ final class AppModel: ObservableObject {
   /// The target in the list that matches the device's language.
   let deviceLanguage: String
   @Published private(set) var listening = false
+  /// Goes up when it is a good moment to ask for a rating (see countDayOfUse).
+  @Published private(set) var reviewRequests = 0
   @Published private(set) var speaking = false
 
   private let dictation = Dictation()
@@ -156,6 +158,7 @@ final class AppModel: ObservableObject {
       pane = .result(trimmed)
       stale = false
       statusKey = "status.done"
+      countDayOfUse()
       Screenshots.ready()
     } catch is CancellationError {
     } catch {
@@ -163,6 +166,23 @@ final class AppModel: ObservableObject {
       pane = .failure(error as? TranslationError ?? .unexpected(error.localizedDescription), provider, model)
       statusKey = "status.error"
     }
+  }
+
+  /// The days of use, counted by their first translation, after which a rating is asked for.
+  private static let reviewDays = [3, 10, 30]
+
+  /// Asks for a rating right after a translation worked, on someone's third,
+  /// tenth and thirtieth day of use. Days rather than translations, as typing
+  /// one sentence can translate many times. The system decides whether the
+  /// prompt is shown (three times a year at most).
+  private func countDayOfUse() {
+    guard !Screenshots.enabled else { return }
+    let today = Calendar.current.startOfDay(for: .now).timeIntervalSinceReferenceDate
+    guard defaults.double(forKey: "langria-review-day") != today else { return }
+    defaults.set(today, forKey: "langria-review-day")
+    let days = defaults.integer(forKey: "langria-review-days") + 1
+    defaults.set(days, forKey: "langria-review-days")
+    if Self.reviewDays.contains(days) { reviewRequests += 1 }
   }
 
   /// Sends the text again at once, after a failed translation.
@@ -319,6 +339,9 @@ final class AppModel: ObservableObject {
   func removeImage() { image = nil }
 
   // MARK: Keys
+
+  /// No key for any service yet: the translation pane shows how to get one.
+  var needsSetup: Bool { keys.map { $0.values.allSatisfy(\.isEmpty) } ?? false }
 
   var lockMethod: String { KeyStore.biometryName ?? shared.t("ios.passcode") }
 
