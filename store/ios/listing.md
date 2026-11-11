@@ -105,7 +105,7 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 名前とサブタイトルの語（英語: translator・translate・text・photos・voice、日本語: 翻訳・文章・写真・音声・AI）は、重ねて入れなくても検索されるので入れません。空いた分は、使う場面（旅行・メニュー・看板・ビジネス）と機能（スキャン・ショートカット）の語に使います。空白を含む語（`Apple Watch`）は入れず、他社の商標（ChatGPT・Claude・Gemini など）も入れません（審査で却下されます）。
 
 ```text
-translation,ocr,camera,scan,speech,dictate,language,english,japanese,chinese,korean,travel,menu,sign,watch,siri,api
+translation,ocr,camera,scan,speech,dictate,language,english,japanese,chinese,korean,travel,menu,sign
 ```
 
 ```text

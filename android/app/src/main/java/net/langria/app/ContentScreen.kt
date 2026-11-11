@@ -158,7 +158,10 @@ fun ContentScreen(model: AppModel, ads: Ads, onOpenSettings: () -> Unit) {
       // as a whole.
       BoxWithConstraints(Modifier.fillMaxSize()) {
         val wide = maxWidth >= 600.dp
-        val pageHeight = maxOf(maxHeight, if (typing) 400.dp else if (wide) 460.dp else 520.dp)
+        // The guide to the first key is taller than half a phone's screen: it gets
+        // the larger share, and a longer page, so its buttons show without scrolling.
+        val guiding = model.needsSetup && !typing && !wide
+        val pageHeight = maxOf(maxHeight, if (typing) 400.dp else if (wide) 460.dp else if (guiding) 840.dp else 520.dp)
         val gap = if (typing) 10.dp else 14.dp
         Column(
           Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
@@ -175,7 +178,7 @@ fun ContentScreen(model: AppModel, ads: Ads, onOpenSettings: () -> Unit) {
               }
             } else {
               InputPane(model, Modifier.weight(1f))
-              OutputPane(model, Modifier.weight(1f), onOpenSettings)
+              OutputPane(model, Modifier.weight(if (guiding) 2f else 1f), onOpenSettings)
             }
             if (!typing) {
               Text(
