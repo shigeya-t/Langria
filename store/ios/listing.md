@@ -40,6 +40,20 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.3
+
+```text
+英語:
+- New to Langria? Until you add an API key, the translation pane now shows three steps to get started, with a link to get a free Gemini API key
+- The settings now link to each AI service's API key page
+- You can rate Langria from the settings
+
+日本語:
+- はじめての方へ: APIキーを入れるまで、翻訳欄に3ステップの案内を出すようにしました。無料の Gemini APIキーを取得するページへのリンクもあります
+- 設定に、各 AI サービスの APIキー取得ページへのリンクを加えました
+- 設定から Langria を評価できるようにしました
+```
+
 #### 1.2.1
 
 ```text

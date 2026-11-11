@@ -238,6 +238,21 @@ SDK を更新したら、上の Google の案内を見直して、変わって�
 
 ## リリースノート（各版の「このリリースの新機能」、500）
 
+### versionCode 5（1.2）
+
+```text
+<en-US>
+- New to Langria? Until you add an API key, the translation pane now shows three steps to get started, with a link to get a free Gemini API key
+- The settings now link to each AI service's API key page
+- You can rate Langria from the settings
+</en-US>
+<ja-JP>
+- はじめての方へ: APIキーを入れるまで、翻訳欄に3ステップの案内を出すようにしました。無料の Gemini APIキーを取得するページへのリンクもあります
+- 設定に、各 AI サービスの APIキー取得ページへのリンクを加えました
+- 設定から Langria を評価できるようにしました
+</ja-JP>
+```
+
 ### versionCode 4（1.1.1）
 
 ```text
