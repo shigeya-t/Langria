@@ -76,6 +76,7 @@ fun SettingsScreen(model: AppModel, holder: AppHolder, onClose: () -> Unit) {
   val activity = LocalActivity.current
   val context = LocalContext.current
   val scope = rememberCoroutineScope()
+  val uri = LocalUriHandler.current
   var editing by rememberSaveable { mutableStateOf(model.provider) }
   // Kept in the model rather than the saved state, which is written out unencrypted.
   var key by model::keyDraft
@@ -202,6 +203,7 @@ fun SettingsScreen(model: AppModel, holder: AppHolder, onClose: () -> Unit) {
               }
             }
           }
+          TextButton(onClick = { uri.openUri(editing.keysUrl) }) { Text(shared.t("ios.getKey", "name" to editing.title)) }
         }
 
         Section(shared.t("ios.lockTitle"), shared.t("android.lockNote", "method" to model.lockMethod)) {
@@ -239,8 +241,9 @@ fun SettingsScreen(model: AppModel, holder: AppHolder, onClose: () -> Unit) {
 
         Section(null, null) {
           Text(shared.t("web.securityNote"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-          val uri = LocalUriHandler.current
           TextButton(onClick = { uri.openUri("https://github.com/shigeya-t/Langria") }) { Text(shared.t("settings.repo")) }
+          // The Play page, where a rating can be left. The in-app review prompt would need the Play library.
+          TextButton(onClick = { uri.openUri("https://play.google.com/store/apps/details?id=${context.packageName}") }) { Text(shared.t("ios.rate")) }
           if (holder.ads.privacyOptionsRequired) {
             TextButton(onClick = { activity?.let { holder.ads.showPrivacyOptions(it) } }) { Text(shared.t("ios.adPrivacy")) }
           }

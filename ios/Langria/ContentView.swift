@@ -1,4 +1,5 @@
 import PhotosUI
+import StoreKit
 import SwiftUI
 
 struct ContentView: View {
@@ -6,6 +7,7 @@ struct ContentView: View {
   @EnvironmentObject private var model: AppModel
   @EnvironmentObject private var ads: Ads
   @Environment(\.horizontalSizeClass) private var sizeClass
+  @Environment(\.requestReview) private var requestReview
   @State private var showSettings = false
   @State private var showCamera = false
   @State private var photoItem: PhotosPickerItem?
@@ -90,6 +92,13 @@ struct ContentView: View {
       }
     }
     .animation(.easeOut(duration: 0.2), value: model.toast)
+    .onChange(of: model.reviewRequests) { _, _ in
+      Task {
+        // Time to read the translation first; not if it has been cleared or is being edited again.
+        try? await Task.sleep(for: .seconds(2))
+        if model.result != nil && !showSettings { requestReview() }
+      }
+    }
   }
 
   private var providerPicker: some View {
@@ -319,6 +328,8 @@ struct ContentView: View {
 
   @ViewBuilder private var translation: some View {
     switch model.pane {
+    case .empty where model.needsSetup, .noKey where model.needsSetup:
+      setupGuide
     case .empty:
       VStack(spacing: 8) {
         Text("✦").font(.title).foregroundStyle(.tertiary)
@@ -363,6 +374,37 @@ struct ContentView: View {
         }
       }
     }
+  }
+}
+
+private extension ContentView {
+  /// Shown until the first API key is saved: how to get a free one and where to put it.
+  var setupGuide: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text(shared.t("ios.setupTitle")).font(.headline)
+      VStack(alignment: .leading, spacing: 8) {
+        ForEach(1...3, id: \.self) { step in
+          HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Text("\(step)").font(.subheadline.weight(.bold).monospacedDigit()).foregroundStyle(Color.accentColor)
+            Text(shared.t("ios.setupStep\(step)"))
+          }
+        }
+      }
+      .font(.subheadline)
+      // Side by side, or one above the other when the labels are long.
+      ViewThatFits(in: .horizontal) {
+        HStack(spacing: 10) { setupButtons }
+        VStack(alignment: .leading, spacing: 10) { setupButtons }
+      }
+      Text(shared.t("ios.setupOther")).font(.footnote).foregroundStyle(.secondary)
+    }
+    .padding(.bottom, 8)
+  }
+
+  @ViewBuilder var setupButtons: some View {
+    Link(shared.t("ios.setupGetKey"), destination: Provider.gemini.keysURL).buttonStyle(.bordered)
+    // The guide is about Gemini, so the settings open on it.
+    Button(shared.t("ios.setupEnterKey")) { model.provider = .gemini; showSettings = true }.buttonStyle(.borderedProminent)
   }
 }
 

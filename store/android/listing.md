@@ -102,7 +102,7 @@ Langria は個人による独立したプロジェクトであり、OpenAI・Ant
 | --- | --- | --- |
 | アプリのアイコン | 512 × 512、32ビット PNG、1MB 以下 | `images/icon-512.png`。`extension/icons/icon.svg` を 512 × 512 で書き出したもの（角丸は Play が付けるので、SVG の角丸の `clipPath` を外して四角いまま・透明なしにする） |
 | フィーチャー グラフィック | 1024 × 500、JPEG または 24ビット PNG（透明なし） | `images/en-feature-graphic-1024x500.png` / `images/ja-feature-graphic-1024x500.png`。アイコンと名前、短いキャッチコピー（英語・日本語）。端に大事な文字を置かない。他社の商標（ChatGPT など）は入れない |
-| スマートフォンのスクリーンショット | 2〜8枚、縦横とも 320〜3840px、長辺は短辺の2倍まで | `capture.sh` で撮る（1080 × 1920。[README.md](README.md) の「スクリーンショット」） |
+| スマートフォンのスクリーンショット | 2〜8枚、縦横とも 320〜3840px、長辺は短辺の2倍まで | `capture.sh` で撮り、`node store/caption.mjs android` で見出しを付けた `images/captioned/` の画像を入れる（1080 × 1920。[README.md](README.md) の「スクリーンショット」） |
 | 7インチ・10インチのタブレット | 任意（最大8枚ずつ） | 撮ると大きい画面の端末で見つかりやすくなる。横並びの画面を見せる |
 | プレビュー動画 | 任意。YouTube の URL（広告なし・年齢制限なし・埋め込み可） | `capture.sh --video` で録画し（`images/{en,ja}-demo.mp4`）、YouTube にアップロードする |
 

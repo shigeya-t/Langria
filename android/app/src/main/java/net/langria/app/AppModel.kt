@@ -87,6 +87,8 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
   /** The decrypted keys, or null while locked. */
   var keys by mutableStateOf<Map<String, String>?>(null)
     private set
+  /** No key for any service yet: the translation pane shows how to get one. */
+  val needsSetup: Boolean get() = keys?.values?.all { it.isEmpty() } == true
   /** The key being typed in the settings; it survives a rotation and is dropped on locking. */
   var keyDraft by mutableStateOf("")
   var locked by mutableStateOf(KeyStore.isLocked(context))

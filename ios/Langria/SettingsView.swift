@@ -62,6 +62,7 @@ struct SettingsView: View {
             }
           }
           .animation(.easeOut(duration: 0.2), value: justSaved)
+          Link(shared.t("ios.getKey", ["name": editing.name]), destination: editing.keysURL)
         } header: {
           Text("\(shared.t("settings.apiKey")) · \(editing.name)")
         } footer: {
@@ -116,6 +117,7 @@ struct SettingsView: View {
         Section {
           Text(shared.t("web.securityNote")).font(.footnote).foregroundStyle(.secondary)
           Link(shared.t("settings.repo"), destination: URL(string: "https://github.com/shigeya-t/Langria")!)
+          Link(shared.t("ios.rate"), destination: URL(string: "https://apps.apple.com/app/id6828902876?action=write-review")!)
           if ads.privacyOptionsRequired {
             Button(shared.t("ios.adPrivacy")) { Task { await ads.showPrivacyOptions() } }
           }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -106,6 +107,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -417,17 +419,20 @@ private fun OutputPane(model: AppModel, modifier: Modifier, onOpenSettings: () -
         val scroll = remember(model.pane) { ScrollState(0) }
         val scrolling = Modifier.fillMaxSize().verticalScroll(scroll).padding(vertical = 10.dp)
         when (val pane = model.pane) {
-          Pane.Empty -> Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("✦", fontSize = 22.sp, color = MaterialTheme.colorScheme.outline)
-            Text(shared.t("web.empty"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+          Pane.Empty, Pane.NoKey -> when {
+            model.needsSetup -> SetupGuide(model, scrolling, onOpenSettings)
+            pane == Pane.NoKey -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+              Text(shared.t("web.noKey"))
+              OutlinedButton(onClick = onOpenSettings) { Text(shared.t("web.openSettings")) }
+            }
+            else -> Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Text("✦", fontSize = 22.sp, color = MaterialTheme.colorScheme.outline)
+              Text(shared.t("web.empty"), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
           }
           Pane.Translating -> CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp))
           is Pane.Result -> androidx.compose.foundation.text.selection.SelectionContainer(scrolling) {
             Text(pane.text, style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, lineHeight = 28.sp))
-          }
-          Pane.NoKey -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(shared.t("web.noKey"))
-            OutlinedButton(onClick = onOpenSettings) { Text(shared.t("web.openSettings")) }
           }
           Pane.NoTarget -> Text(shared.t("web.enterTarget"), scrolling)
           Pane.Locked -> Column(scrolling, verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -464,6 +469,30 @@ private fun OutputPane(model: AppModel, modifier: Modifier, onOpenSettings: () -
       }
     },
   )
+}
+
+/** Shown until the first API key is saved: how to get a free one and where to put it. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SetupGuide(model: AppModel, modifier: Modifier, onOpenSettings: () -> Unit) {
+  val shared = model.shared
+  val uri = LocalUriHandler.current
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Text(shared.t("ios.setupTitle"), style = MaterialTheme.typography.titleMedium)
+    for (step in 1..3) {
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("$step", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(shared.t("ios.setupStep$step"))
+      }
+    }
+    // Side by side, or one above the other when the labels are long.
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      OutlinedButton(onClick = { uri.openUri(Provider.GEMINI.keysUrl) }) { Text(shared.t("ios.setupGetKey")) }
+      // The guide is about Gemini, so the settings open on it.
+      Button(onClick = { model.pickProvider(Provider.GEMINI); onOpenSettings() }) { Text(shared.t("ios.setupEnterKey")) }
+    }
+    Text(shared.t("ios.setupOther"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+  }
 }
 
 /** A rounded pane with a title row and a footer row, like the web app's panes. */
