@@ -1,5 +1,5 @@
-import { loadSettings, requestUnlock, targetLanguageName, contentScripts } from './lib/providers.js';
-import { translateSegments, translateText } from './lib/translator.js';
+import { loadSettings, requestUnlock, targetLanguageName, customTarget, contentScripts } from './lib/providers.js';
+import { translateSegments, translateText, resolveLanguageName } from './lib/translator.js';
 
 async function injectContentScript(tabId, frameIds) {
   await chrome.scripting.executeScript({ target: frameIds ? { tabId, frameIds } : { tabId }, files: contentScripts });
@@ -80,6 +80,24 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
   }
 });
 
+// The target given to the model. A typed-in name is settled once (see
+// resolveLanguageName) and remembered for the browser session; if that
+// fails, the name is used as typed and the translation reports any error.
+async function targetFor(settings) {
+  const name = targetLanguageName(settings);
+  if (!name || settings.target !== customTarget) return name;
+  const { resolvedTargets = {} } = await chrome.storage.session.get('resolvedTargets');
+  if (resolvedTargets[name]) return resolvedTargets[name];
+  try {
+    const resolved = await resolveLanguageName(settings, name);
+    await chrome.storage.session.set({ resolvedTargets: { ...resolvedTargets, [name]: resolved } });
+    return resolved;
+  } catch (error) {
+    console.warn('Langria: could not resolve the target language name', error);
+    return name;
+  }
+}
+
 async function handleMessage(message, sender) {
   const tabId = sender.tab?.id;
   if (message.type === 'translateFrames' && tabId) { await translateFrames(tabId); return {}; }
@@ -93,13 +111,13 @@ async function handleMessage(message, sender) {
     return { translations: await translateSegments(settings, message.segments, message.target) };
   }
   if (message.type === 'translateText') {
-    const target = targetLanguageName(settings);
+    const target = await targetFor(settings);
     if (!target) throw new Error(LangriaI18n.t('ext.missingTarget'));
     // A 429 can hold the reply for up to a minute; the bubble shows the wait.
     const onWait = (wait) => tabId && chrome.tabs.sendMessage(tabId, { type: 'selectionWait', until: wait.until, perMinute: wait.perMinute, name: wait.name }, { frameId: sender.frameId }).catch(() => {});
     return { translation: await translateText(settings, message.text, target, onWait) };
   }
-  if (message.type === 'getSettings') return { settings: { provider: settings.provider, mode: settings.mode, target: targetLanguageName(settings) } };
+  if (message.type === 'getSettings') return { settings: { provider: settings.provider, mode: settings.mode, target: await targetFor(settings) } };
   if (message.type === 'status' && sender.tab?.id) {
     const text = message.status === 'translated' ? 'ON' : message.status === 'translating' ? '…' : message.status === 'error' ? '!' : '';
     chrome.action.setBadgeBackgroundColor({ tabId: sender.tab.id, color: message.status === 'error' ? '#e5484d' : '#5f8a1a' });
