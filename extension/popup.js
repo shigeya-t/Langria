@@ -1,4 +1,4 @@
-import { translationModes, targetLanguages, customTarget, targetLanguageName, loadSettings, modelFor, requestUnlock, unlockVault, missingKeyMessage, contentScripts } from './lib/providers.js';
+import { configs, translationModes, targetLanguages, customTarget, targetLanguageName, loadSettings, modelFor, requestUnlock, unlockVault, missingKeyMessage, contentScripts } from './lib/providers.js';
 
 const $ = (selector) => document.querySelector(selector);
 const t = (key, params) => LangriaI18n.t(key, params);
@@ -6,6 +6,8 @@ let tabId = null;
 let pageState = null;
 let missingSites = []; // Frame sites on the page that Langria has no access to.
 let framesRender = 0;
+let shownSettings = null; // Settings the popup shows, for the rate limit note.
+let limitTimer = null;
 
 function fillSelect(select, entries, value) {
   select.innerHTML = '';
@@ -14,6 +16,7 @@ function fillSelect(select, entries, value) {
 }
 
 function renderProvider(settings) {
+  shownSettings = settings;
   document.querySelectorAll('.provider').forEach((button) => {
     const active = button.dataset.provider === settings.provider;
     button.classList.toggle('active', active);
@@ -36,6 +39,25 @@ function showStatus(message, tone = '') {
   $('#status').className = `status ${tone}`;
 }
 
+// While translating, says why it is slow or paused: the service worker
+// records a wait after a 429 and the per-minute limit it learned (Gemini's
+// free tier, for instance), so the page does not just look stuck.
+async function renderLimit() {
+  clearTimeout(limitTimer);
+  const { rateLimitWait: wait, learnedLimits = {} } = await chrome.storage.session.get(['rateLimitWait', 'learnedLimits']).catch(() => ({}));
+  let text = '';
+  if (pageState?.status === 'translating' && shownSettings) {
+    const { provider } = shownSettings, model = modelFor(shownSettings), name = configs[provider].name;
+    const seconds = wait?.provider === provider && wait.model === model ? Math.ceil((wait.until - Date.now()) / 1000) : 0;
+    const pace = learnedLimits[`${provider}:${model}`];
+    if (seconds > 0) {
+      text = t(wait.perMinute ? 'popup.limitWaitCount' : 'popup.limitWait', { name, limit: wait.perMinute, seconds });
+      limitTimer = setTimeout(renderLimit, 1000);
+    } else if (pace) text = t('popup.limitPace', { name, limit: pace });
+  }
+  $('#limitNote').textContent = text;
+}
+
 // Frames from other sites are translated only once the user allows each site.
 async function renderFrames(sites = []) {
   const run = ++framesRender;
@@ -50,6 +72,7 @@ async function renderFrames(sites = []) {
 function renderPage(state) {
   pageState = state;
   renderFrames(state.frameSites);
+  renderLimit();
   const button = $('#actionButton');
   button.disabled = false;
   const progress = $('#progress');
@@ -198,6 +221,7 @@ async function init() {
   chrome.runtime.onMessage.addListener((message, sender) => {
     if (message.type === 'status' && sender.tab?.id === tabId) renderPage(message);
   });
+  chrome.storage.onChanged.addListener((changes, area) => { if (area === 'session' && (changes.rateLimitWait || changes.learnedLimits)) renderLimit(); });
 }
 
 init();

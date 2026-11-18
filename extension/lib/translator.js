@@ -88,6 +88,33 @@ function perMinuteQuota(data, retryAfter) {
   return Number.isFinite(limit) ? limit : null;
 }
 
+// A per-day request quota (quotaId "GenerateRequestsPerDay…") does not come
+// back within a retry, so it is reported at once instead of retried. Gemini's
+// daily quotas reset at midnight Pacific time.
+function dailyQuota(data) {
+  const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
+  const violation = (failure?.violations || []).find((item) => /PerDay/i.test(item.quotaId || ''));
+  return violation ? { limit: Number(violation.quotaValue) || null } : null;
+}
+
+function nextPacificMidnight(now = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hourCycle: 'h23', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(now).map((part) => [part.type, Number(part.value)]));
+  const elapsed = ((parts.hour * 60 + parts.minute) * 60 + parts.second) * 1000 + now.getMilliseconds();
+  return new Date(now.getTime() + 86400000 - elapsed);
+}
+
+function dailyQuotaMessage(provider, model, quota, detail) {
+  const reset = nextPacificMidnight().toLocaleString(LangriaI18n.language === 'ja' ? 'ja-JP' : 'en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const summary = t(quota.limit ? 'error.dailyLimitCount' : 'error.dailyLimit', { name: configs[provider].name, model, limit: quota.limit, reset });
+  return `${summary}\n${t('error.detail', { detail: detail || t('error.noDetail') })}`;
+}
+
+// Tells the popup why a translation is paused. chrome.storage.session is
+// readable from the popup but not from pages.
+function reportWait(settings, ms, perMinute) {
+  chrome.storage.session.set({ rateLimitWait: { provider: settings.provider, model: modelFor(settings), until: Date.now() + ms, perMinute: perMinute || null } }).catch(() => {});
+}
+
 // Gemini reports how long to wait in a RetryInfo detail ("23s");
 // OpenAI and Anthropic use the Retry-After header (seconds).
 function retryAfterMs(response, data) {
@@ -134,6 +161,8 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
   console.info(`Langria: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
   if (response.status === 429) {
+    const daily = dailyQuota(data);
+    if (daily) throw new FatalTranslationError(dailyQuotaMessage(provider, model, daily, data.error?.message));
     const wait = retryAfterMs(response, data);
     throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), wait, perMinuteQuota(data, wait));
   }
@@ -158,6 +187,7 @@ async function callModel(settings, system, user, maxTokens) {
       if (error.perMinute) learnLimit(settings, error.perMinute);
       console.warn(`Langria: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
+      reportWait(settings, wait, error.perMinute);
     }
   }
 }
