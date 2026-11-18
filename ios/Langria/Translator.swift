@@ -55,6 +55,10 @@ enum TranslationMode: String, CaseIterable, Identifiable {
 /// follows the UI language.
 enum TranslationError: Error {
   case api(status: Int, detail: String)
+  /// A 429. `wait` is how long the service asked to wait, if it said.
+  case rateLimit(wait: TimeInterval?, perMinute: Int?, detail: String)
+  /// Gemini's per-day quota is used up; it resets at midnight Pacific time.
+  case dailyLimit(limit: Int?, detail: String)
   case truncated
   case empty
   case network
@@ -69,6 +73,9 @@ enum TranslationError: Error {
   var remedy: Remedy {
     switch self {
     case .api(let status, _): [400, 401, 403, 404].contains(status) ? .settings : .retry
+    case .rateLimit: .retry
+    // Another model or service is the way on until the quota resets.
+    case .dailyLimit: .settings
     case .truncated, .blocked: .none
     case .empty, .network, .timeout, .unexpected: .retry
     }
@@ -83,6 +90,15 @@ enum TranslationError: Error {
         : status == 400 || status == 404 ? t("error.model", ["model": model])
         : t("error.http", ["name": provider.name, "status": String(status)])
       return "\(summary)\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
+    case .rateLimit(_, _, let detail):
+      return "\(t("error.rateLimit", [:]))\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
+    case .dailyLimit(let limit, let detail):
+      let formatter = DateFormatter()
+      formatter.locale = Locale(identifier: t("limit.locale", [:]))
+      formatter.setLocalizedDateFormatFromTemplate("MMMdjmm")
+      let params = ["name": provider.name, "model": model, "limit": limit.map(String.init) ?? "", "reset": formatter.string(from: Self.nextPacificMidnight())]
+      let summary = t(limit == nil ? "error.dailyLimit" : "error.dailyLimitCount", params)
+      return "\(summary)\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
     case .truncated: return t("error.truncated", [:])
     case .empty: return t("error.empty", [:])
     case .network: return t("error.network", ["name": provider.name])
@@ -90,6 +106,14 @@ enum TranslationError: Error {
     case .blocked(let reason): return t("error.blocked", ["name": provider.name, "reason": reason])
     case .unexpected(let detail): return detail.isEmpty ? t("error.unexpected", [:]) : detail
     }
+  }
+}
+
+extension TranslationError {
+  static func nextPacificMidnight(after now: Date = .now) -> Date {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+    return calendar.nextDate(after: now, matching: DateComponents(hour: 0, minute: 0, second: 0), matchingPolicy: .nextTime) ?? now
   }
 }
 
@@ -102,6 +126,13 @@ struct Translator {
   let key: String
   let language: String
   let mode: TranslationMode
+  /// Called before waiting out a per-minute limit, with when the wait ends
+  /// and the limit. Without it a 429 is reported at once (the share sheet
+  /// and the watch).
+  var onWait: ((Date, Int?) async -> Void)? = nil
+
+  static let maxLimitRetries = 2
+  static let maxLimitWait: TimeInterval = 60
 
   /// "provider:model" that rejected the low-thinking settings with a 400.
   @MainActor static var rejectsFastSettings = Set<String>()
@@ -113,17 +144,32 @@ struct Translator {
     let fast = !rejected && (provider == .openai ? reasoningEffort != nil : provider == .gemini && thinkingConfig != nil)
     var result: String
     do {
-      result = try await call(text, fast: fast)
+      result = try await callRetrying(text, fast: fast)
     } catch TranslationError.api(400, let detail) where fast && detail.range(of: "reason|think|effort", options: [.regularExpression, .caseInsensitive]) != nil {
       _ = await MainActor.run { Self.rejectsFastSettings.insert(id) }
-      result = try await call(text, fast: false)
+      result = try await callRetrying(text, fast: false)
     }
     // Asked once more, with thinking on and the echo pointed out.
     if echoed(text, result) {
       try Task.checkCancellation()
-      result = try await call(text, fast: false, again: true)
+      result = try await callRetrying(text, fast: false, again: true)
     }
     return result
+  }
+
+  /// Waits out a per-minute limit for as long as the service asks (up to a
+  /// minute) and sends the text again. Same as `retryRateLimit` in app.js.
+  private func callRetrying(_ text: String, fast: Bool, again: Bool = false) async throws -> String {
+    var attempt = 0
+    while true {
+      do {
+        return try await call(text, fast: fast, again: again)
+      } catch TranslationError.rateLimit(let wait?, let perMinute, _) where onWait != nil && wait <= Self.maxLimitWait && attempt < Self.maxLimitRetries {
+        attempt += 1
+        await onWait?(Date.now.addingTimeInterval(wait), perMinute)
+        try await Task.sleep(for: .seconds(wait))
+      }
+    }
   }
 
   /// Some models, given a long run of menu items or a language they handle
@@ -219,8 +265,27 @@ struct Translator {
     }
     let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
     let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+    let error = json["error"] as? [String: Any]
+    let detail = error?["message"] as? String ?? ""
+    if status == 429 {
+      // Gemini names the quota in a QuotaFailure detail and the wait in a
+      // RetryInfo detail ("23s"); the others send Retry-After (seconds).
+      let details = error?["details"] as? [[String: Any]] ?? []
+      let violations = details.first { ($0["@type"] as? String)?.hasSuffix("QuotaFailure") == true }?["violations"] as? [[String: Any]] ?? []
+      let quotaValue = { (item: [String: Any]) in Int(item["quotaValue"] as? String ?? "") ?? (item["quotaValue"] as? Int) }
+      if let daily = violations.first(where: { ($0["quotaId"] as? String)?.range(of: "PerDay", options: .caseInsensitive) != nil }) {
+        throw TranslationError.dailyLimit(limit: quotaValue(daily), detail: detail)
+      }
+      let header = Double((response as? HTTPURLResponse)?.value(forHTTPHeaderField: "Retry-After") ?? "") ?? 0
+      let delay = details.first { ($0["@type"] as? String)?.hasSuffix("RetryInfo") == true }?["retryDelay"] as? String
+      let hinted = header > 0 ? header : Double(delay?.replacingOccurrences(of: "s", with: "") ?? "") ?? 0
+      let perMinute = violations.filter {
+        ($0["quotaMetric"] as? String)?.range(of: "requests", options: .caseInsensitive) != nil && ($0["quotaId"] as? String)?.range(of: "PerMinute", options: .caseInsensitive) != nil
+      }.compactMap(quotaValue).filter { $0 > 0 }.min()
+      throw TranslationError.rateLimit(wait: hinted > 0 ? hinted : nil, perMinute: perMinute, detail: detail)
+    }
     guard (200..<300).contains(status) else {
-      throw TranslationError.api(status: status, detail: (json["error"] as? [String: Any])?["message"] as? String ?? "")
+      throw TranslationError.api(status: status, detail: detail)
     }
     return json
   }

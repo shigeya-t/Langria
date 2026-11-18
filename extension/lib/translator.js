@@ -104,7 +104,7 @@ function nextPacificMidnight(now = new Date()) {
 }
 
 function dailyQuotaMessage(provider, model, quota, detail) {
-  const reset = nextPacificMidnight().toLocaleString(LangriaI18n.language === 'ja' ? 'ja-JP' : 'en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const reset = nextPacificMidnight().toLocaleString(t('limit.locale'), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   const summary = t(quota.limit ? 'error.dailyLimitCount' : 'error.dailyLimit', { name: configs[provider].name, model, limit: quota.limit, reset });
   return `${summary}\n${t('error.detail', { detail: detail || t('error.noDetail') })}`;
 }

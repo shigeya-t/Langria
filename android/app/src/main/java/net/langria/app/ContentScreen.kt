@@ -87,6 +87,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -116,6 +117,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -434,6 +436,16 @@ private fun OutputPane(model: AppModel, modifier: Modifier, onOpenSettings: () -
             }
           }
           Pane.Translating -> CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp))
+          is Pane.Waiting -> {
+            // Counts down the wait; once it is over, the text is being sent again.
+            var now by remember(pane) { mutableLongStateOf(System.currentTimeMillis()) }
+            LaunchedEffect(pane) { while (now < pane.until) { delay(1000); now = System.currentTimeMillis() } }
+            val seconds = ((pane.until - now + 999) / 1000).toInt()
+            if (seconds > 0) {
+              val params = arrayOf("name" to pane.provider.title, "limit" to pane.perMinute?.toString().orEmpty(), "seconds" to seconds.toString())
+              Text(shared.t(if (pane.perMinute == null) "limit.wait" else "limit.waitCount", *params), scrolling, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else CircularProgressIndicator(Modifier.align(Alignment.Center).size(32.dp))
+          }
           is Pane.Result -> androidx.compose.foundation.text.selection.SelectionContainer(scrolling) {
             Text(pane.text, style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, lineHeight = 28.sp))
           }
