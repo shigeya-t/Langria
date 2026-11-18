@@ -438,7 +438,25 @@ if (!window.__langriaLoaded) {
     }
   }
 
-  function hideBubble() { bubbleHost?.remove(); }
+  function hideBubble() { clearInterval(waitTimer); bubbleHost?.remove(); }
+
+  // Counts down a rate limit wait while the bubble is still loading.
+  let waitTimer = null;
+  function showWait({ until, perMinute, name }) {
+    clearInterval(waitTimer);
+    const render = () => {
+      const body = bubbleHost?.isConnected && bubbleHost.shadowRoot.querySelector('.body.loading');
+      const seconds = Math.ceil((until - Date.now()) / 1000);
+      if (!body || seconds <= 0) {
+        clearInterval(waitTimer);
+        if (body) body.textContent = t('status.translating');
+        return;
+      }
+      body.textContent = t(perMinute ? 'limit.waitCount' : 'limit.wait', { name, limit: perMinute, seconds });
+    };
+    render();
+    waitTimer = setInterval(render, 1000);
+  }
 
   async function translateSelection(text) {
     const selected = (text || window.getSelection()?.toString() || '').trim();
@@ -447,6 +465,7 @@ if (!window.__langriaLoaded) {
     hideBubble();
     showBubble(t('status.translating'), { loading: true });
     const response = await chrome.runtime.sendMessage({ type: 'translateText', text: selected });
+    clearInterval(waitTimer);
     if (!bubbleHost?.isConnected) return;
     if (response?.error) showBubble(response.error, { error: true });
     else showBubble(response.translation);
@@ -458,6 +477,7 @@ if (!window.__langriaLoaded) {
       sendResponse({});
       return true;
     }
+    if (message.type === 'selectionWait') { showWait(message); return false; }
     // Page-wide messages reach every frame of the tab; only the top frame
     // answers them. The other frames follow it through the service worker.
     if (!isTop) {

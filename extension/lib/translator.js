@@ -88,6 +88,36 @@ function perMinuteQuota(data, retryAfter) {
   return Number.isFinite(limit) ? limit : null;
 }
 
+// A per-day request quota (quotaId "GenerateRequestsPerDay…") does not come
+// back within a retry, so it is reported at once instead of retried. Gemini's
+// daily quotas reset at midnight Pacific time.
+function dailyQuota(data) {
+  const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
+  const violation = (failure?.violations || []).find((item) => /PerDay/i.test(item.quotaId || ''));
+  return violation ? { limit: Number(violation.quotaValue) || null } : null;
+}
+
+function nextPacificMidnight(now = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hourCycle: 'h23', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(now).map((part) => [part.type, Number(part.value)]));
+  const elapsed = ((parts.hour * 60 + parts.minute) * 60 + parts.second) * 1000 + now.getMilliseconds();
+  return new Date(now.getTime() + 86400000 - elapsed);
+}
+
+function dailyQuotaMessage(provider, model, quota, detail) {
+  const reset = nextPacificMidnight().toLocaleString(LangriaI18n.language === 'ja' ? 'ja-JP' : 'en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const summary = t(quota.limit ? 'error.dailyLimitCount' : 'error.dailyLimit', { name: configs[provider].name, model, limit: quota.limit, reset });
+  return `${summary}\n${t('error.detail', { detail: detail || t('error.noDetail') })}`;
+}
+
+// Tells the popup why a translation is paused. chrome.storage.session is
+// readable from the popup but not from pages.
+// `onWait` passes the same to whoever asked (the selection bubble).
+function reportWait(settings, ms, perMinute, onWait) {
+  const wait = { provider: settings.provider, model: modelFor(settings), until: Date.now() + ms, perMinute: perMinute || null };
+  chrome.storage.session.set({ rateLimitWait: wait }).catch(() => {});
+  onWait?.({ ...wait, name: configs[settings.provider].name });
+}
+
 // Gemini reports how long to wait in a RetryInfo detail ("23s");
 // OpenAI and Anthropic use the Retry-After header (seconds).
 function retryAfterMs(response, data) {
@@ -134,6 +164,8 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
   console.info(`Langria: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
   if (response.status === 429) {
+    const daily = dailyQuota(data);
+    if (daily) throw new FatalTranslationError(dailyQuotaMessage(provider, model, daily, data.error?.message));
     const wait = retryAfterMs(response, data);
     throw new RateLimitError(friendlyApiError(provider, model, 429, data.error?.message), wait, perMinuteQuota(data, wait));
   }
@@ -144,7 +176,7 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
 // Retries rate-limited requests after the wait the service asks for. A 429
 // without a retry hint (e.g. a daily quota) is retried with backoff, then
 // reported to the user. Requests that time out are retried right away.
-async function callModel(settings, system, user, maxTokens) {
+async function callModel(settings, system, user, maxTokens, onWait) {
   await learnedReady;
   for (let attempt = 0; ; attempt++) {
     await waitForRateLimit(settings.provider, perMinuteLimit(settings));
@@ -158,6 +190,7 @@ async function callModel(settings, system, user, maxTokens) {
       if (error.perMinute) learnLimit(settings, error.perMinute);
       console.warn(`Langria: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
+      reportWait(settings, wait, error.perMinute, onWait);
     }
   }
 }
@@ -316,6 +349,6 @@ export async function translateSegments(settings, segments, target, retried = fa
 // A closing tag inside the text would end the source early and let the rest
 // pass as instructions. A zero-width space breaks it up; models tend to read
 // past a backslash and still see the tag.
-export function translateText(settings, text, target) {
-  return callModel(settings, textPrompt(settings, target), `Translate into ${target}:\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`, maxOutputTokens(text));
+export function translateText(settings, text, target, onWait) {
+  return callModel(settings, textPrompt(settings, target), `Translate into ${target}:\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`, maxOutputTokens(text), onWait);
 }
