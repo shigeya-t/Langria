@@ -148,8 +148,49 @@ function wrapSource(text, language, again) {
 // Room for the translation, which can be longer than the original.
 function maxOutputTokens(text) { return Math.min(16000, 1024 + text.length * 3); }
 
-function friendlyApiError(status, message) {
+// Gemini names the quota it hit in a QuotaFailure detail. A per-day quota
+// ("GenerateRequestsPerDay…") does not come back within a wait, so it is
+// reported with the time it resets (midnight Pacific time). Same as
+// extension/lib/translator.js.
+function quotaFailure(data) {
+  const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
+  return failure?.violations || [];
+}
+
+function dailyQuota(data) {
+  const violation = quotaFailure(data).find((item) => /PerDay/i.test(item.quotaId || ''));
+  return violation ? { limit: Number(violation.quotaValue) || null } : null;
+}
+
+function perMinuteQuota(data, retryAfter) {
+  const values = quotaFailure(data).filter((violation) => /requests/i.test(violation.quotaMetric || '') && /PerMinute/i.test(violation.quotaId || '')).map((violation) => Number(violation.quotaValue));
+  const fromMessage = retryAfter && retryAfter <= 60000 && data.error?.message?.match(/_requests, limit: (\d+)/)?.[1];
+  const limit = Math.min(...values.filter((value) => value > 0), Number(fromMessage) || Infinity);
+  return Number.isFinite(limit) ? limit : null;
+}
+
+// Gemini reports how long to wait in a RetryInfo detail ("23s"); OpenAI and
+// Anthropic use the Retry-After header, when the browser lets the page read it.
+function retryAfterMs(response, data) {
+  const header = Number(response.headers.get('retry-after'));
+  if (header > 0) return header * 1000;
+  const info = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('RetryInfo'));
+  const seconds = parseFloat(info?.retryDelay);
+  return seconds > 0 ? seconds * 1000 : null;
+}
+
+function nextPacificMidnight(now = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hourCycle: 'h23', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(now).map((part) => [part.type, Number(part.value)]));
+  const elapsed = ((parts.hour * 60 + parts.minute) * 60 + parts.second) * 1000 + now.getMilliseconds();
+  return new Date(now.getTime() + 86400000 - elapsed);
+}
+
+function friendlyApiError(status, message, daily) {
   const name = providerConfig().name;
+  if (daily) {
+    const reset = nextPacificMidnight().toLocaleString(t('limit.locale'), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return `${t(daily.limit ? 'error.dailyLimitCount' : 'error.dailyLimit', { name, model: currentModel(), limit: daily.limit, reset })}\n\n${t('error.detail', { detail: message || t('error.noDetail') })}`;
+  }
   const summary = status === 401 || status === 403 ? t('error.auth', { name })
     : status === 429 ? t('error.rateLimit')
     : status === 400 || status === 404 ? t('error.model', { model: currentModel() })
@@ -215,7 +256,52 @@ function echoed(text, result, language) {
 // Keeps the HTTP status and the service's own message so the caller can
 // react to specific API rejections.
 class ApiError extends Error {
-  constructor(status, detail) { super(friendlyApiError(status, detail)); this.status = status; this.detail = detail || ''; }
+  constructor(status, detail, { daily = null, retryAfter = null, perMinute = null } = {}) {
+    super(friendlyApiError(status, detail, daily));
+    Object.assign(this, { status, detail: detail || '', daily, retryAfter, perMinute });
+  }
+}
+
+function apiError(response, data) {
+  if (response.status !== 429) return new ApiError(response.status, data.error?.message);
+  const retryAfter = retryAfterMs(response, data);
+  return new ApiError(429, data.error?.message, { daily: dailyQuota(data), retryAfter, perMinute: perMinuteQuota(data, retryAfter) });
+}
+
+// A per-minute limit is waited out in the translation pane, counting down the
+// wait the service asks for, then the text is sent again. Typing something
+// new ends the wait (the reply would be dropped anyway).
+const MAX_LIMIT_RETRIES = 2;
+const MAX_LIMIT_WAIT_MS = 60000;
+
+async function retryRateLimit(request, send) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await send();
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 429 || error.daily || !error.retryAfter || error.retryAfter > MAX_LIMIT_WAIT_MS || attempt >= MAX_LIMIT_RETRIES || request !== latestRequest) throw error;
+      await waitOutLimit(request, error);
+      if (request !== latestRequest) throw error;
+    }
+  }
+}
+
+function waitOutLimit(request, error) {
+  const until = Date.now() + error.retryAfter, name = providerConfig().name;
+  return new Promise((resolve) => {
+    const tick = () => {
+      const seconds = Math.ceil((until - Date.now()) / 1000);
+      if (request !== latestRequest || seconds <= 0) {
+        clearInterval(timer);
+        if (request === latestRequest) output('');
+        resolve();
+        return;
+      }
+      output(t(error.perMinute ? 'limit.waitCount' : 'limit.wait', { name, limit: error.perMinute, seconds }));
+    };
+    const timer = setInterval(tick, 1000);
+    tick();
+  });
 }
 
 // `prompt` ({ system, user, maxTokens }) replaces the translation prompt (see resolveLanguageName).
@@ -226,14 +312,14 @@ async function callProvider(key, model, language, text, fast, again, prompt) {
     if (fast) body.reasoning = { effort: reasoningEffort(model) };
     const response = await fetch('https://api.openai.com/v1/responses', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` }, body: JSON.stringify(body) });
     const data = await response.json();
-    if (!response.ok) throw new ApiError(response.status, data.error?.message);
+    if (!response.ok) throw apiError(response, data);
     if (data.incomplete_details?.reason === 'max_output_tokens') throw new Error(t('error.truncated'));
     return getOpenAIText(data);
   }
   if (provider === 'anthropic') {
     const response = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }] }) });
     const data = await response.json();
-    if (!response.ok) throw new ApiError(response.status, data.error?.message);
+    if (!response.ok) throw apiError(response, data);
     if (data.stop_reason === 'max_tokens') throw new Error(t('error.truncated'));
     return (data.content || [])
       .filter((part) => part.type === 'text')
@@ -242,7 +328,7 @@ async function callProvider(key, model, language, text, fast, again, prompt) {
   }
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents: [{ parts: [{ text: user }] }], generationConfig: generationConfig(model, maxTokens, fast) }) });
   const data = await response.json();
-  if (!response.ok) throw new ApiError(response.status, data.error?.message);
+  if (!response.ok) throw apiError(response, data);
   const candidate = data.candidates?.[0];
   if (candidate?.finishReason === 'MAX_TOKENS') throw new Error(t('error.truncated'));
   // Thought summaries come back as parts marked `thought`; only the answer is kept.
@@ -311,16 +397,16 @@ async function requestTranslation(text) {
     }
     let result;
     try {
-      result = await callProvider(key, model, language, text, fast);
+      result = await retryRateLimit(request, () => callProvider(key, model, language, text, fast));
     } catch (error) {
       if (!fast || !(error instanceof ApiError) || error.status !== 400 || !/reason|think|effort/i.test(error.detail)) throw error;
       rejectsFastSettings.add(id);
-      result = await callProvider(key, model, language, text, false);
+      result = await retryRateLimit(request, () => callProvider(key, model, language, text, false));
     }
     // Asked once more, with thinking on and the echo pointed out.
     if (result && echoed(text, result, language)) {
       if (request !== latestRequest) return;
-      result = await callProvider(key, model, language, text, false, true);
+      result = await retryRateLimit(request, () => callProvider(key, model, language, text, false, true));
     }
     if (request !== latestRequest) return;
     if (!result) throw new Error(t('error.emptyWeb'));

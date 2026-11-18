@@ -25,6 +25,7 @@ struct WatchSettings: Codable {
   static let messageKeys = [
     "watch.input", "watch.translateTo", "watch.dictationHint", "watch.noKey", "watch.noTarget", "status.translating", "ios.speak", "ios.stopSpeaking", "ios.speakUnavailable",
     "error.detail", "error.noDetail", "error.auth", "error.rateLimit", "error.model", "error.http",
+    "error.dailyLimit", "error.dailyLimitCount", "limit.locale",
     "error.truncated", "error.empty", "error.network", "error.timeout", "error.blocked", "error.unexpected"
   ]
 }

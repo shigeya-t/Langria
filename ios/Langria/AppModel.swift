@@ -5,6 +5,8 @@ import UIKit
 /// text so that switching the UI language redraws them.
 enum Pane {
   case empty, translating, noKey, noTarget, locked
+  /// Waiting out a per-minute limit until `until`, then sending again.
+  case waiting(until: Date, perMinute: Int?, provider: Provider)
   case result(String)
   case failure(TranslationError, Provider, String)
 }
@@ -156,6 +158,12 @@ final class AppModel: ObservableObject {
         translator = Translator(provider: provider, model: model, key: key, language: await translator.resolvedLanguage(), mode: mode)
         guard request == latestRequest else { return }
       }
+      translator.onWait = { [weak self] until, perMinute in
+        await MainActor.run {
+          guard let self, request == self.latestRequest else { return }
+          self.pane = .waiting(until: until, perMinute: perMinute, provider: provider)
+        }
+      }
       let result = try await translator.translate(text)
       guard request == latestRequest else { return }
       let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -299,7 +307,7 @@ final class AppModel: ObservableObject {
   /// The status to show once reading text from a photo ends.
   private var restingStatus: String {
     switch pane {
-    case .translating: "status.translating"
+    case .translating, .waiting: "status.translating"
     case .result: "status.done"
     case .failure: "status.error"
     case .locked: "status.locked"

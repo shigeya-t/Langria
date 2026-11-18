@@ -161,5 +161,62 @@ final class TranslatorTests: XCTestCase {
     XCTAssertEqual(TranslationError.network.remedy, .retry)
     XCTAssertEqual(TranslationError.blocked(reason: "SAFETY").remedy, .none)
     XCTAssertEqual(TranslationError.truncated.remedy, .none)
+    XCTAssertEqual(TranslationError.rateLimit(wait: 5, perMinute: 15, detail: "").remedy, .retry)
+    XCTAssertEqual(TranslationError.dailyLimit(limit: 20, detail: "").remedy, .settings)
+  }
+
+  /// A Gemini 429 naming the quota it hit and how long to wait.
+  private func geminiQuota(_ quotaId: String, value: String, delay: String) -> (Int, [String: Any]) {
+    (429, ["error": ["code": 429, "message": "Quota exceeded, limit: \(value)", "details": [
+      ["@type": "type.googleapis.com/google.rpc.QuotaFailure", "violations": [["quotaMetric": "generativelanguage.googleapis.com/generate_content_free_tier_requests", "quotaId": quotaId, "quotaValue": value]]],
+      ["@type": "type.googleapis.com/google.rpc.RetryInfo", "retryDelay": delay]
+    ]]])
+  }
+
+  private let geminiReply: (Int, [String: Any]) = (200, ["candidates": [["finishReason": "STOP", "content": ["parts": [["text": "こんにちは"]]]]]])
+
+  func testWaitsOutPerMinuteLimit() async throws {
+    StubProtocol.handler = { [self] _, _ in StubProtocol.requests.count == 1 ? geminiQuota("GenerateRequestsPerMinutePerProjectPerModel-FreeTier", value: "15", delay: "1s") : geminiReply }
+    var translator = translator(.gemini)
+    nonisolated(unsafe) var waits: [Int?] = []
+    translator.onWait = { _, perMinute in waits.append(perMinute) }
+    let result = try await translator.translate("Hello")
+    XCTAssertEqual(result, "こんにちは")
+    XCTAssertEqual(waits, [15])
+    XCTAssertEqual(StubProtocol.requests.count, 2)
+  }
+
+  func testReportsPerMinuteLimitWithoutWaiting() async {
+    StubProtocol.handler = { [self] _, _ in geminiQuota("GenerateRequestsPerMinutePerProjectPerModel-FreeTier", value: "15", delay: "1s") }
+    do {
+      _ = try await translator(.gemini).translate("Hello")
+      XCTFail("expected an error")
+    } catch TranslationError.rateLimit(let wait, let perMinute, _) {
+      XCTAssertEqual(wait, 1)
+      XCTAssertEqual(perMinute, 15)
+      XCTAssertEqual(StubProtocol.requests.count, 1)
+    } catch { XCTFail("\(error)") }
+  }
+
+  func testReportsDailyLimitAtOnce() async {
+    StubProtocol.handler = { [self] _, _ in geminiQuota("GenerateRequestsPerDayPerProjectPerModel-FreeTier", value: "20", delay: "30s") }
+    var translator = translator(.gemini)
+    translator.onWait = { _, _ in XCTFail("should not wait") }
+    do {
+      _ = try await translator.translate("Hello")
+      XCTFail("expected an error")
+    } catch let error as TranslationError {
+      guard case .dailyLimit(let limit, _) = error else { return XCTFail("\(error)") }
+      XCTAssertEqual(limit, 20)
+      XCTAssertEqual(StubProtocol.requests.count, 1)
+      let message = error.message(provider: .gemini, model: "gemini-test", t: { key, params in "\(key) \(params["limit"] ?? "") \(params["reset"] ?? "")" })
+      XCTAssertTrue(message.hasPrefix("error.dailyLimitCount 20 "), message)
+    } catch { XCTFail("\(error)") }
+  }
+
+  func testNextPacificMidnight() {
+    // 2026-11-18 20:00 UTC is 12:00 in Los Angeles (PST, UTC-8).
+    let now = Date(timeIntervalSince1970: 1_795_032_000)
+    XCTAssertEqual(TranslationError.nextPacificMidnight(after: now).timeIntervalSince1970, 1_795_075_200)
   }
 }

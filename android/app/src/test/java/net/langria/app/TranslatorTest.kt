@@ -141,4 +141,53 @@ class TranslatorTest {
     } catch (error: TranslationError.Truncated) {
     }
   }
+
+  /** A Gemini 429 naming the quota it hit and how long to wait. */
+  private fun geminiQuota(quotaId: String, value: String, delay: String) = 429 to JSONObject(
+    """{"error":{"code":429,"message":"Quota exceeded, limit: $value","details":[
+      {"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_free_tier_requests","quotaId":"$quotaId","quotaValue":"$value"}]},
+      {"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"$delay"}]}}"""
+  )
+
+  private val geminiReply = 200 to JSONObject("""{"candidates":[{"finishReason":"STOP","content":{"parts":[{"text":"こんにちは"}]}}]}""")
+
+  @Test fun waitsOutPerMinuteLimit() = runBlocking {
+    handler = { if (requests.size == 1) geminiQuota("GenerateRequestsPerMinutePerProjectPerModel-FreeTier", "15", "1s") else geminiReply }
+    val waits = mutableListOf<Int?>()
+    val translator = Translator(Provider.GEMINI, Provider.GEMINI.defaultModel, "test-key", "Japanese", TranslationMode.NATURAL, "http://127.0.0.1:${server.address.port}") { _, perMinute -> waits += perMinute }
+    assertEquals("こんにちは", translator.translate("Hello"))
+    assertEquals(listOf<Int?>(15), waits)
+    assertEquals(2, requests.size)
+  }
+
+  @Test fun reportsPerMinuteLimitWithoutWaiting() = runBlocking {
+    handler = { geminiQuota("GenerateRequestsPerMinutePerProjectPerModel-FreeTier", "15", "1s") }
+    try {
+      translator(Provider.GEMINI).translate("Hello")
+      fail("expected an error")
+    } catch (error: TranslationError.RateLimit) {
+      assertEquals(1.0, error.waitSeconds)
+      assertEquals(15, error.perMinute)
+      assertEquals(1, requests.size)
+    }
+  }
+
+  @Test fun reportsDailyLimitAtOnce() = runBlocking {
+    handler = { geminiQuota("GenerateRequestsPerDayPerProjectPerModel-FreeTier", "20", "30s") }
+    val translator = Translator(Provider.GEMINI, Provider.GEMINI.defaultModel, "test-key", "Japanese", TranslationMode.NATURAL, "http://127.0.0.1:${server.address.port}") { _, _ -> fail("should not wait") }
+    try {
+      translator.translate("Hello")
+      fail("expected an error")
+    } catch (error: TranslationError.DailyLimit) {
+      assertEquals(20, error.limit)
+      assertEquals(TranslationError.Remedy.SETTINGS, error.remedy)
+      assertEquals(1, requests.size)
+    }
+  }
+
+  @Test fun nextPacificMidnight() {
+    // 2026-11-18 20:00 UTC is 12:00 in Los Angeles (PST, UTC-8).
+    val now = java.time.ZonedDateTime.parse("2026-11-18T20:00:00Z")
+    assertEquals(java.time.Instant.parse("2026-11-19T08:00:00Z"), nextPacificMidnight(now).toInstant())
+  }
 }

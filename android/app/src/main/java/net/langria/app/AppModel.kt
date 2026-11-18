@@ -29,6 +29,8 @@ import java.util.Locale
 sealed interface Pane {
   data object Empty : Pane
   data object Translating : Pane
+  /** Waiting out a per-minute limit until `until` (epoch milliseconds), then sending again. */
+  data class Waiting(val until: Long, val perMinute: Int?, val provider: Provider) : Pane
   data object NoKey : Pane
   data object NoTarget : Pane
   data object Locked : Pane
@@ -239,7 +241,10 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
       // A language typed in under "Other" is settled into one name first (see Translator).
       val resolved = if (target == Shared.CUSTOM_TARGET) Translator(provider, model, key, language, mode).resolvedLanguage() else language
       if (request != latestRequest) return
-      val result = Translator(provider, model, key, resolved, mode).translate(text).trim()
+      val onWait: suspend (Long, Int?) -> Unit = { until, perMinute ->
+        withContext(Dispatchers.Main) { if (request == latestRequest) pane = Pane.Waiting(until, perMinute, provider) }
+      }
+      val result = Translator(provider, model, key, resolved, mode, onWait = onWait).translate(text).trim()
       if (request != latestRequest) return
       if (result.isEmpty()) throw TranslationError.Empty
       pane = Pane.Result(result)
@@ -342,7 +347,7 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
   /** The status to show once reading text from a photo ends. */
   private val restingStatus: String
     get() = when (pane) {
-      Pane.Translating -> "status.translating"
+      Pane.Translating, is Pane.Waiting -> "status.translating"
       is Pane.Result -> "status.done"
       is Pane.Failure -> "status.error"
       Pane.Locked -> "status.locked"

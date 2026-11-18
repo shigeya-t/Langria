@@ -3,6 +3,7 @@ package net.langria.app
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -12,6 +13,10 @@ import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URLEncoder
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Locale
 import java.util.Collections
 
 /** `keysUrl` is the page where the service issues API keys. */
@@ -46,6 +51,10 @@ enum class TranslationMode(val instruction: String) {
 /** A failure shown in the translation pane. Kept as message keys so the text follows the UI language. */
 sealed class TranslationError : Exception() {
   data class Api(val status: Int, val detail: String) : TranslationError()
+  /** A 429. `waitSeconds` is how long the service asked to wait, if it said. */
+  data class RateLimit(val waitSeconds: Double?, val perMinute: Int?, val detail: String) : TranslationError()
+  /** Gemini's per-day quota is used up; it resets at midnight Pacific time. */
+  data class DailyLimit(val limit: Int?, val detail: String) : TranslationError()
   data object Truncated : TranslationError()
   data object Empty : TranslationError()
   data object Network : TranslationError()
@@ -56,6 +65,9 @@ sealed class TranslationError : Exception() {
   /** What would fix it: the key or model in Settings, sending it again, or neither (the model's own answer). */
   val remedy: Remedy get() = when (this) {
     is Api -> if (status in setOf(400, 401, 403, 404)) Remedy.SETTINGS else Remedy.RETRY
+    is RateLimit -> Remedy.RETRY
+    // Another model or service is the way on until the quota resets.
+    is DailyLimit -> Remedy.SETTINGS
     Truncated, is Blocked -> Remedy.NONE
     Empty, Network, Timeout, is Unexpected -> Remedy.RETRY
   }
@@ -73,6 +85,14 @@ sealed class TranslationError : Exception() {
       }
       "$summary\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
     }
+    is RateLimit -> "${t("error.rateLimit", emptyMap())}\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
+    is DailyLimit -> {
+      val locale = Locale.forLanguageTag(t("limit.locale", emptyMap()))
+      val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "MMMdjmm")
+      val reset = java.time.format.DateTimeFormatter.ofPattern(pattern, locale).format(nextPacificMidnight().withZoneSameInstant(ZoneId.systemDefault()))
+      val params = mapOf("name" to provider.title, "model" to model, "limit" to limit?.toString().orEmpty(), "reset" to reset)
+      "${t(if (limit == null) "error.dailyLimit" else "error.dailyLimitCount", params)}\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
+    }
     Truncated -> t("error.truncated", emptyMap())
     Empty -> t("error.empty", emptyMap())
     Network -> t("error.network", mapOf("name" to provider.title))
@@ -80,6 +100,11 @@ sealed class TranslationError : Exception() {
     is Blocked -> t("error.blocked", mapOf("name" to provider.title, "reason" to reason))
     is Unexpected -> detail.ifEmpty { t("error.unexpected", emptyMap()) }
   }
+}
+
+fun nextPacificMidnight(now: ZonedDateTime = ZonedDateTime.now()): ZonedDateTime {
+  val zone = ZoneId.of("America/Los_Angeles")
+  return LocalDate.ofInstant(now.toInstant(), zone).plusDays(1).atStartOfDay(zone)
 }
 
 /**
@@ -96,6 +121,11 @@ class Translator(
   private val mode: TranslationMode,
   /** The API's origin; the tests point it at a local server. */
   private val origin: String = defaultOrigin(provider),
+  /**
+   * Called before waiting out a per-minute limit, with when the wait ends
+   * (epoch milliseconds) and the limit. Without it a 429 is reported at once.
+   */
+  private val onWait: (suspend (Long, Int?) -> Unit)? = null,
 ) {
   companion object {
     /** "provider:model" that rejected the low-thinking settings with a 400. */
@@ -115,14 +145,34 @@ class Translator(
     val id = "${provider.id}:$model"
     val fast = id !in rejectsFastSettings && (if (provider == Provider.OPENAI) reasoningEffort != null else provider == Provider.GEMINI && thinkingConfig != null)
     val result = try {
-      call(text, fast)
+      callRetrying(text, fast)
     } catch (error: TranslationError.Api) {
       if (!(fast && error.status == 400 && Regex("reason|think|effort", RegexOption.IGNORE_CASE).containsMatchIn(error.detail))) throw error
       rejectsFastSettings.add(id)
-      call(text, false)
+      callRetrying(text, false)
     }
     // Asked once more, with thinking on and the echo pointed out.
-    return if (echoed(text, result)) call(text, false, again = true) else result
+    return if (echoed(text, result)) callRetrying(text, false, again = true) else result
+  }
+
+  /**
+   * Waits out a per-minute limit for as long as the service asks (up to a
+   * minute) and sends the text again. Same as `retryRateLimit` in app.js.
+   */
+  private suspend fun callRetrying(text: String, fast: Boolean, again: Boolean = false): String {
+    var attempt = 0
+    while (true) {
+      try {
+        return call(text, fast, again)
+      } catch (error: TranslationError.RateLimit) {
+        val wait = error.waitSeconds
+        if (onWait == null || wait == null || wait > 60 || attempt >= 2) throw error
+        attempt++
+        val millis = (wait * 1000).toLong()
+        onWait.invoke(System.currentTimeMillis() + millis, error.perMinute)
+        delay(millis)
+      }
+    }
   }
 
   /**
@@ -268,7 +318,10 @@ class Translator(
       val stream = if (status in 200..299) connection.inputStream else connection.errorStream
       val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
       val json = runCatching { JSONObject(text) }.getOrDefault(JSONObject())
-      if (status !in 200..299) throw TranslationError.Api(status, json.optJSONObject("error")?.optString("message").orEmpty())
+      val error = json.optJSONObject("error")
+      val detail = error?.optString("message").orEmpty()
+      if (status == 429) throw rateLimitError(error, detail, connection.getHeaderField("Retry-After"))
+      if (status !in 200..299) throw TranslationError.Api(status, detail)
       json
     } catch (error: IOException) {
       ensureActive()
@@ -278,6 +331,25 @@ class Translator(
       connection.disconnect()
     }
   }
+}
+
+/**
+ * Gemini names the quota it hit in a QuotaFailure detail and the wait in a
+ * RetryInfo detail ("23s"); the others send Retry-After (seconds). A per-day
+ * quota is reported at once, as it does not come back within a wait.
+ */
+private fun rateLimitError(error: JSONObject?, detail: String, retryAfter: String?): TranslationError {
+  val details = error?.optJSONArray("details").objects()
+  val violations = details.firstOrNull { it.optString("@type").endsWith("QuotaFailure") }?.optJSONArray("violations").objects()
+  val quotaValue = { item: JSONObject -> item.optString("quotaValue").toIntOrNull() }
+  violations.firstOrNull { it.optString("quotaId").contains("PerDay", ignoreCase = true) }?.let { return TranslationError.DailyLimit(quotaValue(it), detail) }
+  val header = retryAfter?.trim()?.toDoubleOrNull() ?: 0.0
+  val delay = details.firstOrNull { it.optString("@type").endsWith("RetryInfo") }?.optString("retryDelay")?.removeSuffix("s")?.toDoubleOrNull() ?: 0.0
+  val wait = if (header > 0) header else delay
+  val perMinute = violations
+    .filter { it.optString("quotaMetric").contains("requests", ignoreCase = true) && it.optString("quotaId").contains("PerMinute", ignoreCase = true) }
+    .mapNotNull(quotaValue).filter { it > 0 }.minOrNull()
+  return TranslationError.RateLimit(wait.takeIf { it > 0 }, perMinute, detail)
 }
 
 private fun JSONArray?.objects(): List<JSONObject> = if (this == null) emptyList() else (0 until length()).mapNotNull { optJSONObject(it) }
