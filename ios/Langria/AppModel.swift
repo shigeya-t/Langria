@@ -151,7 +151,12 @@ final class AppModel: ObservableObject {
     pane = .translating
     statusKey = "status.translating"
     do {
-      let result = try await Translator(provider: provider, model: model, key: key, language: language, mode: mode).translate(text)
+      var translator = Translator(provider: provider, model: model, key: key, language: language, mode: mode)
+      if target == Shared.customTarget {
+        translator = Translator(provider: provider, model: model, key: key, language: await translator.resolvedLanguage(), mode: mode)
+        guard request == latestRequest else { return }
+      }
+      let result = try await translator.translate(text)
       guard request == latestRequest else { return }
       let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
       if trimmed.isEmpty { throw TranslationError.empty }

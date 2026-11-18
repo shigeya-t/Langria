@@ -236,7 +236,10 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
     pane = Pane.Translating
     statusKey = "status.translating"
     try {
-      val result = Translator(provider, model, key, language, mode).translate(text).trim()
+      // A language typed in under "Other" is settled into one name first (see Translator).
+      val resolved = if (target == Shared.CUSTOM_TARGET) Translator(provider, model, key, language, mode).resolvedLanguage() else language
+      if (request != latestRequest) return
+      val result = Translator(provider, model, key, resolved, mode).translate(text).trim()
       if (request != latestRequest) return
       if (result.isEmpty()) throw TranslationError.Empty
       pane = Pane.Result(result)

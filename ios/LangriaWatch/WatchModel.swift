@@ -101,7 +101,13 @@ final class WatchModel: NSObject, ObservableObject, WCSessionDelegate {
     // Kept in `pending`, so that the next change cancels the request too.
     pending = Task {
       do {
-        let result = try await Translator(provider: provider, model: model, key: key, language: language, mode: mode).translate(text)
+        var translator = Translator(provider: provider, model: model, key: key, language: language, mode: mode)
+        // A language typed in under "Other" on the iPhone.
+        if !(settings?.targets.contains(language) ?? true) {
+          translator = Translator(provider: provider, model: model, key: key, language: await translator.resolvedLanguage(), mode: mode)
+          guard request == latestRequest else { return }
+        }
+        let result = try await translator.translate(text)
         guard request == latestRequest else { return }
         let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty { throw TranslationError.empty }

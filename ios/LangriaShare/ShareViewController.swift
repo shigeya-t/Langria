@@ -146,10 +146,13 @@ final class ShareModel: ObservableObject {
     speaker.stop()
     pending?.cancel()
     state = .translating
-    let translator = Translator(provider: provider, model: modelName, key: key, language: target == Shared.customTarget ? customTarget : target, mode: mode)
-    let text = source
+    let typed = Translator(provider: provider, model: modelName, key: key, language: target == Shared.customTarget ? customTarget : target, mode: mode)
+    let text = source, custom = target == Shared.customTarget
     pending = Task { [weak self] in
       do {
+        // A language typed in under "Other" is settled into one name first (see Translator).
+        let translator = custom ? Translator(provider: typed.provider, model: typed.model, key: typed.key, language: await typed.resolvedLanguage(), mode: typed.mode) : typed
+        try Task.checkCancellation()
         let result = try await translator.translate(text).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !Task.isCancelled else { return }
         if result.isEmpty { throw TranslationError.empty }
