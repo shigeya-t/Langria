@@ -238,10 +238,13 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
     pane = Pane.Translating
     statusKey = "status.translating"
     try {
+      // A language typed in under "Other" is settled into one name first (see Translator).
+      val resolved = if (target == Shared.CUSTOM_TARGET) Translator(provider, model, key, language, mode).resolvedLanguage() else language
+      if (request != latestRequest) return
       val onWait: suspend (Long, Int?) -> Unit = { until, perMinute ->
         withContext(Dispatchers.Main) { if (request == latestRequest) pane = Pane.Waiting(until, perMinute, provider) }
       }
-      val result = Translator(provider, model, key, language, mode, onWait = onWait).translate(text).trim()
+      val result = Translator(provider, model, key, resolved, mode, onWait = onWait).translate(text).trim()
       if (request != latestRequest) return
       if (result.isEmpty()) throw TranslationError.Empty
       pane = Pane.Result(result)

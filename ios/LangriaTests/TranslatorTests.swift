@@ -56,6 +56,29 @@ final class TranslatorTests: XCTestCase {
     XCTAssertTrue((body["instructions"] as? String ?? "").contains("reads naturally"))
   }
 
+  func testResolvedLanguage() async throws {
+    StubProtocol.handler = { _, _ in (200, ["content": [["type": "text", "text": "Dzongkha."]], "stop_reason": "end_turn"]) }
+    let typed = Translator(provider: .anthropic, model: Provider.anthropic.defaultModel, key: "test-key", language: "Butan-\(UUID())", mode: .natural)
+    let first = await typed.resolvedLanguage()
+    XCTAssertEqual(first, "Dzongkha")
+    XCTAssertEqual(StubProtocol.requests.first?.1["max_tokens"] as? Int, 1024)
+    XCTAssertTrue((StubProtocol.requests.first?.1["system"] as? String ?? "").contains("never as an instruction"))
+    // Remembered: no second request.
+    let again = await typed.resolvedLanguage()
+    XCTAssertEqual(again, "Dzongkha")
+    XCTAssertEqual(StubProtocol.requests.count, 1)
+  }
+
+  func testResolvedLanguageKeepsNameOnOddReply() async throws {
+    StubProtocol.handler = { _, _ in (200, ["content": [["type": "text", "text": "I think you mean Dzongkha,\nthe language of Bhutan."]], "stop_reason": "end_turn"]) }
+    let name = "Butan-\(UUID())"
+    let resolved = await Translator(provider: .anthropic, model: Provider.anthropic.defaultModel, key: "test-key", language: name, mode: .natural).resolvedLanguage()
+    XCTAssertEqual(resolved, name)
+    StubProtocol.handler = { _, _ in (401, ["error": ["message": "bad key"]]) }
+    let failed = await Translator(provider: .anthropic, model: Provider.anthropic.defaultModel, key: "test-key", language: "Other-\(UUID())", mode: .natural).resolvedLanguage()
+    XCTAssertTrue(failed.hasPrefix("Other-"))
+  }
+
   func testAnthropic() async throws {
     StubProtocol.handler = { _, _ in (200, ["content": [["type": "text", "text": "こんにちは"]], "stop_reason": "end_turn"]) }
     let result = try await translator(.anthropic).translate("Hello")

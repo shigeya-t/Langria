@@ -54,6 +54,28 @@ class TranslatorTest {
     assertEquals("こんにちは", translator(Provider.OPENAI).translate("Hello"))
   }
 
+  @Test fun resolvedLanguage() = runBlocking {
+    handler = { 200 to JSONObject("""{"content":[{"type":"text","text":"Dzongkha."}],"stop_reason":"end_turn"}""") }
+    val name = "Butan-${System.nanoTime()}"
+    val typed = Translator(Provider.ANTHROPIC, Provider.ANTHROPIC.defaultModel, "test-key", name, TranslationMode.NATURAL, "http://127.0.0.1:${server.address.port}")
+    assertEquals("Dzongkha", typed.resolvedLanguage())
+    assertEquals(1024, requests.single().body.getInt("max_tokens"))
+    assertEquals(name, requests.single().body.getJSONArray("messages").getJSONObject(0).getString("content"))
+    // Remembered: no second request.
+    assertEquals("Dzongkha", typed.resolvedLanguage())
+    assertEquals(1, requests.size)
+  }
+
+  @Test fun resolvedLanguageKeepsNameOnOddReplyOrError() = runBlocking {
+    val origin = "http://127.0.0.1:${server.address.port}"
+    handler = { 200 to JSONObject("""{"content":[{"type":"text","text":"I think you mean Dzongkha,\nthe language of Bhutan."}],"stop_reason":"end_turn"}""") }
+    val odd = "Butan-${System.nanoTime()}"
+    assertEquals(odd, Translator(Provider.ANTHROPIC, Provider.ANTHROPIC.defaultModel, "test-key", odd, TranslationMode.NATURAL, origin).resolvedLanguage())
+    handler = { 401 to JSONObject("""{"error":{"message":"bad key"}}""") }
+    val failed = "Other-${System.nanoTime()}"
+    assertEquals(failed, Translator(Provider.ANTHROPIC, Provider.ANTHROPIC.defaultModel, "test-key", failed, TranslationMode.NATURAL, origin).resolvedLanguage())
+  }
+
   @Test fun anthropic() = runBlocking {
     handler = { 200 to JSONObject("""{"content":[{"type":"text","text":"こんにちは"}],"stop_reason":"end_turn"}""") }
     assertEquals("こんにちは", translator(Provider.ANTHROPIC).translate("Hello"))

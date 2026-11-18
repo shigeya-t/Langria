@@ -154,6 +154,10 @@ final class AppModel: ObservableObject {
     statusKey = "status.translating"
     do {
       var translator = Translator(provider: provider, model: model, key: key, language: language, mode: mode)
+      if target == Shared.customTarget {
+        translator = Translator(provider: provider, model: model, key: key, language: await translator.resolvedLanguage(), mode: mode)
+        guard request == latestRequest else { return }
+      }
       translator.onWait = { [weak self] until, perMinute in
         await MainActor.run {
           guard let self, request == self.latestRequest else { return }
