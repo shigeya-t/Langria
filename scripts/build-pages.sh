@@ -29,6 +29,8 @@ for locale in en ja; do
   cp "store/android/images/$locale-dark-1-translate.png" "$out/images/$locale-android-translate-dark.png"
   # Apple's official badges, unmodified (black for light pages, white for dark).
   for color in black white; do cp "assets/app-store/$locale-$color.svg" "$out/images/app-store-$locale-$color.svg"; done
+  # Google's official badge (only the transparent margin trimmed); one version for both themes.
+  cp "assets/google-play/$locale.png" "$out/images/google-play-$locale.png"
 done
 
 app="$out/app"

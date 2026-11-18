@@ -41,7 +41,6 @@ code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em; 
 .button.secondary { background:transparent; color:var(--accent); }
 .button:hover { opacity:.85; }
 .store-badge { display:inline-block; line-height:0; }
-.soon { display:inline-block; padding:8px 18px; border-radius:999px; border:1px dashed var(--line); color:var(--muted); font-weight:700; }
 .store-badge img { display:block; width:auto; height:40px; }
 /* Images with a light and a dark version: .on-light shows in light mode, .on-dark in dark mode. */
 :root .on-dark, :root[data-theme="dark"] .on-light { display:none; }

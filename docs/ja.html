@@ -56,14 +56,14 @@
           <div class="edition-shot phone"><img class="on-light" src="images/ja-android-translate.png" loading="lazy" alt="Langria の Android アプリ" /><img class="on-dark" src="images/ja-android-translate-dark.png" loading="lazy" alt="Langria の Android アプリ" /></div>
           <h2>Android アプリ</h2>
           <p>Android のスマホ・タブレットで、入力した文章、話した言葉、写真の文字を翻訳します。</p>
-          <span class="soon">準備中</span>
+          <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja"><img src="images/google-play-ja.png" width="135" height="40" alt="Google Play で手に入れよう" /></a>
         </section>
       </div>
 
       <div class="summary">
         <ul>
           <li>ご自身のAPIキーを使い、文章はブラウザや端末から選んだサービスへ直接送られます。</li>
-          <li>Langria 独自のサーバーはなく、拡張機能やアプリにアクセス解析はありません。拡張機能とWebアプリには広告もありません（iOSアプリにはバナー広告が出ますが、翻訳する文章が広告に使われることはありません）。</li>
+          <li>Langria 独自のサーバーはなく、拡張機能やアプリにアクセス解析はありません。拡張機能とWebアプリには広告もありません（iOS・Androidアプリにはバナー広告が出ますが、翻訳する文章が広告に使われることはありません）。</li>
           <li>Google AI Studio で取得できる無料の Gemini APIキーがあれば、すぐに試せます。</li>
         </ul>
       </div>
@@ -156,10 +156,20 @@
         <li>Apple Watch: 設定で「Apple Watch で使う」をオンにすると、Watch だけで翻訳できます。</li>
       </ul>
 
+      <h2 class="section" id="android">Android アプリ</h2>
+      <p>iPhone アプリと同じ機能（ウォッチアプリを除く）を Android のスマホ・タブレット（Android 11 以降）で使えます。<a href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja">Google Play の Langria</a>（無料）を入れ、設定でAPIキーを入力すれば使い始められます。</p>
+
+      <ul>
+        <li>写真の文字は ML Kit で端末内で読み取ります。送るのは文字だけで、画像は送りません。</li>
+        <li>ほかのアプリから共有した文章や、文字選択メニューの「Langria」で選んだ文章を翻訳できます。</li>
+        <li>APIキーは Android Keystore で暗号化して保存し、指紋・顔・画面ロックでロックできます。</li>
+      </ul>
+
       <h2 class="section">リンク</h2>
       <ul>
         <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a></li>
         <li><a href="https://apps.apple.com/jp/app/id6828902876">App Store</a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja">Google Play</a></li>
         <li><a href="app/">Webアプリ</a></li>
         <li><a href="privacy/ja.html">プライバシーポリシー</a></li>
         <li><a href="https://github.com/shigeya-t/Langria">ソースコード</a></li>
