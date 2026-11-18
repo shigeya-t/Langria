@@ -338,6 +338,17 @@ struct ContentView: View {
       .frame(maxWidth: .infinity, minHeight: translationMinHeight - 10)
     case .translating:
       ProgressView().frame(maxWidth: .infinity, minHeight: translationMinHeight - 10)
+    case .waiting(let until, let perMinute, let provider):
+      // Counts down the wait; once it is over, the text is being sent again.
+      TimelineView(.periodic(from: .now, by: 1)) { context in
+        let seconds = Int(until.timeIntervalSince(context.date).rounded(.up))
+        if seconds > 0 {
+          Text(shared.t(perMinute == nil ? "limit.wait" : "limit.waitCount", ["name": provider.name, "limit": perMinute.map(String.init) ?? "", "seconds": String(seconds)]))
+            .foregroundStyle(.orange)
+        } else {
+          ProgressView().frame(maxWidth: .infinity, minHeight: translationMinHeight - 10)
+        }
+      }
     case .result(let text):
       Text(text).textSelection(.enabled)
     case .noKey:
