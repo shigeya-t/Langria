@@ -51,7 +51,7 @@ async function renderLimit() {
     const seconds = wait?.provider === provider && wait.model === model ? Math.ceil((wait.until - Date.now()) / 1000) : 0;
     const pace = learnedLimits[`${provider}:${model}`];
     if (seconds > 0) {
-      text = t(wait.perMinute ? 'popup.limitWaitCount' : 'popup.limitWait', { name, limit: wait.perMinute, seconds });
+      text = t(wait.perMinute ? 'limit.waitCount' : 'limit.wait', { name, limit: wait.perMinute, seconds });
       limitTimer = setTimeout(renderLimit, 1000);
     } else if (pace) text = t('popup.limitPace', { name, limit: pace });
   }

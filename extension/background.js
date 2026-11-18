@@ -95,7 +95,9 @@ async function handleMessage(message, sender) {
   if (message.type === 'translateText') {
     const target = targetLanguageName(settings);
     if (!target) throw new Error(LangriaI18n.t('ext.missingTarget'));
-    return { translation: await translateText(settings, message.text, target) };
+    // A 429 can hold the reply for up to a minute; the bubble shows the wait.
+    const onWait = (wait) => tabId && chrome.tabs.sendMessage(tabId, { type: 'selectionWait', until: wait.until, perMinute: wait.perMinute, name: wait.name }, { frameId: sender.frameId }).catch(() => {});
+    return { translation: await translateText(settings, message.text, target, onWait) };
   }
   if (message.type === 'getSettings') return { settings: { provider: settings.provider, mode: settings.mode, target: targetLanguageName(settings) } };
   if (message.type === 'status' && sender.tab?.id) {

@@ -111,8 +111,11 @@ function dailyQuotaMessage(provider, model, quota, detail) {
 
 // Tells the popup why a translation is paused. chrome.storage.session is
 // readable from the popup but not from pages.
-function reportWait(settings, ms, perMinute) {
-  chrome.storage.session.set({ rateLimitWait: { provider: settings.provider, model: modelFor(settings), until: Date.now() + ms, perMinute: perMinute || null } }).catch(() => {});
+// `onWait` passes the same to whoever asked (the selection bubble).
+function reportWait(settings, ms, perMinute, onWait) {
+  const wait = { provider: settings.provider, model: modelFor(settings), until: Date.now() + ms, perMinute: perMinute || null };
+  chrome.storage.session.set({ rateLimitWait: wait }).catch(() => {});
+  onWait?.({ ...wait, name: configs[settings.provider].name });
 }
 
 // Gemini reports how long to wait in a RetryInfo detail ("23s");
@@ -173,7 +176,7 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
 // Retries rate-limited requests after the wait the service asks for. A 429
 // without a retry hint (e.g. a daily quota) is retried with backoff, then
 // reported to the user. Requests that time out are retried right away.
-async function callModel(settings, system, user, maxTokens) {
+async function callModel(settings, system, user, maxTokens, onWait) {
   await learnedReady;
   for (let attempt = 0; ; attempt++) {
     await waitForRateLimit(settings.provider, perMinuteLimit(settings));
@@ -187,7 +190,7 @@ async function callModel(settings, system, user, maxTokens) {
       if (error.perMinute) learnLimit(settings, error.perMinute);
       console.warn(`Langria: rate limited, retrying in ${wait} ms`);
       pauseProvider(settings.provider, wait);
-      reportWait(settings, wait, error.perMinute);
+      reportWait(settings, wait, error.perMinute, onWait);
     }
   }
 }
@@ -346,6 +349,6 @@ export async function translateSegments(settings, segments, target, retried = fa
 // A closing tag inside the text would end the source early and let the rest
 // pass as instructions. A zero-width space breaks it up; models tend to read
 // past a backslash and still see the tag.
-export function translateText(settings, text, target) {
-  return callModel(settings, textPrompt(settings, target), `Translate into ${target}:\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`, maxOutputTokens(text));
+export function translateText(settings, text, target, onWait) {
+  return callModel(settings, textPrompt(settings, target), `Translate into ${target}:\n<source>\n${text.replace(/<(\/source)/gi, '<\u200b$1')}\n</source>`, maxOutputTokens(text), onWait);
 }
