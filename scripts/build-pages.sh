@@ -18,6 +18,9 @@ mkdir -p "$out/images"
 for locale in en ja; do
   for shot in 2-selection 3-layout; do cp "store/chrome/images/$locale-$shot.png" "$out/images/"; done
 done
+# Google's official Chrome Web Store badges, unmodified (English only; the bordered one for dark pages).
+cp assets/chrome-web-store/plain.png "$out/images/chrome-web-store.png"
+cp assets/chrome-web-store/border.png "$out/images/chrome-web-store-border.png"
 # Light and dark versions for the page (made by scripts/capture-site.mjs and store/chrome/capture.mjs).
 cp assets/site/*.png "$out/images/"
 for locale in en ja; do
