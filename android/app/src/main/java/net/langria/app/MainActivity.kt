@@ -64,6 +64,9 @@ class MainActivity : ComponentActivity() {
   private val holder: AppHolder by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    // Before the first frame, so older Android versions draw edge to edge from
+    // the start too; the effect below only matches the bars to the chosen theme.
+    enableEdgeToEdge()
     super.onCreate(savedInstanceState)
     if (savedInstanceState == null) receive(intent)
     setContent {
