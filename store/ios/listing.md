@@ -40,6 +40,20 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 
 ### このバージョンの最新情報（4000）
 
+#### 1.4
+
+```text
+英語:
+- Langria remembers your language pair: type in the target language and it switches the target to your other language
+- If the AI's usage limit is hit, Langria says so: it waits out a per-minute limit and continues, or shows when a daily limit resets
+- A language typed under "Other" is settled on one language name first, for consistent translations
+
+日本語:
+- 言語の組み合わせを覚えるようにしました。翻訳先の言語で入力すると、翻訳先をもう一方の言語に切り替えます
+- AI の利用上限に達したとき、状況を表示するようにしました。1分あたりの上限なら待ってから自動で続け、1日の上限ならリセットの時刻を出します
+- 「その他」で入力した翻訳先の言語名を、1つの言語名に決めてから翻訳するようにしました。訳がぶれにくくなります
+```
+
 #### 1.3
 
 ```text
@@ -47,17 +61,11 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 - New to Langria? Until you add an API key, the translation pane now shows three steps to get started, with a link to get a free Gemini API key
 - The settings now link to each AI service's API key page
 - You can rate Langria from the settings
-- Langria remembers your language pair: type in the target language and it switches the target to your other language
-- If the AI's usage limit is hit, Langria says so: it waits out a per-minute limit and continues, or shows when a daily limit resets
-- A language typed under "Other" is settled on one language name first, for consistent translations
 
 日本語:
 - はじめての方へ: APIキーを入れるまで、翻訳欄に3ステップの案内を出すようにしました。無料の Gemini APIキーを取得するページへのリンクもあります
 - 設定に、各 AI サービスの APIキー取得ページへのリンクを加えました
 - 設定から Langria を評価できるようにしました
-- 言語の組み合わせを覚えるようにしました。翻訳先の言語で入力すると、翻訳先をもう一方の言語に切り替えます
-- AI の利用上限に達したとき、状況を表示するようにしました。1分あたりの上限なら待ってから自動で続け、1日の上限ならリセットの時刻を出します
-- 「その他」で入力した翻訳先の言語名を、1つの言語名に決めてから翻訳するようにしました。訳がぶれにくくなります
 ```
 
 #### 1.2.1
