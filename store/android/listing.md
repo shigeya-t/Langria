@@ -246,6 +246,23 @@ SDK を更新したら、上の Google の案内を見直して、変わって�
 
 ## リリースノート（各版の「このリリースの新機能」、500）
 
+### versionCode 6（1.3）
+
+```text
+<en-US>
+- Langria remembers your language pair: type in the target language and it switches the target to your other language
+- If the AI's usage limit is hit, Langria says so: it waits out a per-minute limit and continues, or shows when a daily limit resets
+- A language typed under "Other" is settled on one language name first, for consistent translations
+- Fixed the layout around the system bars on some devices
+</en-US>
+<ja-JP>
+- 言語の組み合わせを覚えるようにしました。翻訳先の言語で入力すると、翻訳先をもう一方の言語に切り替えます
+- AI の利用上限に達したとき、状況を表示するようにしました。1分あたりの上限なら待ってから自動で続け、1日の上限ならリセットの時刻を出します
+- 「その他」で入力した翻訳先の言語名を、1つの言語名に決めてから翻訳するようにしました。訳がぶれにくくなります
+- 一部の端末で、ステータスバーやナビゲーションバーまわりの表示を直しました
+</ja-JP>
+```
+
 ### versionCode 5（1.2）
 
 ```text
