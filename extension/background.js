@@ -81,22 +81,25 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 });
 
 // The target given to the model. A typed-in name is settled once (see
-// resolveLanguageName) and remembered for the browser session; if that
-// fails, the name is used as typed and the translation reports any error.
-async function targetFor(settings) {
+// resolveLanguageName), with the scripts the language is written in, and
+// remembered for the browser session; if that fails, the name is used as
+// typed and the translation reports any error.
+async function resolvedTarget(settings) {
   const name = targetLanguageName(settings);
-  if (!name || settings.target !== customTarget) return name;
-  const { resolvedTargets = {} } = await chrome.storage.session.get('resolvedTargets');
-  if (resolvedTargets[name]) return resolvedTargets[name];
+  if (!name || settings.target !== customTarget) return { name, scripts: [] };
+  const { targetNames = {} } = await chrome.storage.session.get('targetNames');
+  if (targetNames[name]) return targetNames[name];
   try {
     const resolved = await resolveLanguageName(settings, name);
-    await chrome.storage.session.set({ resolvedTargets: { ...resolvedTargets, [name]: resolved } });
+    await chrome.storage.session.set({ targetNames: { ...targetNames, [name]: resolved } });
     return resolved;
   } catch (error) {
     console.warn('Langria: could not resolve the target language name', error);
-    return name;
+    return { name, scripts: [] };
   }
 }
+
+async function targetFor(settings) { return (await resolvedTarget(settings)).name; }
 
 async function handleMessage(message, sender) {
   const tabId = sender.tab?.id;
@@ -108,7 +111,10 @@ async function handleMessage(message, sender) {
   }
   const settings = await loadSettings();
   if (message.type === 'translateSegments') {
-    return { translations: await translateSegments(settings, message.segments, message.target) };
+    // The scripts of a typed-in target, when the page is being translated into it.
+    const resolved = await resolvedTarget(settings);
+    const scripts = resolved.name === message.target ? resolved.scripts : [];
+    return { translations: await translateSegments(settings, message.segments, message.target, { scripts }) };
   }
   if (message.type === 'translateText') {
     const target = await targetFor(settings);
