@@ -168,6 +168,26 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
   }
 
   /**
+   * Remembers the language last translated from, kept with the target as a
+   * pair: text in the target language is translated back into it (see pairedTarget).
+   */
+  private fun rememberSource(text: String) {
+    if (target == Shared.CUSTOM_TARGET) return
+    val original = LanguageDetector.detect(text) ?: return
+    if (original != target) prefs.edit { putString("langria-pair-source", original) }
+  }
+
+  /**
+   * The language to translate into instead of the target, when the text is in
+   * the target language and another language was last translated into it.
+   */
+  private fun pairedTarget(text: String): String? {
+    val paired = prefs.getString("langria-pair-source", null) ?: return null
+    if (paired !in shared.targets || paired == target || target == Shared.CUSTOM_TARGET) return null
+    return if (LanguageDetector.detect(text) == target) paired else null
+  }
+
+  /**
    * The language voice input listens in. Auto assumes you speak the device's
    * language, unless you are translating into it: then the other person's,
    * the last target that was not the device's language. So the swap button
@@ -231,6 +251,11 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
     }
     val key = keys[provider.id].orEmpty()
     if (key.isEmpty()) { pane = Pane.NoKey; statusKey = "status.noKey"; return }
+    pairedTarget(text)?.let { paired ->
+      prefs.edit { putString("langria-pair-source", target) }
+      storeTarget(paired)
+      show(shared.t("web.pairedTarget", "lang" to shared.languageLabel(paired)))
+    }
     val language = targetLanguage
     if (language.isEmpty()) { pane = Pane.NoTarget; statusKey = "status.noTarget"; return }
     val provider = provider
@@ -247,6 +272,7 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
       val result = Translator(provider, model, key, resolved, mode, onWait = onWait).translate(text).trim()
       if (request != latestRequest) return
       if (result.isEmpty()) throw TranslationError.Empty
+      rememberSource(text)
       pane = Pane.Result(result)
       stale = false
       statusKey = "status.done"
@@ -285,6 +311,7 @@ class AppModel(private val context: Context, val shared: Shared, private val sco
     if (original != null && original != target) {
       // The original is already the translation of the new input, so show it
       // as is and make its language the new target.
+      prefs.edit { putString("langria-pair-source", target) }
       storeTarget(original)
       sourceState = text
       pending?.cancel()

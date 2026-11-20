@@ -22,6 +22,7 @@ Project page: <https://langria.net/>
 - Light and dark mode
 - Translation modes (Faithful / Natural / Business / Casual & social / Technical)
 - A swap button (swaps the two panes and the target language; the source language is guessed from the script, so Latin-script text counts as English; kanji-only text could be Japanese or Chinese, so the swap then only moves the translation into the input and translates it again)
+- Remembers the language pair: after translating Japanese into English, text typed in English is translated into Japanese, switching the target automatically (and back again). The input language is guessed from the script, as for the swap button
 - Changing the target language or translation mode translates again right away
 - Translates automatically shortly after you stop typing (or press `⌘ / Ctrl + Enter`)
 - The UI is in English and Japanese: Japanese when your browser (Chrome) is set to Japanese, English otherwise. Switch with the small "EN / JA" toggle (your choice is remembered)

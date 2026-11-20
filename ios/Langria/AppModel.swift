@@ -85,6 +85,20 @@ final class AppModel: ObservableObject {
     if shared.targets.contains(next) && next != deviceLanguage { defaults.set(next, forKey: "langria-dictation-other") }
   }
 
+  /// Remembers the language last translated from, kept with the target as a
+  /// pair: text in the target language is translated back into it (see pairedTarget).
+  private func rememberSource(_ text: String) {
+    guard target != Shared.customTarget, let original = LanguageDetector.detect(text), original != target else { return }
+    defaults.set(original, forKey: "langria-pair-source")
+  }
+
+  /// The language to translate into instead of the target, when the text is in
+  /// the target language and another language was last translated into it.
+  private func pairedTarget(_ text: String) -> String? {
+    guard let paired = defaults.string(forKey: "langria-pair-source"), shared.targets.contains(paired), paired != target, target != Shared.customTarget else { return nil }
+    return LanguageDetector.detect(text) == target ? paired : nil
+  }
+
   /// The language voice input listens in. Auto assumes you speak the
   /// device's language, unless you are translating into it: then the other
   /// person's, the last target that was not the device's language. So the
@@ -147,6 +161,11 @@ final class AppModel: ObservableObject {
     }
     let key = keys[provider.rawValue] ?? ""
     guard !key.isEmpty else { pane = .noKey; statusKey = "status.noKey"; return }
+    if let paired = pairedTarget(text) {
+      defaults.set(target, forKey: "langria-pair-source")
+      setTarget(paired)
+      show(shared.t("web.pairedTarget", ["lang": shared.languageLabel(paired)]))
+    }
     let language = targetLanguage
     guard !language.isEmpty else { pane = .noTarget; statusKey = "status.noTarget"; return }
     let provider = provider, model = currentModel
@@ -168,6 +187,7 @@ final class AppModel: ObservableObject {
       guard request == latestRequest else { return }
       let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
       if trimmed.isEmpty { throw TranslationError.empty }
+      rememberSource(text)
       pane = .result(trimmed)
       stale = false
       statusKey = "status.done"
@@ -238,6 +258,7 @@ final class AppModel: ObservableObject {
     if let original = LanguageDetector.detect(originalText), original != target {
       // The original is already the translation of the new input, so show it
       // as is and make its language the new target.
+      defaults.set(target, forKey: "langria-pair-source")
       setTarget(original)
       source = text
       pending?.cancel()

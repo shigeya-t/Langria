@@ -17,7 +17,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 
 | パス | 役割 |
 | --- | --- |
-| `app.js` | Webアプリの全ロジック（クラシックスクリプト）。翻訳、設定、ロック解除、入れ替えボタン |
+| `app.js` | Webアプリの全ロジック（クラシックスクリプト）。翻訳、設定、ロック解除、入れ替えボタン。翻訳できたら原文の言語を `langria-pair-source` に覚え、翻訳先の言語で入力されたら翻訳先をその言語に切り替える（`pairedTarget`。iOS・Android の `AppModel` も同じ） |
 | `extension/background.js` | Service Worker（ES module）。API呼び出し、右クリックメニュー、ショートカット |
 | `extension/content.js` | 必要なときにページへ注入する。テキストの抽出・差し替え・復元、選択翻訳の吹き出し |
 | `extension/popup.js` / `options.js` / `unlock.js` | ポップアップ、設定画面、パスキー解除ウィンドウ（ES module） |

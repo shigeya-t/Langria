@@ -148,6 +148,7 @@ TRANSLATE ANYTHING
 • Photograph a sign, menu or document, or pick a photo: the text is read on your device and translated. Only the text is sent, never the image.
 • Speak to type, and have the translation read aloud in the target language.
 • Swap the languages with one tap for a back-and-forth conversation.
+• Remembers your language pair: type in either language and the other becomes the target.
 • Share text from any app to Langria and read the translation right in the share sheet.
 • Send text from other apps with the “Translate with Langria” action in Shortcuts, the Action button or Siri.
 • On Apple Watch, dictate or scribble a sentence and see — or hear — the translation on your wrist.
@@ -181,6 +182,7 @@ Langria は、入力した文章・話した言葉・写真の文字を、選ん
 ・看板・メニュー・書類を撮影するか写真を選ぶと、文字を端末の中で読み取って翻訳します。送るのは文字だけで、画像は送りません。
 ・話して入力し、訳文を翻訳先の言語で読み上げられます。
 ・入れ替えボタンで言語をすぐに切り替えられるので、会話にも使えます。
+・言語の組み合わせを覚え、どちらの言語で入力しても、もう一方に翻訳します。
 ・ほかのアプリで文章を共有して「Langria」を選ぶと、共有シートの中で訳文を読めます。
 ・ショートカット・アクションボタン・Siri の「Langriaで翻訳」で、ほかのアプリの文章を送って翻訳できます。
 ・Apple Watch では、音声入力や手書きで文章を入れ、訳文を手元で読んだり聞いたりできます。

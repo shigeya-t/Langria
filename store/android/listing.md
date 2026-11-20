@@ -41,6 +41,7 @@ TRANSLATE ANYTHING
 • Speak to type, and have the translation read aloud in the target language.
 • Share text from any app to Langria, or select text and choose "Langria" in the menu.
 • Swap the languages with one tap for a back-and-forth conversation.
+• Remembers your language pair: type in either language and the other becomes the target.
 
 FEATURES
 • Switch between ChatGPT, Claude and Gemini, and set the model for each.
@@ -74,6 +75,7 @@ Langria は、入力した文章・話した言葉・写真の文字を、選ん
 ・話して入力し、訳文を翻訳先の言語で読み上げられます。
 ・ほかのアプリから文章を Langria に共有したり、文字を選んだときのメニューの「Langria」で送ったりできます。
 ・入れ替えボタンで言語をすぐに切り替えられるので、会話にも使えます。
+・言語の組み合わせを覚え、どちらの言語で入力しても、もう一方に翻訳します。
 
 主な機能
 ・ChatGPT / Claude / Gemini を切り替えられます。モデルもサービスごとに設定できます。

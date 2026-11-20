@@ -89,6 +89,21 @@ function setTarget(next) {
   renderTarget();
 }
 
+// The last language translated from, kept with the target as a pair: text in
+// the target language is translated back into it (see pairedTarget).
+function rememberSource(text) {
+  const original = detectLanguage(text);
+  if (original && original !== target && target !== customTarget) localStorage.setItem('langria-pair-source', original);
+}
+
+// The language to translate into instead of the target, when the text is in
+// the target language and another language was last translated into it.
+function pairedTarget(text) {
+  const paired = localStorage.getItem('langria-pair-source');
+  if (!paired || !targetLanguages[paired] || paired === target || target === customTarget) return null;
+  return detectLanguage(text) === target ? paired : null;
+}
+
 // The language name sent to the model, or '' when "Other" is chosen but left blank.
 function targetLanguage() {
   return target === customTarget ? $('#customTarget').value.trim() : target;
@@ -379,6 +394,12 @@ async function requestTranslation(text) {
     setStatus('status.noKey');
     return;
   }
+  const paired = pairedTarget(text);
+  if (paired) {
+    localStorage.setItem('langria-pair-source', target);
+    setTarget(paired);
+    toast(t('web.pairedTarget', { lang: languageLabel(paired) }));
+  }
   let language = targetLanguage();
   if (!language) {
     output(t('web.enterTarget'));
@@ -411,6 +432,7 @@ async function requestTranslation(text) {
     if (request !== latestRequest) return;
     if (!result) throw new Error(t('error.emptyWeb'));
     lastResult = result.trim();
+    rememberSource(text);
     output(lastResult);
     setStatus('status.done');
   } catch (error) {
@@ -544,6 +566,7 @@ $('#swapButton').addEventListener('click', () => {
   if (original && original !== target) {
     // The original text is already the translation of the new input, so show it
     // as is and make its language the new target.
+    localStorage.setItem('langria-pair-source', target);
     setTarget(original);
     clearTimeout(timer);
     latestRequest++;
