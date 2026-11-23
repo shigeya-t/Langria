@@ -214,6 +214,22 @@ final class TranslatorTests: XCTestCase {
     } catch { XCTFail("\(error)") }
   }
 
+  func testReportsModelMissingFromFreeTier() async {
+    StubProtocol.handler = { [self] _, _ in geminiQuota("GenerateRequestsPerDayPerProjectPerModel-FreeTier", value: "0", delay: "30s") }
+    var translator = translator(.gemini)
+    translator.onWait = { _, _ in XCTFail("should not wait") }
+    do {
+      _ = try await translator.translate("Hello")
+      XCTFail("expected an error")
+    } catch let error as TranslationError {
+      guard case .freeTier = error else { return XCTFail("\(error)") }
+      XCTAssertEqual(error.remedy, .settings)
+      XCTAssertEqual(StubProtocol.requests.count, 1)
+      let message = error.message(provider: .gemini, model: "gemini-test", t: { key, params in "\(key) \(params["model"] ?? "")" })
+      XCTAssertTrue(message.hasPrefix("error.freeTier gemini-test"), message)
+    } catch { XCTFail("\(error)") }
+  }
+
   func testNextPacificMidnight() {
     // 2026-11-18 20:00 UTC is 12:00 in Los Angeles (PST, UTC-8).
     let now = Date(timeIntervalSince1970: 1_795_032_000)

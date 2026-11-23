@@ -91,6 +91,14 @@ function perMinuteQuota(data, retryAfter) {
 // A per-day request quota (quotaId "GenerateRequestsPerDay…") does not come
 // back within a retry, so it is reported at once instead of retried. Gemini's
 // daily quotas reset at midnight Pacific time.
+// A model the free tier does not offer comes back as a free-tier quota with a
+// limit of 0, even for someone with a Gemini app subscription: the API bills
+// by the key's Cloud project. Not a quota that resets, so said apart.
+function freeTierUnavailable(data) {
+  const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
+  return (failure?.violations || []).some((item) => /free_tier/i.test(item.quotaMetric || '') && String(item.quotaValue) === '0');
+}
+
 function dailyQuota(data) {
   const failure = (data.error?.details || []).find((detail) => detail['@type']?.endsWith('QuotaFailure'));
   const violation = (failure?.violations || []).find((item) => /PerDay/i.test(item.quotaId || ''));
@@ -164,6 +172,7 @@ async function postJSON(provider, model, url, headers, body, maxTokens) {
   console.info(`Langria: ${provider} HTTP ${response.status} in ${Date.now() - started} ms`, data.candidates?.[0]?.finishReason || data.promptFeedback?.blockReason || data.stop_reason || data.incomplete_details?.reason || '', data.error?.message || '');
   if (signal.aborted) throw timedOut();
   if (response.status === 429) {
+    if (freeTierUnavailable(data)) throw new FatalTranslationError(`${t('error.freeTier', { name: configs[provider].name, model })}\n${t('error.detail', { detail: data.error?.message || t('error.noDetail') })}`);
     const daily = dailyQuota(data);
     if (daily) throw new FatalTranslationError(dailyQuotaMessage(provider, model, daily, data.error?.message));
     const wait = retryAfterMs(response, data);

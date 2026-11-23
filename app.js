@@ -182,6 +182,13 @@ function quotaFailure(data) {
   return failure?.violations || [];
 }
 
+// A model the free tier does not offer comes back as a free-tier quota with a
+// limit of 0, even for someone with a Gemini app subscription: the API bills
+// by the key's Cloud project. Not a quota that resets, so said apart.
+function freeTierUnavailable(data) {
+  return quotaFailure(data).some((item) => /free_tier/i.test(item.quotaMetric || '') && String(item.quotaValue) === '0');
+}
+
 function dailyQuota(data) {
   const violation = quotaFailure(data).find((item) => /PerDay/i.test(item.quotaId || ''));
   return violation ? { limit: Number(violation.quotaValue) || null } : null;
@@ -210,8 +217,9 @@ function nextPacificMidnight(now = new Date()) {
   return new Date(now.getTime() + 86400000 - elapsed);
 }
 
-function friendlyApiError(status, message, daily) {
+function friendlyApiError(status, message, daily, freeTier) {
   const name = providerConfig().name;
+  if (freeTier) return `${t('error.freeTier', { name, model: currentModel() })}\n\n${t('error.detail', { detail: message || t('error.noDetail') })}`;
   if (daily) {
     const reset = nextPacificMidnight().toLocaleString(t('limit.locale'), { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     return `${t(daily.limit ? 'error.dailyLimitCount' : 'error.dailyLimit', { name, model: currentModel(), limit: daily.limit, reset })}\n\n${t('error.detail', { detail: message || t('error.noDetail') })}`;
@@ -281,15 +289,16 @@ function echoed(text, result, language) {
 // Keeps the HTTP status and the service's own message so the caller can
 // react to specific API rejections.
 class ApiError extends Error {
-  constructor(status, detail, { daily = null, retryAfter = null, perMinute = null } = {}) {
-    super(friendlyApiError(status, detail, daily));
-    Object.assign(this, { status, detail: detail || '', daily, retryAfter, perMinute });
+  constructor(status, detail, { daily = null, freeTier = false, retryAfter = null, perMinute = null } = {}) {
+    super(friendlyApiError(status, detail, daily, freeTier));
+    Object.assign(this, { status, detail: detail || '', daily, freeTier, retryAfter, perMinute });
   }
 }
 
 function apiError(response, data) {
   if (response.status !== 429) return new ApiError(response.status, data.error?.message);
   const retryAfter = retryAfterMs(response, data);
+  if (freeTierUnavailable(data)) return new ApiError(429, data.error?.message, { freeTier: true });
   return new ApiError(429, data.error?.message, { daily: dailyQuota(data), retryAfter, perMinute: perMinuteQuota(data, retryAfter) });
 }
 
@@ -304,7 +313,7 @@ async function retryRateLimit(request, send) {
     try {
       return await send();
     } catch (error) {
-      if (!(error instanceof ApiError) || error.status !== 429 || error.daily || !error.retryAfter || error.retryAfter > MAX_LIMIT_WAIT_MS || attempt >= MAX_LIMIT_RETRIES || request !== latestRequest) throw error;
+      if (!(error instanceof ApiError) || error.status !== 429 || error.daily || error.freeTier || !error.retryAfter || error.retryAfter > MAX_LIMIT_WAIT_MS || attempt >= MAX_LIMIT_RETRIES || request !== latestRequest) throw error;
       await waitOutLimit(request, error);
       if (request !== latestRequest) throw error;
     }

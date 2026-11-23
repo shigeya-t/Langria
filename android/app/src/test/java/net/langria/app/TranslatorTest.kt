@@ -185,6 +185,19 @@ class TranslatorTest {
     }
   }
 
+  @Test fun reportsModelMissingFromFreeTier() = runBlocking {
+    handler = { geminiQuota("GenerateRequestsPerDayPerProjectPerModel-FreeTier", "0", "30s") }
+    val translator = Translator(Provider.GEMINI, Provider.GEMINI.defaultModel, "test-key", "Japanese", TranslationMode.NATURAL, "http://127.0.0.1:${server.address.port}") { _, _ -> fail("should not wait") }
+    try {
+      translator.translate("Hello")
+      fail("expected an error")
+    } catch (error: TranslationError.FreeTier) {
+      assertEquals(TranslationError.Remedy.SETTINGS, error.remedy)
+      assertEquals(1, requests.size)
+      assertTrue(error.message(Provider.GEMINI, "gemini-test") { key, params -> "$key ${params["model"]}" }.startsWith("error.freeTier gemini-test"))
+    }
+  }
+
   @Test fun nextPacificMidnight() {
     // 2026-11-18 20:00 UTC is 12:00 in Los Angeles (PST, UTC-8).
     val now = java.time.ZonedDateTime.parse("2026-11-18T20:00:00Z")
