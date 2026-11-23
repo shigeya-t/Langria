@@ -59,6 +59,9 @@ enum TranslationError: Error {
   case rateLimit(wait: TimeInterval?, perMinute: Int?, detail: String)
   /// Gemini's per-day quota is used up; it resets at midnight Pacific time.
   case dailyLimit(limit: Int?, detail: String)
+  /// The model is not on Gemini's free tier (limit 0) and the key's Cloud
+  /// project has no billing; a Gemini app subscription does not count.
+  case freeTier(detail: String)
   case truncated
   case empty
   case network
@@ -75,7 +78,7 @@ enum TranslationError: Error {
     case .api(let status, _): [400, 401, 403, 404].contains(status) ? .settings : .retry
     case .rateLimit: .retry
     // Another model or service is the way on until the quota resets.
-    case .dailyLimit: .settings
+    case .dailyLimit, .freeTier: .settings
     case .truncated, .blocked: .none
     case .empty, .network, .timeout, .unexpected: .retry
     }
@@ -92,6 +95,8 @@ enum TranslationError: Error {
       return "\(summary)\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
     case .rateLimit(_, _, let detail):
       return "\(t("error.rateLimit", [:]))\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
+    case .freeTier(let detail):
+      return "\(t("error.freeTier", ["name": provider.name, "model": model]))\n\n\(t("error.detail", ["detail": detail.isEmpty ? t("error.noDetail", [:]) : detail]))"
     case .dailyLimit(let limit, let detail):
       let formatter = DateFormatter()
       formatter.locale = Locale(identifier: t("limit.locale", [:]))
@@ -300,6 +305,9 @@ struct Translator {
       let details = error?["details"] as? [[String: Any]] ?? []
       let violations = details.first { ($0["@type"] as? String)?.hasSuffix("QuotaFailure") == true }?["violations"] as? [[String: Any]] ?? []
       let quotaValue = { (item: [String: Any]) in Int(item["quotaValue"] as? String ?? "") ?? (item["quotaValue"] as? Int) }
+      if violations.contains(where: { ($0["quotaMetric"] as? String)?.range(of: "free_tier", options: .caseInsensitive) != nil && quotaValue($0) == 0 }) {
+        throw TranslationError.freeTier(detail: detail)
+      }
       if let daily = violations.first(where: { ($0["quotaId"] as? String)?.range(of: "PerDay", options: .caseInsensitive) != nil }) {
         throw TranslationError.dailyLimit(limit: quotaValue(daily), detail: detail)
       }

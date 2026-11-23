@@ -55,6 +55,8 @@ sealed class TranslationError : Exception() {
   data class RateLimit(val waitSeconds: Double?, val perMinute: Int?, val detail: String) : TranslationError()
   /** Gemini's per-day quota is used up; it resets at midnight Pacific time. */
   data class DailyLimit(val limit: Int?, val detail: String) : TranslationError()
+  /** The model is not on Gemini's free tier (limit 0) and the key's Cloud project has no billing; a Gemini app subscription does not count. */
+  data class FreeTier(val detail: String) : TranslationError()
   data object Truncated : TranslationError()
   data object Empty : TranslationError()
   data object Network : TranslationError()
@@ -67,7 +69,7 @@ sealed class TranslationError : Exception() {
     is Api -> if (status in setOf(400, 401, 403, 404)) Remedy.SETTINGS else Remedy.RETRY
     is RateLimit -> Remedy.RETRY
     // Another model or service is the way on until the quota resets.
-    is DailyLimit -> Remedy.SETTINGS
+    is DailyLimit, is FreeTier -> Remedy.SETTINGS
     Truncated, is Blocked -> Remedy.NONE
     Empty, Network, Timeout, is Unexpected -> Remedy.RETRY
   }
@@ -86,6 +88,7 @@ sealed class TranslationError : Exception() {
       "$summary\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
     }
     is RateLimit -> "${t("error.rateLimit", emptyMap())}\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
+    is FreeTier -> "${t("error.freeTier", mapOf("name" to provider.title, "model" to model))}\n\n${t("error.detail", mapOf("detail" to detail.ifEmpty { t("error.noDetail", emptyMap()) }))}"
     is DailyLimit -> {
       val locale = Locale.forLanguageTag(t("limit.locale", emptyMap()))
       val pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, "MMMdjmm")
@@ -342,6 +345,7 @@ private fun rateLimitError(error: JSONObject?, detail: String, retryAfter: Strin
   val details = error?.optJSONArray("details").objects()
   val violations = details.firstOrNull { it.optString("@type").endsWith("QuotaFailure") }?.optJSONArray("violations").objects()
   val quotaValue = { item: JSONObject -> item.optString("quotaValue").toIntOrNull() }
+  if (violations.any { it.optString("quotaMetric").contains("free_tier", ignoreCase = true) && quotaValue(it) == 0 }) return TranslationError.FreeTier(detail)
   violations.firstOrNull { it.optString("quotaId").contains("PerDay", ignoreCase = true) }?.let { return TranslationError.DailyLimit(quotaValue(it), detail) }
   val header = retryAfter?.trim()?.toDoubleOrNull() ?: 0.0
   val delay = details.firstOrNull { it.optString("@type").endsWith("RetryInfo") }?.optString("retryDelay")?.removeSuffix("s")?.toDoubleOrNull() ?: 0.0
