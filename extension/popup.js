@@ -28,7 +28,12 @@ function renderProvider(settings) {
   // because Chrome closes the popup when it shows its passkey dialog.
   const passphrase = settings.locked && settings.lockMethod === 'passphrase';
   $('#unlockPassphrase').hidden = !passphrase;
-  if (passphrase) showStatus(t('popup.lockedPassphrase'), 'warn');
+  // No key for any service yet: the guide says where to get one, in place of
+  // the missing-key warning. Locked keys do not count as missing.
+  const setup = !settings.locked && !Object.values(settings.apiKeys || {}).some(Boolean);
+  $('#setupGuide').hidden = !setup;
+  if (setup && (!pageState || pageState.status === 'idle')) showStatus('');
+  else if (passphrase) showStatus(t('popup.lockedPassphrase'), 'warn');
   else if (settings.locked) showStatus(t('popup.lockedPasskey'), 'warn');
   else if (!hasKey) showStatus(missingKeyMessage(settings), 'warn');
   else if (!pageState || pageState.status === 'idle') showStatus('');
@@ -170,6 +175,8 @@ async function init() {
     else $('#actionButton').click();
   });
   $('#openOptions').addEventListener('click', () => chrome.runtime.openOptionsPage());
+  // The guide is about Gemini, so it is made the service to use.
+  $('#setupEnterKey').addEventListener('click', async () => { await chrome.storage.local.set({ provider: 'gemini' }); chrome.runtime.openOptionsPage(); window.close(); });
   $('#allowFrames').addEventListener('click', () => {
     // Asked first, while the click still counts as a user gesture. Chrome may
     // close the popup when it asks, so the service worker starts the frames

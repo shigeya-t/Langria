@@ -17,7 +17,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 
 | パス | 役割 |
 | --- | --- |
-| `app.js` | Webアプリの全ロジック（クラシックスクリプト）。翻訳、設定、ロック解除、入れ替えボタン。翻訳できたら原文の言語を `langria-pair-source` に覚え、翻訳先の言語で入力されたら翻訳先をその言語に切り替える（`pairedTarget`。iOS・Android の `AppModel` も同じ） |
+| `app.js` | Webアプリの全ロジック（クラシックスクリプト）。翻訳、設定、ロック解除、入れ替えボタン。翻訳できたら原文の言語を `langria-pair-source` に覚え、翻訳先の言語で入力されたら翻訳先をその言語に切り替える（`pairedTarget`。iOS・Android の `AppModel` も同じ）。どのサービスのキーもない間（`needsSetup`。ロック中は含めない）は、翻訳欄に APIキーの取り方の案内（`showSetupGuide`）を出す。拡張機能のポップアップも同じ案内（`#setupGuide`）を出す |
 | `extension/background.js` | Service Worker（ES module）。API呼び出し、右クリックメニュー、ショートカット |
 | `extension/content.js` | 必要なときにページへ注入する。テキストの抽出・差し替え・復元、選択翻訳の吹き出し |
 | `extension/popup.js` / `options.js` / `unlock.js` | ポップアップ、設定画面、パスキー解除ウィンドウ（ES module） |
@@ -60,7 +60,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 
 ### 共用ファイルの決まり
 
-`i18n.js`・`vault.js`・`languages.js` は Webアプリ（`<script>` タグ）と拡張機能（ES module の `import`）の両方から読み込みます。`i18n.js` と `languages.js` は iOSアプリも JavaScriptCore で実行します（DOM・`navigator.language` 以外のブラウザ API がない環境なので、トップレベルでそれらに触れないでください）。iOS だけの文言は `ios.` で始まるキーで `i18n.js` に置きます（Androidアプリも、Apple の機能に触れない `ios.` の文言はそのまま使う。Android だけの文言は `android.` で始める）。Androidアプリは `LangriaI18n.messages` を読むので、このプロパティは残してください。Apple Watch の文言は `watch.` で始め、使うキーを `WatchSettings.messageKeys` に足します（iPhone が Watch に送るのはそこに並べたキーだけです）。そのため、`globalThis.LangriaI18n` / `globalThis.LangriaVault` / `globalThis.LangriaLanguages` を設定する**クラシックスクリプト**として書きます。`export` を書いたり chrome API に依存したりしないでください（`i18n.js` は `chrome.i18n` があれば使い、なければ `navigator.language` で判定します）。言語を追加・変更するときは `languages.js` だけを直せば、全部に反映されます（`locale` は iOS・Android の音声入力・読み上げに使う BCP 47 のタグ。Webアプリと拡張機能は読まない）。
+`i18n.js`・`vault.js`・`languages.js` は Webアプリ（`<script>` タグ）と拡張機能（ES module の `import`）の両方から読み込みます。`i18n.js` と `languages.js` は iOSアプリも JavaScriptCore で実行します（DOM・`navigator.language` 以外のブラウザ API がない環境なので、トップレベルでそれらに触れないでください）。APIキーの取り方の案内（`setup.`）は Web・拡張機能・iOS・Android で共用し、手順の3つ目だけをそれぞれのキー（`web.setupStep3`・`popup.setupStep3`・`ios.setupStep3`）で持ちます。iOS だけの文言は `ios.` で始まるキーで `i18n.js` に置きます（Androidアプリも、Apple の機能に触れない `ios.` の文言はそのまま使う。Android だけの文言は `android.` で始める）。Androidアプリは `LangriaI18n.messages` を読むので、このプロパティは残してください。Apple Watch の文言は `watch.` で始め、使うキーを `WatchSettings.messageKeys` に足します（iPhone が Watch に送るのはそこに並べたキーだけです）。そのため、`globalThis.LangriaI18n` / `globalThis.LangriaVault` / `globalThis.LangriaLanguages` を設定する**クラシックスクリプト**として書きます。`export` を書いたり chrome API に依存したりしないでください（`i18n.js` は `chrome.i18n` があれば使い、なければ `navigator.language` で判定します）。言語を追加・変更するときは `languages.js` だけを直せば、全部に反映されます（`locale` は iOS・Android の音声入力・読み上げに使う BCP 47 のタグ。Webアプリと拡張機能は読まない）。
 
 ### 表示言語（UIの国際化）
 

@@ -90,7 +90,7 @@ docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria
 ## 使い方
 
 1. 使いたいサービス（ChatGPT / Claude / Gemini）を選択します。
-2. 右上の設定（歯車）を開き、選択中のサービスのAPIキーを入力します。
+2. 右上の設定（歯車）を開き、選択中のサービスのAPIキーを入力します。どのサービスのAPIキーもまだ保存されていない間は、翻訳欄に案内（無料の Gemini APIキーを取得できる Google AI Studio へのリンクと、Gemini を選んで設定を開くボタン）が出ます。暗号化したキーがロック中のときは出ません。
 3. 必要に応じてモデル名を変更し、「保存する」を押します。
 4. 「原文」欄の左上で翻訳モードを選択します（省略時は「原文に忠実」）。
 5. 上部のドロップダウンで翻訳先の言語を選びます（初期値は、表示言語が日本語なら日本語、それ以外は英語）。一覧にない言語は「その他…」を選んで言語名を入力します。
@@ -137,7 +137,7 @@ git config core.hooksPath .githooks && .githooks/write-version
 ### インストール
 
 1. [Chrome ウェブストア](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja)から Langria をインストールします。
-2. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。
+2. ツールバーの Langria アイコン → 歯車から設定画面を開き、使うサービスのAPIキー（必要ならモデル名も）を入力して保存します。APIキーがまだ保存されていない間は、ポップアップに Webアプリと同じ案内（無料の Gemini APIキーの取得先へのリンクと、設定画面を開くボタン）が出ます。
 
 拡張機能の設定は `chrome.storage.local` に保存されるため、Webアプリとは別に入力が必要です。プライバシーポリシーは [docs/privacy/](docs/privacy/ja.html)（公開URL: <https://langria.net/privacy/ja.html>）にあります。
 

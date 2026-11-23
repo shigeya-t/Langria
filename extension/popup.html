@@ -32,6 +32,13 @@
     </div>
     <input id="customTarget" class="model-input custom-target" type="text" placeholder="Language name (e.g. Arabic)" aria-label="Target language name" data-i18n-attr="placeholder:target.customPlaceholder;aria-label:target.customLabel" hidden />
 
+    <section class="setup-guide" id="setupGuide" hidden>
+      <h2 class="setup-title" data-i18n="setup.title">Three steps to your first translation</h2>
+      <ol class="setup-steps"><li data-i18n="setup.step1"></li><li data-i18n="setup.step2"></li><li data-i18n="popup.setupStep3"></li></ol>
+      <div class="setup-buttons"><a class="vault-button" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" data-i18n="setup.getKey"></a><button type="button" class="vault-button primary" id="setupEnterKey" data-i18n="setup.enterKey"></button></div>
+      <p class="setup-other" data-i18n="setup.other"></p>
+    </section>
+
     <input id="unlockPassphrase" class="model-input" type="password" autocomplete="current-password" placeholder="Passphrase" aria-label="Passphrase" data-i18n-attr="placeholder:passphrase;aria-label:passphrase" hidden />
     <button id="actionButton" class="primary-button" disabled>Translate this page</button>
     <div class="frames-notice" id="framesNotice" role="status" hidden>

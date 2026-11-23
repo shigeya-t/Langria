@@ -493,20 +493,20 @@ private fun SetupGuide(model: AppModel, modifier: Modifier, onOpenSettings: () -
   val shared = model.shared
   val uri = LocalUriHandler.current
   Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    Text(shared.t("ios.setupTitle"), style = MaterialTheme.typography.titleMedium)
-    for (step in 1..3) {
+    Text(shared.t("setup.title"), style = MaterialTheme.typography.titleMedium)
+    listOf("setup.step1", "setup.step2", "ios.setupStep3").forEachIndexed { index, key ->
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("$step", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Text(shared.t("ios.setupStep$step"))
+        Text("${index + 1}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(shared.t(key))
       }
     }
     // Side by side, or one above the other when the labels are long.
     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-      OutlinedButton(onClick = { uri.openUri(Provider.GEMINI.keysUrl) }) { Text(shared.t("ios.setupGetKey")) }
+      OutlinedButton(onClick = { uri.openUri(Provider.GEMINI.keysUrl) }) { Text(shared.t("setup.getKey")) }
       // The guide is about Gemini, so the settings open on it.
-      Button(onClick = { model.pickProvider(Provider.GEMINI); onOpenSettings() }) { Text(shared.t("ios.setupEnterKey")) }
+      Button(onClick = { model.pickProvider(Provider.GEMINI); onOpenSettings() }) { Text(shared.t("setup.enterKey")) }
     }
-    Text(shared.t("ios.setupOther"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(shared.t("setup.other"), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
