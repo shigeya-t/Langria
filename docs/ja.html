@@ -20,164 +20,269 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="stylesheet" href="privacy/privacy.css" />
+    <link rel="stylesheet" href="site.css" />
   </head>
   <body>
-    <main>
-      <header>
-        <span class="brand"><img class="brand-mark" src="favicon.svg" alt="" />Langria</span>
-        <nav><a href="./" lang="en">English</a> | 日本語</nav>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="ja.html"><img class="brand-mark" src="favicon.svg" alt="" />Langria</a>
+        <nav class="site-nav" aria-label="セクション">
+          <a href="#features">特長</a>
+          <a href="#get-started">使い方</a>
+          <a href="#download">ダウンロード</a>
+          <a href="#faq">よくある質問</a>
+        </nav>
+        <nav class="lang-switch" aria-label="言語"><a href="./" lang="en">English</a> | 日本語</nav>
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="ダークモード" title="ダークモード" aria-pressed="false" hidden><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 3v2.2M12 18.8V21M4.2 12H2M22 12h-2.2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></svg><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></button>
-      </header>
+      </div>
+    </header>
 
-      <h1>Langria – AI翻訳</h1>
-      <p>選んだAIサービス — ChatGPT（OpenAI）・Claude（Anthropic）・Gemini（Google）— で好きな言語に翻訳します。Langria は次の形で使えます。</p>
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <p class="eyebrow">Chrome · iPhone · Android · Web</p>
+          <h1>世界中のWebを、<br /><em>あなたの言葉で。</em></h1>
+          <p class="lead">Langria は ChatGPT・Claude・Gemini で、Webページ・選んだ文章・写真・声を翻訳するAI翻訳ツール。ページの見た目はそのままに、文章だけが切り替わります。</p>
+          <div class="cta">
+            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Chrome に追加（無料）</a>
+            <a class="button secondary" href="app/">ブラウザで試す</a>
+          </div>
+          <ul class="trust">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>無料で使える</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Langria への登録は不要</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>文章が Langria のサーバーを通らない</li>
+          </ul>
+          <div class="hero-shot">
+            <img class="on-light" src="images/ja-extension-layout-light.png" width="1280" height="800" alt="日本語のWebページと、同じレイアウトのまま英語に翻訳したページ" /><img class="on-dark" src="images/ja-3-layout.png" width="1280" height="800" alt="日本語のWebページと、同じレイアウトのまま英語に翻訳したページ" />
+          </div>
+        </div>
+      </section>
 
-      <div class="editions">
-        <section class="edition">
-          <div class="edition-shot"><img class="on-light" src="images/ja-extension-layout-light.png" loading="lazy" alt="翻訳前と翻訳後のWebページ" /><img class="on-dark" src="images/ja-3-layout.png" loading="lazy" alt="翻訳前と翻訳後のWebページ" /></div>
-          <h2>Chrome拡張機能</h2>
-          <p>表示中のWebページや選択した文章を、その場で翻訳します。</p>
-          <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot"><img class="on-light" src="images/ja-web-app-light.png" loading="lazy" alt="Langria のWebアプリ" /><img class="on-dark" src="images/ja-web-app-dark.png" loading="lazy" alt="Langria のWebアプリ" /></div>
-          <h2>Webアプリ</h2>
-          <p>入力・貼り付けた文章を翻訳します。インストール不要で、ブラウザですぐ使えます。</p>
-          <a class="button" href="app/">Webアプリを試す</a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot phone"><img class="on-light" src="images/ja-ios-translate.png" loading="lazy" alt="Langria の iPhone アプリ" /><img class="on-dark" src="images/ja-ios-translate-dark.png" loading="lazy" alt="Langria の iPhone アプリ" /></div>
-          <h2>iPhone / iPad アプリ</h2>
-          <p>入力した文章、話した言葉、写真の文字を翻訳します。Apple Watch でも使えます。</p>
-          <a class="store-badge" href="https://apps.apple.com/jp/app/id6828902876"><img class="on-light" src="images/app-store-ja-black.svg" width="109" height="40" alt="App Store からダウンロード" /><img class="on-dark" src="images/app-store-ja-white.svg" width="109" height="40" alt="App Store からダウンロード" /></a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot phone"><img class="on-light" src="images/ja-android-translate.png" loading="lazy" alt="Langria の Android アプリ" /><img class="on-dark" src="images/ja-android-translate-dark.png" loading="lazy" alt="Langria の Android アプリ" /></div>
-          <h2>Android アプリ</h2>
-          <p>Android のスマホ・タブレットで、入力した文章、話した言葉、写真の文字を翻訳します。</p>
-          <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja"><img src="images/google-play-ja.png" width="135" height="40" alt="Google Play で手に入れよう" /></a>
-        </section>
+      <div class="providers">
+        <div class="wrap">
+          <p>使うAIは自分で選べます</p>
+          <strong>ChatGPT</strong><strong>Claude</strong><strong>Gemini</strong>
+        </div>
       </div>
 
-      <div class="summary">
-        <ul>
-          <li>ご自身のAPIキーを使い、文章はブラウザや端末から選んだサービスへ直接送られます。</li>
-          <li>Langria 独自のサーバーはなく、拡張機能やアプリにアクセス解析はありません。拡張機能とWebアプリには広告もありません（iOS・Androidアプリにはバナー広告が出ますが、翻訳する文章が広告に使われることはありません）。</li>
-          <li>Google AI Studio で取得できる無料の Gemini APIキーがあれば、すぐに試せます。</li>
-        </ul>
-      </div>
+      <section class="block" id="features">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">Langria の特長</span>
+            <h2>自然に読める翻訳を、いつもの画面で</h2>
+            <p>最新のAIが文脈ごと訳すので、単語を置き換えただけの訳ではなく、そのまま読める文章になります。</p>
+          </div>
+          <div class="benefits">
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 13h8M8 16.5h5"/></svg></div>
+              <h3>ページの見た目はそのまま</h3>
+              <p>変わるのは文章だけ。メニューや画像、レイアウトはそのままで、ワンクリックで原文に戻せます。</p>
+            </div>
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
+              <h3>プライバシーを第一に</h3>
+              <p>文章は端末から選んだAIサービスへ直接送られます。Langria のサーバーはなく、APIキーはパスキーや Face ID でロックできます。</p>
+            </div>
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></div>
+              <h3>どの言語にも、場面に合った訳で</h3>
+              <p>多数の言語に対応し、一覧にない言語も指定できます。訳し方は「原文に忠実」「自然な訳」「ビジネス」「会話・SNS」「技術文書」から選べます。</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h2 class="section" id="features">主な機能</h2>
-      <ul>
-        <li>ChatGPT / Claude / Gemini を切り替えられます。モデルもサービスごとに設定できます。</li>
-        <li>英語・日本語・中国語・韓国語・スペイン語・フランス語・ドイツ語など多数の言語に翻訳できます。一覧にない言語も指定できます。</li>
-        <li>翻訳モードは5種類（原文に忠実 / ネイティブらしい自然な訳 / ビジネス文書向け / 会話・SNS向け / 技術文書向け）。</li>
-        <li>APIキーはパスキー（Touch ID など）またはパスフレーズで暗号化できます。</li>
-        <li>画面の表示は日本語と英語に対応しています。</li>
-      </ul>
+      <section class="block alt">
+        <div class="wrap">
+          <div class="feature" id="extension">
+            <div class="feature-media">
+              <img class="on-light" src="images/ja-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="選択した文章の訳文を吹き出しで表示した画面" /><img class="on-dark" src="images/ja-2-selection.png" width="1280" height="800" loading="lazy" alt="選択した文章の訳文を吹き出しで表示した画面" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">Chrome拡張機能</span>
+              <h2>ページ全体も、一文だけも</h2>
+              <p>読んでいるページをワンクリックで翻訳。一部だけ知りたいときは、選んで右クリックすれば吹き出しで訳が出ます。</p>
+              <ul class="checks">
+                <li>画面に見えている部分から先に訳し、残りはスクロールに合わせて翻訳します。</li>
+                <li>Alt+Shift+T でいつでも原文に戻せます。</li>
+                <li>ChatGPT・Claude・Gemini を切り替えられ、モデルもサービスごとに選べます。</li>
+              </ul>
+              <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+            </div>
+          </div>
 
-      <h2 class="section" id="extension">Chrome拡張機能</h2>
-      <p>表示中のWebページを翻訳します。ページのレイアウトはそのままで、ワンクリックで原文に戻せます。</p>
+          <div class="feature reverse" id="ios">
+            <div class="feature-media phones">
+              <img class="on-light" src="images/ja-ios-translate.png" width="1206" height="2622" loading="lazy" alt="Langria の iPhone アプリで文章を翻訳した画面" /><img class="on-dark" src="images/ja-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="Langria の iPhone アプリで文章を翻訳した画面" />
+              <img src="images/ja-ios-photo.png" width="1206" height="2622" loading="lazy" alt="写真から読み取った文字を翻訳した画面" />
+              <img class="watch" src="images/ja-ios-watch.png" width="422" height="514" loading="lazy" alt="Apple Watch で翻訳した画面" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">iPhone・iPad・Apple Watch・Android</span>
+              <h2>撮って、話して、すぐわかる</h2>
+              <p>看板やメニューを撮る、スマホに話しかける、メッセージを貼り付ける。あとは Langria が数秒で訳します。</p>
+              <ul class="checks">
+                <li>写真の文字は端末内で読み取ります。送るのは文字だけで、画像は送りません。</li>
+                <li>音声入力と、訳文の読み上げができます。</li>
+                <li>iPhone は Siri・ショートカット、Android は共有・文字選択メニューから、ほかのアプリの文章を翻訳できます。</li>
+                <li>Apple Watch でも、Watch だけで翻訳できます。</li>
+              </ul>
+              <div class="badges">
+                <a class="store-badge" href="https://apps.apple.com/jp/app/id6828902876"><img class="on-light" src="images/app-store-ja-black.svg" width="109" height="40" alt="App Store からダウンロード" /><img class="on-dark" src="images/app-store-ja-white.svg" width="109" height="40" alt="App Store からダウンロード" /></a>
+                <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja"><img src="images/google-play-ja.png" width="135" height="40" alt="Google Play で手に入れよう" /></a>
+              </div>
+            </div>
+          </div>
 
-      <h3 id="install">インストール</h3>
-      <p>次のどちらかの方法でインストールします。</p>
-      <ul>
-        <li><strong>Chrome ウェブストアから</strong>: <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストアの Langria のページ</a>を開き、「Chrome に追加」を押します。更新は自動で入ります。</li>
-        <li><strong>このリポジトリから自分用に</strong>: <a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>をダウンロード（または clone）し、<code>chrome://extensions</code> を開いて右上の「デベロッパーモード」をオンにし、「パッケージ化されていない拡張機能を読み込む」でリポジトリの <code>extension</code> フォルダを選びます。自動では更新されないので、新しいコードを取り込んだら <code>chrome://extensions</code> で Langria の再読み込みボタン（↻）を押してください。詳しくは <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#リポジトリから読み込む開発用">README</a> をご覧ください。</li>
-      </ul>
+          <div class="feature" id="web-app">
+            <div class="feature-media">
+              <img class="on-light" src="images/ja-web-app-light.png" width="1280" height="948" loading="lazy" alt="Langria のWebアプリで英語の文章を日本語に翻訳した画面" /><img class="on-dark" src="images/ja-web-app-dark.png" width="1280" height="948" loading="lazy" alt="Langria のWebアプリで英語の文章を日本語に翻訳した画面" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">Webアプリ</span>
+              <h2>インストール不要</h2>
+              <p>どのブラウザでも、文章を入力・貼り付けるだけ。言語は自動で判別し、入力の手を止めるとすぐに訳します。</p>
+              <ul class="checks">
+                <li>入れ替えボタンで、受け取った文章への返信もすぐ書けます。</li>
+                <li>言語の組み合わせを覚え、翻訳の向きを自動で切り替えます。</li>
+                <li>ライト・ダークモードに対応。APIキーはブラウザの中にだけ保存されます。</li>
+              </ul>
+              <a class="button" href="app/">Webアプリを開く</a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h3>使い方</h3>
-      <ol>
-        <li>拡張機能の設定画面で、OpenAI・Anthropic・Google Gemini のいずれかのAPIキーを入力します。</li>
-        <li>ツールバーのアイコンを開いて「このページを翻訳」を押します。画面に見えている部分から先に翻訳し、残りはスクロールに合わせて翻訳します。</li>
-        <li>「原文に戻す」または Alt+Shift+T で原文に戻せます。一部だけ訳したいときは、文章を選んで右クリックし「Langria で「…」を翻訳」を選びます。</li>
-      </ol>
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">動画で見る</span>
+            <h2>ページの言語が切り替わる様子</h2>
+          </div>
+          <figure class="video">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/qp4NPzt_NMg" title="Langria Chrome拡張機能のデモ" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <figcaption>再生できないときは <a href="https://www.youtube.com/watch?v=qp4NPzt_NMg">YouTube で見る</a></figcaption>
+          </figure>
+        </div>
+      </section>
 
-      <h3>動画で見る</h3>
-      <figure class="video">
-        <div class="video-frame"><iframe src="https://www.youtube.com/embed/qp4NPzt_NMg" title="Langria Chrome拡張機能のデモ" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-        <figcaption>再生できないときは <a href="https://www.youtube.com/watch?v=qp4NPzt_NMg">YouTube で見る</a></figcaption>
-      </figure>
+      <section class="block alt" id="get-started">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">使い方</span>
+            <h2>数分で使い始められます</h2>
+            <p>Langria はご自身のAPIキーを使うので、間に余計なサービスを挟まずにAIを使えます。</p>
+          </div>
+          <ol class="steps">
+            <li>
+              <h3>APIキーを用意する</h3>
+              <p><a href="https://aistudio.google.com/apikey">Google AI Studio</a> の無料の Gemini APIキーがあれば始められます。OpenAI・Anthropic のキーも使えます。</p>
+            </li>
+            <li>
+              <h3>Langria を入れる</h3>
+              <p>Chrome に追加するか、スマホのアプリを入れるか、Webアプリを開き、設定にキーを貼り付けます。</p>
+            </li>
+            <li>
+              <h3>翻訳する</h3>
+              <p>Webページ、選んだ文章、メッセージ、写真、声を、選んだ言語に翻訳します。</p>
+            </li>
+          </ol>
+        </div>
+      </section>
 
-      <div class="shots">
-        <figure class="shot">
-          <img class="on-light" src="images/ja-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="選択した文章の訳文を吹き出しで表示した画面" /><img class="on-dark" src="images/ja-2-selection.png" width="1280" height="800" loading="lazy" alt="選択した文章の訳文を吹き出しで表示した画面" />
-          <figcaption>右クリックメニューから、選択した部分だけを翻訳できます。</figcaption>
-        </figure>
-        <figure class="shot">
-          <img class="on-light" src="images/ja-extension-layout-light.png" width="1280" height="800" loading="lazy" alt="原文と翻訳後のページを並べた画面" /><img class="on-dark" src="images/ja-3-layout.png" width="1280" height="800" loading="lazy" alt="原文と翻訳後のページを並べた画面" />
-          <figcaption>文章だけを差し替え、レイアウトは変わりません。</figcaption>
-        </figure>
-      </div>
+      <section class="block" id="download">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">ダウンロード</span>
+            <h2>読む場所すべてで使える</h2>
+            <p>どれも無料。使い方に合わせて選べます。</p>
+          </div>
+          <div class="downloads">
+            <div class="download" id="install">
+              <h3>Chrome拡張機能</h3>
+              <p>表示中のWebページや選んだ文章を、その場で翻訳します。</p>
+              <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+            </div>
+            <div class="download">
+              <h3>iPhone / iPad</h3>
+              <p>文章・声・写真を翻訳。iOS 17 以降、Apple Watch にも対応。</p>
+              <a class="store-badge" href="https://apps.apple.com/jp/app/id6828902876"><img class="on-light" src="images/app-store-ja-black.svg" width="109" height="40" alt="App Store からダウンロード" /><img class="on-dark" src="images/app-store-ja-white.svg" width="109" height="40" alt="App Store からダウンロード" /></a>
+            </div>
+            <div class="download" id="android">
+              <h3>Android</h3>
+              <p>スマホ・タブレットで文章・声・写真を翻訳。Android 11 以降。</p>
+              <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja"><img src="images/google-play-ja.png" width="135" height="40" alt="Google Play で手に入れよう" /></a>
+            </div>
+            <div class="download">
+              <h3>Webアプリ</h3>
+              <p>どのブラウザでも、入力・貼り付けた文章を翻訳。インストール不要。</p>
+              <a class="button" href="app/">Webアプリを開く</a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h2 class="section" id="web-app">Webアプリ</h2>
-      <p>入力・貼り付けた文章を翻訳するツールです。原文の言語は自動で判別し、入力の手を止めると少し後に翻訳します。<a href="app/">Webアプリ</a>を開き、設定（歯車アイコン）でAPIキーを入力すれば使い始められます。キーを保存するまでは、無料の Gemini APIキーの取得先を翻訳欄に案内します。</p>
+      <section class="block alt" id="faq">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">FAQ</span>
+            <h2>よくある質問</h2>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>無料で使えますか？</summary>
+              <div><p>はい。拡張機能とアプリは無料です。翻訳にはご自身のAPIキーを使うため、利用料がかかる場合は選んだAIサービスから請求されます。Gemini の無料枠でも始められます。拡張機能とWebアプリに広告はありません。iOS・Androidアプリにはバナー広告が出ますが、翻訳する文章が広告に使われることはありません。</p></div>
+            </details>
+            <details>
+              <summary>APIキーとは何ですか？どこで取得できますか？</summary>
+              <div><p>Langria がAIサービスを使うための鍵です。<a href="https://aistudio.google.com/apikey">Google AI Studio</a>（Gemini。無料枠あり）、<a href="https://platform.openai.com/api-keys">OpenAI</a>、<a href="https://console.anthropic.com/settings/keys">Anthropic</a> で取得できます。キーを保存するまでは、Langria の画面に取得先が案内されます。</p></div>
+            </details>
+            <details>
+              <summary>翻訳する文章はどう扱われますか？</summary>
+              <div><p>翻訳を頼んだときだけ、ブラウザや端末から選んだAIサービスへ直接送られます。Langria 独自のサーバーはなく、拡張機能やアプリにアクセス解析もありません。写真の文字は端末内で読み取り、送るのは文字だけです。APIキーはパスキー（Touch ID など）やパスフレーズで暗号化でき、スマホでは Face ID や指紋でロックできます。詳しくは<a href="privacy/ja.html">プライバシーポリシー</a>をご覧ください。</p></div>
+            </details>
+            <details>
+              <summary>どの言語に翻訳できますか？</summary>
+              <div><p>英語・日本語・中国語・韓国語・スペイン語・フランス語・ドイツ語など多数の言語を一覧から選べ、一覧にない言語も名前を入力して指定できます。Langria の画面は日本語と英語で表示できます。</p></div>
+            </details>
+            <details>
+              <summary>Webアプリを自分のサーバーに置けますか？</summary>
+              <div><p>はい。このサイトのWebアプリはお試し用のデモなので、普段使いにはご自身の環境に置くことをおすすめします。ビルド不要の静的サイトなので、<a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>のファイルを好きなWebサーバーに置くか、<code>localhost</code> で開くだけで使えます。1 MB ほどのコンテナイメージもあり、<code>docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria</code> を実行して <code>http://localhost:8080</code> を開くだけでも使えます。手順は <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#サーバーについて">README</a> をご覧ください。</p></div>
+            </details>
+            <details>
+              <summary>拡張機能をソースコードから入れられますか？</summary>
+              <div><p>はい。<a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>をダウンロード（または clone）し、<code>chrome://extensions</code> で「デベロッパーモード」をオンにして、「パッケージ化されていない拡張機能を読み込む」で <code>extension</code> フォルダを選びます。自動では更新されないので、新しいコードを取り込んだら Langria の再読み込みボタン（↻）を押してください。詳しくは <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#リポジトリから読み込む開発用">README</a> をご覧ください。</p></div>
+            </details>
+          </div>
+        </div>
+      </section>
 
-      <figure class="shot">
-        <img class="on-light" src="images/ja-web-app-light.png" width="1280" height="948" loading="lazy" alt="Langria のWebアプリで英語の文章を日本語に翻訳した画面" /><img class="on-dark" src="images/ja-web-app-dark.png" width="1280" height="948" loading="lazy" alt="Langria のWebアプリで英語の文章を日本語に翻訳した画面" />
-      </figure>
-
-      <ul>
-        <li>使えるサービス・翻訳先の言語・翻訳モードは拡張機能と同じです。</li>
-        <li>入れ替えボタンで左右の文章と翻訳先の言語を入れ替えられ、返信を書くときに便利です。</li>
-        <li>言語の組み合わせを覚え、日本語を英語に翻訳したあとに英語を入力すると、翻訳先が自動で日本語に切り替わります。</li>
-        <li>ライトモードとダークモードに対応しています。</li>
-        <li>APIキーはブラウザの中にだけ保存されます。</li>
-      </ul>
-
-      <div class="summary">
-        <p><strong>このサイトのWebアプリは、お試し用のデモです。</strong>普段使いには、ご自身の環境に置いて使う（セルフホストする）ことをおすすめします。ビルド不要の静的サイトなので、<a href="https://github.com/shigeya-t/Langria">GitHub のリポジトリ</a>のファイルを好きなWebサーバーに置くか、<code>localhost</code> で開くだけで使えます。1 MB ほどのコンテナイメージも用意しているので、<code>docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria</code> を実行して <code>http://localhost:8080</code> を開くだけでも使えます。手順は <a href="https://github.com/shigeya-t/Langria/blob/master/README.ja.md#サーバーについて">README</a> をご覧ください。</p>
-      </div>
-
-      <h2 class="section" id="ios">iPhone / iPad アプリ</h2>
-      <p>Webアプリと同じ翻訳を iPhone・iPad（iOS 17 以降）で使え、写真の文字や音声も翻訳できます。<a href="https://apps.apple.com/jp/app/id6828902876">App Store の Langria</a>（無料）を入れ、設定でAPIキーを入力すれば使い始められます。</p>
-
-      <div class="shots phones">
-        <figure class="shot">
-          <img class="on-light" src="images/ja-ios-translate.png" width="1206" height="2622" loading="lazy" alt="Langria の iPhone アプリで文章を翻訳した画面" /><img class="on-dark" src="images/ja-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="Langria の iPhone アプリで文章を翻訳した画面" />
-          <figcaption>入力の手を止めると、少し後に翻訳します。</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="images/ja-ios-photo.png" width="1206" height="2622" loading="lazy" alt="写真から読み取った文字を翻訳した画面" />
-          <figcaption>写真の文字を端末内で読み取って翻訳します。</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="images/ja-ios-watch.png" width="422" height="514" loading="lazy" alt="Apple Watch で翻訳した画面" />
-          <figcaption>Apple Watch でも、話したり手書きしたりして翻訳できます。</figcaption>
-        </figure>
-      </div>
-
-      <ul>
-        <li>使えるサービス・翻訳先の言語・翻訳モード、入れ替えボタンはWebアプリと同じです。</li>
-        <li>写真を撮るか選ぶと、文字を端末内で読み取ります。送るのは文字だけで、画像は送りません。</li>
-        <li>音声入力と、訳文の読み上げができます。</li>
-        <li>ショートカット・アクションボタン・Siri（「Langriaで翻訳」）から、ほかのアプリの文章を送って翻訳できます。</li>
-        <li>APIキーは端末のキーチェーンに保存し、Face ID でロックできます。</li>
-        <li>Apple Watch: 設定で「Apple Watch で使う」をオンにすると、Watch だけで翻訳できます。</li>
-      </ul>
-
-      <h2 class="section" id="android">Android アプリ</h2>
-      <p>iPhone アプリと同じ機能（ウォッチアプリを除く）を Android のスマホ・タブレット（Android 11 以降）で使えます。<a href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja">Google Play の Langria</a>（無料）を入れ、設定でAPIキーを入力すれば使い始められます。</p>
-
-      <ul>
-        <li>写真の文字は ML Kit で端末内で読み取ります。送るのは文字だけで、画像は送りません。</li>
-        <li>ほかのアプリから共有した文章や、文字選択メニューの「Langria」で選んだ文章を翻訳できます。</li>
-        <li>APIキーは Android Keystore で暗号化して保存し、指紋・顔・画面ロックでロックできます。</li>
-      </ul>
-
-      <h2 class="section">リンク</h2>
-      <ul>
-        <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a></li>
-        <li><a href="https://apps.apple.com/jp/app/id6828902876">App Store</a></li>
-        <li><a href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja">Google Play</a></li>
-        <li><a href="app/">Webアプリ</a></li>
-        <li><a href="privacy/ja.html">プライバシーポリシー</a></li>
-        <li><a href="https://github.com/shigeya-t/Langria">ソースコード</a></li>
-        <li><a href="https://github.com/shigeya-t/Langria/issues">サポート・ご意見</a></li>
-      </ul>
-
-      <p class="updated">Langria は個人による独立したプロジェクトであり、OpenAI・Anthropic・Google とは提携しておらず、これらの企業による承認を受けたものではありません。</p>
+      <section class="closing">
+        <div class="wrap">
+          <h2>さっそく、あなたの言葉で読んでみませんか</h2>
+          <p>Langria は無料。1分もかからず、最初のページを翻訳できます。</p>
+          <div class="cta">
+            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome に追加</a>
+            <a class="button secondary" href="#download">スマホアプリを入手</a>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <a class="brand" href="ja.html"><img class="brand-mark" src="favicon.svg" alt="" />Langria</a>
+        <nav aria-label="リンク">
+          <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa?hl=ja">Chrome ウェブストア</a>
+          <a href="https://apps.apple.com/jp/app/id6828902876">App Store</a>
+          <a href="https://play.google.com/store/apps/details?id=net.langria.app&amp;hl=ja">Google Play</a>
+          <a href="app/">Webアプリ</a>
+          <a href="privacy/ja.html">プライバシーポリシー</a>
+          <a href="https://github.com/shigeya-t/Langria">ソースコード</a>
+          <a href="https://github.com/shigeya-t/Langria/issues">サポート・ご意見</a>
+        </nav>
+        <p>Langria は個人による独立したプロジェクトであり、OpenAI・Anthropic・Google とは提携しておらず、これらの企業による承認を受けたものではありません。</p>
+      </div>
+    </footer>
   </body>
 </html>
