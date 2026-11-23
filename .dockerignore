@@ -1,0 +1,9 @@
+# Send only the files the image uses (see Dockerfile) to the build.
+*
+!index.html
+!styles.css
+!app.js
+!extension/lib/i18n.js
+!extension/lib/vault.js
+!extension/lib/languages.js
+!extension/icons/icon.svg

@@ -1,0 +1,81 @@
+name: Publish container image
+
+# Builds the web app's container image (Dockerfile) and pushes it to the
+# GitHub Container Registry as ghcr.io/<owner>/langria. Pull requests only
+# build and test it.
+on:
+  push:
+    branches: [master]
+    paths: &paths
+      - index.html
+      - styles.css
+      - app.js
+      - extension/lib/i18n.js
+      - extension/lib/vault.js
+      - extension/lib/languages.js
+      - extension/icons/icon.svg
+      - Dockerfile
+      - .dockerignore
+      - .github/workflows/container.yml
+  pull_request:
+    paths: *paths
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: container-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: commit
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+      - name: Build for testing
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: langria:test
+          build-args: COMMIT=${{ steps.commit.outputs.short }}
+      - name: Test
+        run: |
+          docker image ls langria:test
+          docker run -d --name langria -p 8080:8080 langria:test
+          for i in $(seq 20); do curl -fs -o /dev/null http://localhost:8080/ && break; sleep 0.5; done
+          curl -fsS http://localhost:8080/ | grep -q '<title>Langria'
+          for file in styles.css app.js extension/lib/i18n.js extension/lib/vault.js extension/lib/languages.js extension/icons/icon.svg; do
+            curl -fsS -o /dev/null "http://localhost:8080/$file"
+          done
+          curl -fsS http://localhost:8080/extension/lib/version.js | grep -q "${{ steps.commit.outputs.short }}"
+          curl -fsSI http://localhost:8080/app.js | grep -qi '^content-type: text/javascript'
+          curl -fsSI http://localhost:8080/extension/icons/icon.svg | grep -qi '^content-type: image/svg+xml'
+          docker stop langria
+      - if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: COMMIT=${{ steps.commit.outputs.short }}
