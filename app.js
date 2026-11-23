@@ -138,7 +138,17 @@ function output(text) {
 }
 
 function outputEmpty() {
+  if (needsSetup()) { showSetupGuide(); return; }
   translation.innerHTML = `<div class="empty-state"><span class="empty-star">✦</span><p data-i18n="web.empty">${t('web.empty')}</p></div>`;
+}
+
+// Shown until the first API key is saved: how to get a free one and where to
+// put it. Same as the setup guide of the iOS and Android apps.
+function showSetupGuide() {
+  const text = (tag, key, attrs = '') => `<${tag}${attrs} data-i18n="${key}">${t(key)}</${tag}>`;
+  translation.innerHTML = `<div class="setup-guide">${text('h2', 'setup.title', ' class="setup-title"')}<ol class="setup-steps">${['setup.step1', 'setup.step2', 'web.setupStep3'].map((key) => text('li', key)).join('')}</ol><div class="setup-buttons">${text('a', 'setup.getKey', ' class="setup-button" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"')}${text('button', 'setup.enterKey', ' type="button" class="setup-button primary"')}</div>${text('p', 'setup.other', ' class="setup-other"')}</div>`;
+  // The guide is about Gemini, so the settings open on it.
+  translation.querySelector('.setup-button.primary').addEventListener('click', () => { setProvider('gemini'); openSettings(); $('#apiKey').focus(); });
 }
 
 function setStatus(key) {
@@ -390,7 +400,8 @@ async function requestTranslation(text) {
   }
   const key = apiKey(provider);
   if (!key) {
-    output(t('web.noKey'));
+    if (needsSetup()) showSetupGuide();
+    else output(t('web.noKey'));
     setStatus('status.noKey');
     return;
   }
@@ -449,6 +460,8 @@ let vault = JSON.parse(localStorage.getItem(vaultStorageKey) || 'null');
 let unlocked = null; // { keys, key } while unlocked.
 
 function vaultLocked() { return Boolean(vault && !unlocked); }
+// No key for any service. Locked keys are unknown, so they do not count as missing.
+function needsSetup() { return !vaultLocked() && Object.values(vault ? unlocked.keys : plainKeys()).every((value) => !value); }
 function apiKey(id) { return vault ? unlocked?.keys[id] || '' : localStorage.getItem(configs[id].key) || ''; }
 function plainKeys() { return Object.fromEntries(Object.entries(configs).map(([id, config]) => [id, localStorage.getItem(config.key) || ''])); }
 function storeVault(next) { vault = next; localStorage.setItem(vaultStorageKey, JSON.stringify(vault)); }
@@ -498,6 +511,7 @@ async function unlockFromPane({ quiet = false } = {}) {
 function afterVaultChange() {
   fillSettings();
   if (!vaultLocked() && source.value.trim()) scheduleTranslation();
+  else if (!source.value.trim()) outputEmpty();
 }
 
 const vaultPanel = LangriaVault.mountPanel($('#vaultPanel'), {
@@ -590,7 +604,7 @@ $('#saveSettings').addEventListener('click', async () => {
   const config = providerConfig();
   if (!vaultLocked()) await saveApiKey(provider, $('#apiKey').value.trim());
   localStorage.setItem(config.modelKey, $('#modelInput').value.trim() || config.model);
-  $('#modelLabel').textContent = currentModel(); closeSettings(); toast(t('web.savedProvider', { name: config.name })); if (source.value.trim()) scheduleTranslation();
+  $('#modelLabel').textContent = currentModel(); closeSettings(); toast(t('web.savedProvider', { name: config.name })); scheduleTranslation();
 });
 // The demo notice is only unhidden on the GitHub Pages build; once closed it stays closed in this browser.
 if (localStorage.getItem('langria-demo-notice-closed')) $('#demoNotice').hidden = true;
@@ -621,6 +635,7 @@ function renderLanguage() {
 LangriaI18n.mountSwitch($('#langSwitch'), (language) => { localStorage.setItem('langria-ui-language', language); renderLanguage(); });
 
 setProvider(provider);
+if (!source.value.trim()) outputEmpty();
 renderLanguage();
 initTheme();
 $('#commitHash').textContent = globalThis.LANGRIA_COMMIT || '';

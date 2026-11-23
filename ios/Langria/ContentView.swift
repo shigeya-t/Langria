@@ -392,12 +392,12 @@ private extension ContentView {
   /// Shown until the first API key is saved: how to get a free one and where to put it.
   var setupGuide: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text(shared.t("ios.setupTitle")).font(.headline)
+      Text(shared.t("setup.title")).font(.headline)
       VStack(alignment: .leading, spacing: 8) {
-        ForEach(1...3, id: \.self) { step in
+        ForEach(Array(["setup.step1", "setup.step2", "ios.setupStep3"].enumerated()), id: \.offset) { index, key in
           HStack(alignment: .firstTextBaseline, spacing: 8) {
-            Text("\(step)").font(.subheadline.weight(.bold).monospacedDigit()).foregroundStyle(Color.accentColor)
-            Text(shared.t("ios.setupStep\(step)"))
+            Text("\(index + 1)").font(.subheadline.weight(.bold).monospacedDigit()).foregroundStyle(Color.accentColor)
+            Text(shared.t(key))
           }
         }
       }
@@ -407,15 +407,15 @@ private extension ContentView {
         HStack(spacing: 10) { setupButtons }
         VStack(alignment: .leading, spacing: 10) { setupButtons }
       }
-      Text(shared.t("ios.setupOther")).font(.footnote).foregroundStyle(.secondary)
+      Text(shared.t("setup.other")).font(.footnote).foregroundStyle(.secondary)
     }
     .padding(.bottom, 8)
   }
 
   @ViewBuilder var setupButtons: some View {
-    Link(shared.t("ios.setupGetKey"), destination: Provider.gemini.keysURL).buttonStyle(.bordered)
+    Link(shared.t("setup.getKey"), destination: Provider.gemini.keysURL).buttonStyle(.bordered)
     // The guide is about Gemini, so the settings open on it.
-    Button(shared.t("ios.setupEnterKey")) { model.provider = .gemini; showSettings = true }.buttonStyle(.borderedProminent)
+    Button(shared.t("setup.enterKey")) { model.provider = .gemini; showSettings = true }.buttonStyle(.borderedProminent)
   }
 }
 

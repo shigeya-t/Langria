@@ -90,7 +90,7 @@ Then open `http://localhost:8080`. The server listens on port 8080 inside the co
 ## Usage
 
 1. Choose a service (ChatGPT / Claude / Gemini).
-2. Open Settings (the gear at the top right) and enter the API key for the selected service.
+2. Open Settings (the gear at the top right) and enter the API key for the selected service. Until an API key is saved for any service, the translation pane shows a short guide: where to get a free Gemini API key (a link to Google AI Studio) and a button that opens Settings on Gemini. Encrypted keys that are still locked do not bring the guide back.
 3. Change the model name if needed and press "Save".
 4. Choose a translation mode at the top left of the "Original" pane ("Faithful" by default).
 5. Choose the target language from the dropdown at the top (Japanese by default when the UI is in Japanese, English otherwise). For a language not in the list, choose "Other…" and type its name.
@@ -137,7 +137,7 @@ The `extension/` folder contains a Chrome extension that translates the whole pa
 ### Installation
 
 1. Install Langria from the [Chrome Web Store](https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa).
-2. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save.
+2. Open the settings page from the Langria toolbar icon → gear, enter the API key (and model name if needed) for the services you use, and save. Until an API key is saved, the popup shows the same short guide as the web app, with a link to get a free Gemini API key and a button that opens the settings page.
 
 The extension stores its settings in `chrome.storage.local`, so you need to enter them separately from the web app. The privacy policy is in [docs/privacy/](docs/privacy/index.html) (published at <https://langria.net/privacy/>).
 
