@@ -6,7 +6,7 @@ AIコーディングエージェント（Claude Code、Codex など）がこの�
 
 Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで、次の4つからなります。
 
-- **Webアプリ**（`index.html` / `styles.css` / `app.js`）: 入力した文章を翻訳する静的サイト。
+- **Webアプリ**（`index.html` / `styles.css` / `app.js`）: 入力した文章を翻訳する静的サイト。GitHub Pages と、GitHub Container Registry のコンテナイメージで公開する。
 - **Chrome拡張機能**（`extension/`、Manifest V3）: 表示中のWebページや選択テキストを翻訳する。
 - **iOSアプリ**（`ios/`、SwiftUI、iOS 17 以降）: Webアプリと同じ翻訳に加え、カメラ・写真の文字を端末内で読み取って（Vision）翻訳する。Apple Watch アプリ（`ios/LangriaWatch/`、watchOS 10 以降）を同梱する。
 - **Androidアプリ**（`android/`、Jetpack Compose、Android 11 以降）: iOSアプリの移植（ウォッチアプリなし）。写真の文字は ML Kit で端末内で読む。ほかのアプリからの共有・文字選択メニューの文章も受け取る。
@@ -52,6 +52,7 @@ Langria は ChatGPT / Claude / Gemini を切り替えて使う翻訳ツールで
 | `android/.../TextRecognizer.kt` / `Dictation.kt` / `Speaker.kt` | ML Kit の OCR（ラテン・日本語・中国語・韓国語のモデルで読み、確からしさ×文字数が最大のものを使う。段落のまとめ方は iOS と同じ）、SpeechRecognizer の音声入力（区切りごとに聞き直してつなぐ）、TextToSpeech の読み上げ（「その他」は TextClassifier で言語を推定） |
 | `android/app/src/test/` | JUnit のテスト。API はローカルの `HttpServer` で受けるので APIキーは要らない |
 | `scripts/build-pages.sh` / `.github/workflows/pages.yml` | GitHub Pages のサイト（`_site/`）を組み立てて公開する。`docs/` の中を直下に、Webアプリ（`index.html` / `styles.css` / `app.js` と読み込む `extension/` のファイル）を `app/` に置く。公開版だけ `index.html` の `#demoNotice`（デモ用の注意書き。× で閉じると `localStorage` の `langria-demo-notice-closed` に記録）の `hidden` を外す。`master` への push で動く |
+| `Dockerfile` / `.dockerignore` / `.github/workflows/container.yml` | Webアプリのコンテナイメージ。空のベース（`scratch`）に、静的リンクの BusyBox（`busybox:*-musl`）の `httpd` と Webアプリのファイルだけを入れる（約 1 MB）。ファイルの組み立ては `--platform=$BUILDPLATFORM` の段で一度だけ行い、`version.js` は build arg の `COMMIT` から書く。BusyBox の MIME の既定値には charset と SVG がないので `httpd.conf` で足している。8080 番ポート、ユーザーは 65534。httpd は PID 1 で SIGTERM を無視するので `STOPSIGNAL SIGKILL`。デモ用の注意書きは出さない。ワークフローは PR でビルドして curl で試し、`master` への push で `ghcr.io/<owner>/langria`（`latest` と `sha-…`、amd64 / arm64）に登録する。ローカルに Docker がなくても、PR の実行で確かめられる |
 | `scripts/package-extension.sh` | ストアにアップロードする zip（`dist/`）を作る。`lib/version.js` を書き込んでから固める |
 | `scripts/archive-ios.sh` | iOSアプリを Release でアーカイブし、`--upload` で App Store Connect に送る。ビルド番号はコミット数（`git rev-list --count HEAD`） |
 | `store/` | `store/chrome/` は Chrome ウェブストア（公開済み: <https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa>）の掲載テキスト（`listing.md`）、画像（`images/`、`capture.mjs` で再生成）、公開手順（`README.md`）。`store/ios/` は App Store の掲載テキスト（`listing.md`。Appのプライバシーの申告・審査用のメモを含む）、スクリーンショット（`images/`、`capture.sh` で撮る。Debug ビルドの `ios/Langria/Screenshots.swift` を起動引数で使い、APIキーは要らない）と公開手順（`README.md`）。`store/caption.mjs` は、撮ったスクリーンショットの上に見出しを付けた掲載用の画像（`store/{ios,android}/images/captioned/`）を作る（見出しの文言を変えたら作り直す。他社の商標は入れない）。元の画像は紹介ページも使うので、そのまま残す。`store/android/` は Google Play の掲載テキスト（`listing.md`。データ セーフティ・権限の一覧・審査用の手順を含む）と公開手順（`README.md`） |
@@ -131,7 +132,7 @@ git config core.hooksPath .githooks && .githooks/write-version   # コミット�
 - 拡張機能のページへのアクセス権は `activeTab` と、利用者がサイトごとに許可する `optional_host_permissions` だけです。常に持つ広い `host_permissions` は追加しないでください。
 - 機能や使い方を変えたら `README.md`（英語）と `README.ja.md`（日本語）の両方を更新します。ストアの説明文（`store/chrome/listing.md`）と紹介ページ（`docs/index.html` / `docs/ja.html`）も合わせて直します。
 - 権限・送信先・保存するデータを変えたら、`store/chrome/listing.md`（権限の理由・データ使用の申告）と `docs/privacy/` の両方（英語・日本語）も合わせて直します。iOSアプリなら `store/ios/listing.md` の「Appのプライバシー」と `PrivacyInfo.xcprivacy` も、Androidアプリなら `store/android/listing.md` の「データ セーフティ」と「権限」もです。審査ではコードの動作との一致を見られます。
-- Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。
+- Webアプリが読み込むファイルを増やしたら、`scripts/build-pages.sh` のコピー対象にも足してください（公開版の `app/` に入らず、読み込みに失敗します）。コンテナイメージにも入るよう、`Dockerfile` の `COPY`・`.dockerignore`・`container.yml` の `paths` とテストにも足します。
 - `extension/manifest.json` の `version` は、利用者から指示があったときだけ上げます（ストアに出す版を作るときなど）。指示がなければ、機能を変えても変更しないでください。
 
 ## Git

@@ -73,6 +73,20 @@ Press `Ctrl + C` in the terminal to stop it.
 - Use `http://localhost:8000`, not `http://127.0.0.1:8000`. Passkeys do not work on IP addresses.
 - Settings (API keys, etc.) are stored separately for each origin. Settings saved while the page was opened as a file are not carried over, so enter them again. The same applies when you change the port.
 
+### Running in a container
+
+The web app is also published as a container image on the GitHub Container Registry. It holds only the files above (including `version.js` for the commit it was built from) and BusyBox's small web server on an empty base, about 1 MB in all, for `linux/amd64` and `linux/arm64`.
+
+```sh
+docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria
+```
+
+Then open `http://localhost:8080`. The server listens on port 8080 inside the container and runs as an unprivileged user. Tags: `latest` (the latest `master`) and `sha-<commit>` (a specific commit). The demo notice of the published version is not shown.
+
+- As with [Serving on localhost](#serving-on-localhost), passkeys need `http://localhost` or https. To use the app from other devices, put it behind a reverse proxy that serves https.
+- To build the image yourself: `docker build --build-arg COMMIT=$(git rev-parse --short HEAD) -t langria .` (`COMMIT` is optional).
+- `.github/workflows/container.yml` builds and tests the image for pull requests that change the web app or the `Dockerfile`, and pushes it on pushes to `master` (or when run by hand). A newly created package is private; to let anyone pull it, change its visibility to Public in the package settings on GitHub.
+
 ## Usage
 
 1. Choose a service (ChatGPT / Claude / Gemini).
@@ -234,7 +248,8 @@ Encryption protects against the browser's stored data being read or copied. It d
 ├── ios/         # iOS app (SwiftUI; project.yml for XcodeGen, Langria/ sources, LangriaWatch/ Apple Watch app, LangriaTests/)
 ├── android/     # Android app (Jetpack Compose; Gradle project, app/src/main sources, app/src/test unit tests)
 ├── docs/        # Project page and privacy policy (published with GitHub Pages)
-├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages
+├── Dockerfile   # Container image of the web app (with .dockerignore)
+├── .github/     # workflows/pages.yml: deploys docs/ and the web app to GitHub Pages; workflows/container.yml: publishes the container image
 ├── store/       # Listing text, images and publishing steps: chrome/: Chrome Web Store; ios/: App Store; android/: Google Play
 ├── scripts/     # package-extension.sh: store zip; build-pages.sh: GitHub Pages site; archive-ios.sh: App Store build
 └── extension/   # Chrome extension (page translation)

@@ -73,6 +73,20 @@ npx serve -l 8000
 - アドレスは `http://127.0.0.1:8000` ではなく `http://localhost:8000` を使ってください。IPアドレスではパスキーを使えません。
 - 設定（APIキーなど）は開き方ごとに別々に保存されます。ファイルとして開いていたときの設定は引き継がれないので、入力し直してください。ポート番号を変えた場合も同様です。
 
+### コンテナで動かす
+
+Webアプリは GitHub Container Registry にコンテナイメージとしても公開しています。中身は上のファイル（ビルドしたコミットの `version.js` を含む）と、空のベースイメージに BusyBox の小さな Web サーバーだけで、全体で 1 MB 程度です（`linux/amd64` と `linux/arm64`）。
+
+```sh
+docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria
+```
+
+ブラウザで `http://localhost:8080` を開いてください。コンテナの中では 8080 番ポートで待ち受け、特権のないユーザーで動きます。タグは `latest`（最新の `master`）と `sha-<コミット>`（そのコミットの版）です。公開版のデモ用の注意書きは出ません。
+
+- [localhost で開く](#localhost-で開く) と同じく、パスキーは `http://localhost` か https でしか使えません。ほかの端末から使う場合は、https で配信するリバースプロキシの後ろに置いてください。
+- 自分でビルドするには `docker build --build-arg COMMIT=$(git rev-parse --short HEAD) -t langria .` を実行します（`COMMIT` は省略できます）。
+- `.github/workflows/container.yml` が、Webアプリか `Dockerfile` を変える PR ではイメージをビルドして試し、`master` への push（または手動の実行）でレジストリに登録します。新しく作られたパッケージは非公開なので、誰でも取得できるようにするには、GitHub のパッケージの設定で公開範囲を Public に変えてください。
+
 ## 使い方
 
 1. 使いたいサービス（ChatGPT / Claude / Gemini）を選択します。
@@ -234,7 +248,8 @@ Google Play に出すときは、`./gradlew bundleRelease` で署名した AAB �
 ├── ios/         # iOSアプリ（SwiftUI。XcodeGen 用の project.yml、Langria/ にコード、LangriaWatch/ に Apple Watch アプリ、LangriaTests/ にテスト）
 ├── android/     # Androidアプリ（Jetpack Compose。Gradle のプロジェクト、app/src/main にコード、app/src/test にテスト）
 ├── docs/        # 紹介ページとプライバシーポリシー（GitHub Pages で公開）
-├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する
+├── Dockerfile   # Webアプリのコンテナイメージ（.dockerignore と組み）
+├── .github/     # workflows/pages.yml: docs/ とWebアプリを GitHub Pages に公開する。workflows/container.yml: コンテナイメージを登録する
 ├── store/       # 掲載情報・画像・公開手順。chrome/ は Chrome ウェブストア、ios/ は App Store、android/ は Google Play
 ├── scripts/     # package-extension.sh: ストア用の zip、build-pages.sh: GitHub Pages のサイトを作る、archive-ios.sh: App Store 用のビルド
 └── extension/   # Chrome拡張機能（Webページ翻訳）
