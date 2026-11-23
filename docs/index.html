@@ -21,164 +21,269 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="stylesheet" href="privacy/privacy.css" />
+    <link rel="stylesheet" href="site.css" />
   </head>
   <body>
-    <main>
-      <header>
-        <span class="brand"><img class="brand-mark" src="favicon.svg" alt="" />Langria</span>
-        <nav>English | <a href="ja.html" lang="ja">日本語</a></nav>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href="./"><img class="brand-mark" src="favicon.svg" alt="" />Langria</a>
+        <nav class="site-nav" aria-label="Sections">
+          <a href="#features">Features</a>
+          <a href="#get-started">How it works</a>
+          <a href="#download">Download</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <nav class="lang-switch" aria-label="Language">English | <a href="ja.html" lang="ja">日本語</a></nav>
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Dark mode" title="Dark mode" aria-pressed="false" hidden><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 3v2.2M12 18.8V21M4.2 12H2M22 12h-2.2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></svg><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></button>
-      </header>
+      </div>
+    </header>
 
-      <h1>Langria – AI Translator</h1>
-      <p>Translate with the AI service you choose: ChatGPT (OpenAI), Claude (Anthropic) or Gemini (Google). Langria comes in these forms:</p>
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <p class="eyebrow">Chrome · iPhone · Android · Web</p>
+          <h1>Read the whole web in <em>your language</em></h1>
+          <p class="lead">Langria translates web pages, selected text, photos and speech with ChatGPT, Claude or Gemini, and keeps every page looking exactly as it did.</p>
+          <div class="cta">
+            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add to Chrome – it’s free</a>
+            <a class="button secondary" href="app/">Try it in your browser</a>
+          </div>
+          <ul class="trust">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Free to install</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>No Langria account</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Your text never touches our servers</li>
+          </ul>
+          <div class="hero-shot">
+            <img class="on-light" src="images/en-extension-layout-light.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" /><img class="on-dark" src="images/en-3-layout.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" />
+          </div>
+        </div>
+      </section>
 
-      <div class="editions">
-        <section class="edition">
-          <div class="edition-shot"><img class="on-light" src="images/en-extension-layout-light.png" loading="lazy" alt="A web page before and after translation" /><img class="on-dark" src="images/en-3-layout.png" loading="lazy" alt="A web page before and after translation" /></div>
-          <h2>Chrome extension</h2>
-          <p>Translates the web page you are viewing, or just the text you select, in place.</p>
-          <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot"><img class="on-light" src="images/en-web-app-light.png" loading="lazy" alt="The Langria web app" /><img class="on-dark" src="images/en-web-app-dark.png" loading="lazy" alt="The Langria web app" /></div>
-          <h2>Web app</h2>
-          <p>Translates text you type or paste. Runs in any browser, nothing to install.</p>
-          <a class="button" href="app/">Try the web app</a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot phone"><img class="on-light" src="images/en-ios-translate.png" loading="lazy" alt="The Langria iPhone app" /><img class="on-dark" src="images/en-ios-translate-dark.png" loading="lazy" alt="The Langria iPhone app" /></div>
-          <h2>iPhone / iPad app</h2>
-          <p>Translates text you type, speak or photograph. Also works on Apple Watch.</p>
-          <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
-        </section>
-        <section class="edition">
-          <div class="edition-shot phone"><img class="on-light" src="images/en-android-translate.png" loading="lazy" alt="The Langria Android app" /><img class="on-dark" src="images/en-android-translate-dark.png" loading="lazy" alt="The Langria Android app" /></div>
-          <h2>Android app</h2>
-          <p>Translates text you type, speak or photograph on Android phones and tablets.</p>
-          <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
-        </section>
+      <div class="providers">
+        <div class="wrap">
+          <p>Powered by the AI you choose</p>
+          <strong>ChatGPT</strong><strong>Claude</strong><strong>Gemini</strong>
+        </div>
       </div>
 
-      <div class="summary">
-        <ul>
-          <li>Uses your own API key. Your text goes straight from your browser or device to the service you choose.</li>
-          <li>No Langria server, and no analytics in the extension or the apps. The extension and the web app have no ads; the iOS and Android apps show a banner ad, which never sees the text you translate.</li>
-          <li>A free Gemini API key from Google AI Studio is enough to get started.</li>
-        </ul>
-      </div>
+      <section class="block" id="features">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">Why Langria</span>
+            <h2>Translation that feels native</h2>
+            <p>Modern AI models translate with context, so you get natural sentences instead of word-by-word output.</p>
+          </div>
+          <div class="benefits">
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 13h8M8 16.5h5"/></svg></div>
+              <h3>Pages keep their look</h3>
+              <p>Only the text changes. Menus, images and layout stay where they are, and one click brings back the original.</p>
+            </div>
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
+              <h3>Private by design</h3>
+              <p>Your text goes straight from your device to the AI service you pick. There is no Langria server, and API keys can be locked with a passkey or Face ID.</p>
+            </div>
+            <div class="benefit">
+              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></div>
+              <h3>Any language, the right tone</h3>
+              <p>Dozens of languages, or type any other. Pick a style: Faithful, Natural, Business, Casual &amp; social or Technical.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h2 class="section" id="features">Features</h2>
-      <ul>
-        <li>Switch between ChatGPT, Claude and Gemini, and set the model for each.</li>
-        <li>Translate into English, Japanese, Chinese, Korean, Spanish, French, German and many more, or type any language.</li>
-        <li>Five translation modes: Faithful, Natural, Business, Casual &amp; social, Technical.</li>
-        <li>API keys can be encrypted with a passkey (Touch ID, etc.) or a passphrase.</li>
-        <li>The interface is available in English and Japanese.</li>
-      </ul>
+      <section class="block alt">
+        <div class="wrap">
+          <div class="feature" id="extension">
+            <div class="feature-media">
+              <img class="on-light" src="images/en-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" /><img class="on-dark" src="images/en-2-selection.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">Chrome extension</span>
+              <h2>A whole page, or just one sentence</h2>
+              <p>Translate the page you are reading with one click, or select a passage and right-click for a quick translation in a bubble.</p>
+              <ul class="checks">
+                <li>What is on screen is translated first; the rest follows as you scroll.</li>
+                <li>Switch back to the original at any time with Alt+Shift+T.</li>
+                <li>Switch between ChatGPT, Claude and Gemini, and pick the model for each.</li>
+              </ul>
+              <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+            </div>
+          </div>
 
-      <h2 class="section" id="extension">Chrome extension</h2>
-      <p>Translates the page you are viewing. Pages keep their layout, and you can switch back to the original in one click.</p>
+          <div class="feature reverse" id="ios">
+            <div class="feature-media phones">
+              <img class="on-light" src="images/en-ios-translate.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" /><img class="on-dark" src="images/en-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" />
+              <img src="images/en-ios-photo.png" width="1206" height="2622" loading="lazy" alt="Text read from a photo of a sign and translated" />
+              <img class="watch" src="images/en-ios-watch.png" width="422" height="514" loading="lazy" alt="A translation on Apple Watch" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">iPhone, iPad, Apple Watch and Android</span>
+              <h2>Snap it. Say it. Understand it.</h2>
+              <p>Take a photo of a sign or a menu, speak into your phone, or paste a message. Langria translates it in seconds.</p>
+              <ul class="checks">
+                <li>Text in photos is read on the device; only the text is sent, never the image.</li>
+                <li>Voice input, and the translation read aloud.</li>
+                <li>Translate from other apps with Siri and Shortcuts on iPhone, or the share and text selection menus on Android.</li>
+                <li>Apple Watch translates on its own once you turn it on.</li>
+              </ul>
+              <div class="badges">
+                <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
+                <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
+              </div>
+            </div>
+          </div>
 
-      <h3 id="install">Installation</h3>
-      <p>Choose one of the following.</p>
-      <ul>
-        <li><strong>From the Chrome Web Store</strong>: open <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Langria on the Chrome Web Store</a> and click “Add to Chrome”. Updates are installed automatically.</li>
-        <li><strong>From this repository, for your own use</strong>: download or clone the <a href="https://github.com/shigeya-t/Langria">GitHub repository</a>, open <code>chrome://extensions</code>, turn on “Developer mode” at the top right, click “Load unpacked” and select the repository’s <code>extension</code> folder. It is not updated automatically: after pulling new code, press Langria’s reload button (↻) on <code>chrome://extensions</code>. See the <a href="https://github.com/shigeya-t/Langria#loading-from-the-repository-development">README</a> for details.</li>
-      </ul>
+          <div class="feature" id="web-app">
+            <div class="feature-media">
+              <img class="on-light" src="images/en-web-app-light.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" /><img class="on-dark" src="images/en-web-app-dark.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" />
+            </div>
+            <div class="feature-text">
+              <span class="kicker">Web app</span>
+              <h2>Nothing to install</h2>
+              <p>Type or paste text in any browser. The language is detected automatically and the translation appears as soon as you stop typing.</p>
+              <ul class="checks">
+                <li>The swap button turns a translation into a reply in one tap.</li>
+                <li>Remembers your language pair and switches direction for you.</li>
+                <li>Light and dark mode. Your API key stays in your browser.</li>
+              </ul>
+              <a class="button" href="app/">Open the web app</a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h3>Usage</h3>
-      <ol>
-        <li>Enter an API key for OpenAI, Anthropic or Google Gemini on the extension’s settings page.</li>
-        <li>Click the toolbar icon and press “Translate this page”. What is on screen is translated first, and the rest as you scroll.</li>
-        <li>Press “Show original” or Alt+Shift+T to switch back. To translate just a part, select text, right-click and choose “Translate … with Langria”.</li>
-      </ol>
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">See it in action</span>
+            <h2>Watch a page change language</h2>
+          </div>
+          <figure class="video">
+            <div class="video-frame"><iframe src="https://www.youtube.com/embed/pljnY8G_Ywo" title="Langria Chrome extension demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+            <figcaption>If the video does not play, <a href="https://www.youtube.com/watch?v=pljnY8G_Ywo">watch it on YouTube</a></figcaption>
+          </figure>
+        </div>
+      </section>
 
-      <h3>Demo video</h3>
-      <figure class="video">
-        <div class="video-frame"><iframe src="https://www.youtube.com/embed/pljnY8G_Ywo" title="Langria Chrome extension demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-        <figcaption>If the video does not play, <a href="https://www.youtube.com/watch?v=pljnY8G_Ywo">watch it on YouTube</a></figcaption>
-      </figure>
+      <section class="block alt" id="get-started">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">How it works</span>
+            <h2>Up and running in a few minutes</h2>
+            <p>Langria uses your own API key, so you get the AI service directly, with no middleman.</p>
+          </div>
+          <ol class="steps">
+            <li>
+              <h3>Get an API key</h3>
+              <p>A free Gemini API key from <a href="https://aistudio.google.com/apikey">Google AI Studio</a> is enough to start. Keys for OpenAI and Anthropic work too.</p>
+            </li>
+            <li>
+              <h3>Install Langria</h3>
+              <p>Add it to Chrome, get the app for your phone, or open the web app, then paste your key into Settings.</p>
+            </li>
+            <li>
+              <h3>Translate anything</h3>
+              <p>Web pages, selected text, messages, photos and your voice, into the language you choose.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
 
-      <div class="shots">
-        <figure class="shot">
-          <img class="on-light" src="images/en-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="Selected text translated in a bubble" /><img class="on-dark" src="images/en-2-selection.png" width="1280" height="800" loading="lazy" alt="Selected text translated in a bubble" />
-          <figcaption>Translate just a selection from the right-click menu.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img class="on-light" src="images/en-extension-layout-light.png" width="1280" height="800" loading="lazy" alt="The original and translated page side by side" /><img class="on-dark" src="images/en-3-layout.png" width="1280" height="800" loading="lazy" alt="The original and translated page side by side" />
-          <figcaption>Only the text changes; the layout stays the same.</figcaption>
-        </figure>
-      </div>
+      <section class="block" id="download">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">Download</span>
+            <h2>Use it everywhere you read</h2>
+            <p>Free on every platform. Pick the ones that fit how you read.</p>
+          </div>
+          <div class="downloads">
+            <div class="download" id="install">
+              <h3>Chrome extension</h3>
+              <p>Translate web pages and selected text in place.</p>
+              <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+            </div>
+            <div class="download">
+              <h3>iPhone / iPad</h3>
+              <p>Text, voice and photos. iOS 17 or later, with Apple Watch support.</p>
+              <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
+            </div>
+            <div class="download" id="android">
+              <h3>Android</h3>
+              <p>Text, voice and photos on phones and tablets. Android 11 or later.</p>
+              <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
+            </div>
+            <div class="download">
+              <h3>Web app</h3>
+              <p>Type or paste text in any browser. Nothing to install.</p>
+              <a class="button" href="app/">Open the web app</a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <h2 class="section" id="web-app">Web app</h2>
-      <p>A translation tool for text you type or paste. The source language is detected automatically, and the text is translated shortly after you stop typing. Open <a href="app/">the web app</a>, enter your API key under Settings (the gear icon) and start typing. Until a key is saved, the translation pane shows where to get a free Gemini API key.</p>
+      <section class="block alt" id="faq">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">FAQ</span>
+            <h2>Questions and answers</h2>
+          </div>
+          <div class="faq">
+            <details>
+              <summary>Is Langria free?</summary>
+              <div><p>Yes. The extension and the apps are free. Translations are made with your own API key, so any usage charges come from the AI service you choose, and Gemini’s free tier is enough to get started. The extension and the web app have no ads; the iOS and Android apps show a banner ad, which never sees the text you translate.</p></div>
+            </details>
+            <details>
+              <summary>What is an API key, and where do I get one?</summary>
+              <div><p>An API key lets Langria use an AI service on your behalf. Get one from <a href="https://aistudio.google.com/apikey">Google AI Studio</a> (Gemini, free tier available), <a href="https://platform.openai.com/api-keys">OpenAI</a> or <a href="https://console.anthropic.com/settings/keys">Anthropic</a>. Until a key is saved, Langria shows you where to get one.</p></div>
+            </details>
+            <details>
+              <summary>What happens to my text?</summary>
+              <div><p>It is sent directly from your browser or device to the AI service you chose, only when you ask for a translation. Langria has no server of its own, and there are no analytics in the extension or the apps. Photos are read on the device, and only the recognized text is sent. API keys can be encrypted with a passkey (Touch ID, etc.) or a passphrase, or locked with Face ID or your fingerprint on mobile. See the <a href="privacy/">privacy policy</a> for details.</p></div>
+            </details>
+            <details>
+              <summary>Which languages are supported?</summary>
+              <div><p>English, Japanese, Chinese, Korean, Spanish, French, German and many more are in the list, and you can type the name of any other language. Langria’s own interface is available in English and Japanese.</p></div>
+            </details>
+            <details>
+              <summary>Can I host the web app myself?</summary>
+              <div><p>Yes, and we recommend it for regular use: the web app on this site is a demo. It is a static site with no build step, so you can put the files from the <a href="https://github.com/shigeya-t/Langria">GitHub repository</a> on any web server or run it on <code>localhost</code>. It is also available as a container image of about 1 MB: run <code>docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria</code> and open <code>http://localhost:8080</code>. See the <a href="https://github.com/shigeya-t/Langria#about-the-server">README</a>.</p></div>
+            </details>
+            <details>
+              <summary>Can I install the extension from the source code?</summary>
+              <div><p>Yes. Download or clone the <a href="https://github.com/shigeya-t/Langria">GitHub repository</a>, open <code>chrome://extensions</code>, turn on “Developer mode”, click “Load unpacked” and select the <code>extension</code> folder. It is not updated automatically: after pulling new code, press Langria’s reload button (↻). See the <a href="https://github.com/shigeya-t/Langria#loading-from-the-repository-development">README</a> for details.</p></div>
+            </details>
+          </div>
+        </div>
+      </section>
 
-      <figure class="shot">
-        <img class="on-light" src="images/en-web-app-light.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" /><img class="on-dark" src="images/en-web-app-dark.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" />
-      </figure>
-
-      <ul>
-        <li>The same services, target languages and translation modes as the extension.</li>
-        <li>A swap button exchanges the two panes and the target language, handy for writing replies.</li>
-        <li>Remembers the language pair: after translating Japanese into English, typing English switches the target to Japanese.</li>
-        <li>Light and dark mode.</li>
-        <li>Your API key is stored only in your browser.</li>
-      </ul>
-
-      <div class="summary">
-        <p><strong>The web app on this site is a demo for trying Langria out.</strong> For regular use, we recommend hosting your own copy: it is a static site with no build step, so you can put the files from the <a href="https://github.com/shigeya-t/Langria">GitHub repository</a> on any web server or simply run it on <code>localhost</code>. It is also available as a container image of about 1 MB: run <code>docker run --rm -p 8080:8080 ghcr.io/shigeya-t/langria</code> and open <code>http://localhost:8080</code>. See the <a href="https://github.com/shigeya-t/Langria#about-the-server">README</a> for how to set it up.</p>
-      </div>
-
-      <h2 class="section" id="ios">iPhone / iPad app</h2>
-      <p>The web app’s translation on iPhone and iPad (iOS 17 or later), plus text from photos and your voice. Install <a href="https://apps.apple.com/app/id6828902876">Langria from the App Store</a> (free), enter your API key in Settings and start typing.</p>
-
-      <div class="shots phones">
-        <figure class="shot">
-          <img class="on-light" src="images/en-ios-translate.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" /><img class="on-dark" src="images/en-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" />
-          <figcaption>Translates shortly after you stop typing.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="images/en-ios-photo.png" width="1206" height="2622" loading="lazy" alt="Text read from a photo and translated" />
-          <figcaption>Reads the text in a photo on the device and translates it.</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="images/en-ios-watch.png" width="422" height="514" loading="lazy" alt="A translation on Apple Watch" />
-          <figcaption>Speak or scribble on Apple Watch.</figcaption>
-        </figure>
-      </div>
-
-      <ul>
-        <li>The same services, target languages and translation modes as the web app, and the swap button.</li>
-        <li>Take or choose a photo: the text is read on the device and only the text is sent, never the image.</li>
-        <li>Voice input, and reading the translation aloud.</li>
-        <li>Send text from other apps with Shortcuts, the Action button or Siri (“Translate with Langria”).</li>
-        <li>API keys are kept in the device’s keychain and can be locked with Face ID.</li>
-        <li>Apple Watch: turn on “Use on Apple Watch” in Settings, and the watch translates on its own.</li>
-      </ul>
-
-      <h2 class="section" id="android">Android app</h2>
-      <p>The same features as the iPhone app on Android phones and tablets (Android 11 or later), except the watch app. Install <a href="https://play.google.com/store/apps/details?id=net.langria.app">Langria from Google Play</a> (free), enter your API key in Settings and start typing.</p>
-
-      <ul>
-        <li>Text in photos is read on the device with ML Kit, and only the text is sent, never the image.</li>
-        <li>Share text from another app, or pick “Langria” in the text selection menu, to translate it.</li>
-        <li>API keys are encrypted with the Android Keystore and can be locked with your fingerprint, face or screen lock.</li>
-      </ul>
-
-      <h2 class="section">Links</h2>
-      <ul>
-        <li><a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Chrome Web Store</a></li>
-        <li><a href="https://apps.apple.com/app/id6828902876">App Store</a></li>
-        <li><a href="https://play.google.com/store/apps/details?id=net.langria.app">Google Play</a></li>
-        <li><a href="app/">Web app</a></li>
-        <li><a href="privacy/">Privacy policy</a></li>
-        <li><a href="https://github.com/shigeya-t/Langria">Source code</a></li>
-        <li><a href="https://github.com/shigeya-t/Langria/issues">Support and feedback</a></li>
-      </ul>
-
-      <p class="updated">Langria is an independent project and is not affiliated with or endorsed by OpenAI, Anthropic or Google.</p>
+      <section class="closing">
+        <div class="wrap">
+          <h2>Start reading in your language</h2>
+          <p>Install Langria for free and translate your first page in under a minute.</p>
+          <div class="cta">
+            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Add to Chrome</a>
+            <a class="button secondary" href="#download">Get the mobile apps</a>
+          </div>
+        </div>
+      </section>
     </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <a class="brand" href="./"><img class="brand-mark" src="favicon.svg" alt="" />Langria</a>
+        <nav aria-label="Links">
+          <a href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Chrome Web Store</a>
+          <a href="https://apps.apple.com/app/id6828902876">App Store</a>
+          <a href="https://play.google.com/store/apps/details?id=net.langria.app">Google Play</a>
+          <a href="app/">Web app</a>
+          <a href="privacy/">Privacy policy</a>
+          <a href="https://github.com/shigeya-t/Langria">Source code</a>
+          <a href="https://github.com/shigeya-t/Langria/issues">Support and feedback</a>
+        </nav>
+        <p>Langria is an independent project and is not affiliated with or endorsed by OpenAI, Anthropic or Google.</p>
+      </div>
+    </footer>
   </body>
 </html>
