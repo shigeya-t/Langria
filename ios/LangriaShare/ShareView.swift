@@ -49,6 +49,8 @@ struct ShareView: View {
       HStack { Spacer(); ProgressView(); Spacer() }.padding(.vertical, 12)
     case .noText:
       Text(t("ios.shareNoText", [:])).foregroundStyle(.secondary)
+    case .unreadable:
+      Text(t("ios.sharePageUnreadable", [:])).foregroundStyle(.secondary)
     case .noKey:
       Text(t("ios.shareNoKey", [:]))
     case .locked:

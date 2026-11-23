@@ -47,11 +47,13 @@ App Store Connect の各欄に貼り付けるテキストと、質問への回�
 - Langria remembers your language pair: type in the target language and it switches the target to your other language
 - If the AI's usage limit is hit, Langria says so: it waits out a per-minute limit and continues, or shows when a daily limit resets
 - A language typed under "Other" is settled on one language name first, for consistent translations
+- Langria now appears in the share sheet for links, too: share a link from Chrome, news or social apps to translate the page's main text
 
 日本語:
 - 言語の組み合わせを覚えるようにしました。翻訳先の言語で入力すると、翻訳先をもう一方の言語に切り替えます
 - AI の利用上限に達したとき、状況を表示するようにしました。1分あたりの上限なら待ってから自動で続け、1日の上限ならリセットの時刻を出します
 - 「その他」で入力した翻訳先の言語名を、1つの言語名に決めてから翻訳するようにしました。訳がぶれにくくなります
+- リンク（URL）の共有でも Langria を選べるようにしました。Chrome やニュース・SNS のアプリから共有すると、ページの本文を翻訳します
 ```
 
 #### 1.3
@@ -290,7 +292,7 @@ To test:
    (a key created only for this review, on Google's free tier)
 3. Type or paste text in the top box; the translation appears below after a moment.
 4. Camera / photo buttons: the text in the photo is read on the device (Vision) and translated. The microphone button turns speech into text.
-5. Share sheet: select text in Safari (or any app) → Share → Langria, or share a whole page with Safari’s Share button (the selected text, or the first 5,000 characters of the page, is translated). The share extension translates it in the sheet with the key entered in step 2.
+5. Share sheet: select text in Safari (or any app) → Share → Langria, or share a whole page with Safari’s Share button (the selected text, or the first 5,000 characters of the page, is translated). A link shared from another app (e.g. long-press a link in Safari → Share → Langria) is loaded on the device and its main text is translated the same way. The share extension translates it in the sheet with the key entered in step 2.
 6. Shortcuts: the app provides a “Translate with Langria” action; running it opens the app with the given text in the top box and translates it.
 7. Apple Watch: in Settings turn on "Use on Apple Watch"; the key and settings are sent to the watch app, which calls the API itself.
 

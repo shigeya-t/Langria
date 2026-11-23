@@ -19,16 +19,29 @@ final class ShareViewController: UIViewController {
     host.didMove(toParent: self)
     let items = extensionContext?.inputItems as? [NSExtensionItem] ?? []
     Task {
-      let (text, clipped) = await Self.text(in: items)
-      await model.start(with: text, clipped: clipped)
+      switch await Self.input(in: items) {
+      case .text(let text, let clipped):
+        await model.start(with: text, clipped: clipped)
+      case .page(let url):
+        guard let text = await PageReader(in: view).text(at: url) else { model.pageUnreadable(); return }
+        let (clipped, cut) = Self.clip(text)
+        await model.start(with: clipped, clipped: cut)
+      }
     }
   }
 
   /// The most of a page that is translated when nothing on it is selected.
   static let pageLimit = 5000
 
-  /// The shared text, and whether it was cut to `pageLimit`.
-  private static func text(in items: [NSExtensionItem]) async -> (String, Bool) {
+  enum Input {
+    /// The text, and whether it was cut to `pageLimit`.
+    case text(String, Bool)
+    /// A page shared only as its address, read by PageReader.
+    case page(URL)
+  }
+
+  /// What was shared. Text comes first, so text that came with a link is what is translated.
+  private static func input(in items: [NSExtensionItem]) async -> Input {
     let providers = items.flatMap { $0.attachments ?? [] }
     // A page from Safari's share button: what Preprocess.js read from it.
     let list = UTType.propertyList.identifier
@@ -36,15 +49,34 @@ final class ShareViewController: UIViewController {
       guard let item = try? await provider.loadItem(forTypeIdentifier: list) as? [String: Any],
             let page = item[NSExtensionJavaScriptPreprocessingResultsKey] as? [String: Any] else { continue }
       let selection = (page["selection"] as? String ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-      if !selection.isEmpty { return (selection, false) }
-      return clip(page["text"] as? String ?? "")
+      if !selection.isEmpty { return .text(selection, false) }
+      let (text, clipped) = clip(page["text"] as? String ?? "")
+      return .text(text, clipped)
     }
+    var text = ""
     let type = UTType.plainText.identifier
     for provider in providers where provider.hasItemConformingToTypeIdentifier(type) {
-      if let text = try? await provider.loadItem(forTypeIdentifier: type) as? String, !text.isEmpty { return (text, false) }
+      if let item = try? await provider.loadItem(forTypeIdentifier: type) as? String, !item.isEmpty { text = item; break }
     }
     // Some apps put the text in the item itself rather than in an attachment.
-    return (items.lazy.compactMap { $0.attributedContentText?.string }.first { !$0.isEmpty } ?? "", false)
+    if text.isEmpty { text = items.lazy.compactMap { $0.attributedContentText?.string }.first { !$0.isEmpty } ?? "" }
+    // Some apps share a link as text; its page is what is wanted.
+    if let url = webURL(text.trimmingCharacters(in: .whitespacesAndNewlines)) { return .page(url) }
+    if !text.isEmpty { return .text(text, false) }
+    let urlType = UTType.url.identifier
+    for provider in providers where provider.hasItemConformingToTypeIdentifier(urlType) {
+      let item = try? await provider.loadItem(forTypeIdentifier: urlType)
+      let url = (item as? URL) ?? (item as? Data).flatMap { URL(dataRepresentation: $0, relativeTo: nil) } ?? (item as? String).flatMap(webURL)
+      if let url = url.flatMap({ webURL($0.absoluteString) }) { return .page(url) }
+    }
+    return .text("", false)
+  }
+
+  /// The string as an http(s) address, when it is one and nothing else.
+  static func webURL(_ string: String) -> URL? {
+    guard !string.contains(where: \.isWhitespace), let url = URL(string: string),
+          ["http", "https"].contains(url.scheme?.lowercased() ?? ""), url.host?.isEmpty == false else { return nil }
+    return url
   }
 
   /// Cuts a page's text to `pageLimit`, at the end of a paragraph when one is near.
@@ -62,7 +94,7 @@ final class ShareViewController: UIViewController {
 @MainActor
 final class ShareModel: ObservableObject {
   enum State {
-    case loading, noText, noKey, locked, translating
+    case loading, noText, unreadable, noKey, locked, translating
     case result(String)
     case failure(TranslationError)
   }
@@ -117,6 +149,8 @@ final class ShareModel: ObservableObject {
     guard !source.isEmpty else { state = .noText; return }
     await unlock()
   }
+
+  func pageUnreadable() { state = .unreadable }
 
   /// Reads the keys; with the lock on this shows the Face ID (or passcode) prompt.
   func unlock() async {
