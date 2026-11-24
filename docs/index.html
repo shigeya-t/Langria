@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Langria – AI Translator</title>
-    <meta name="description" content="Translate web pages or selected text into any language with ChatGPT, Claude or Gemini, using your own API key. Available as a Chrome extension, a web app and an iPhone / iPad app." />
+    <meta name="description" content="Translate web pages, selected text, photos and speech with ChatGPT, Claude or Gemini—using your own API key. Free Chrome extension, iPhone / iPad / Apple Watch app, Android app and web app." />
     <meta name="google-site-verification" content="jzSWXyYKKLvUwDRIymO8sKCNanj96cgn7cov-4KLkT0" />
     <link rel="canonical" href="https://langria.net/" />
     <link rel="alternate" hreflang="en" href="https://langria.net/" />
@@ -12,6 +12,7 @@
     <link rel="alternate" hreflang="x-default" href="https://langria.net/" />
     <script src="lang.js"></script>
     <script src="theme.js"></script>
+    <script src="landing.js" defer></script>
     <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-W8S5STNC"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -28,127 +29,115 @@
       <div class="wrap">
         <a class="brand" href="./"><img class="brand-mark" src="favicon.svg" alt="" />Langria</a>
         <nav class="site-nav" aria-label="Sections">
-          <a href="#features">Features</a>
+          <a href="#extension">Platforms</a>
+          <a href="#features">Why Langria</a>
           <a href="#get-started">How it works</a>
-          <a href="#download">Download</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <nav class="lang-switch" aria-label="Language">English | <a href="ja.html" lang="ja">日本語</a></nav>
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Dark mode" title="Dark mode" aria-pressed="false" hidden><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 3v2.2M12 18.8V21M4.2 12H2M22 12h-2.2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></svg><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></button>
+        <div class="header-actions">
+          <nav class="lang-switch" aria-label="Language">English | <a href="ja.html" lang="ja">日本語</a></nav>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Dark mode" title="Dark mode" aria-pressed="false" hidden><svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 3v2.2M12 18.8V21M4.2 12H2M22 12h-2.2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></svg><svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></svg></button>
+          <a class="nav-cta" href="#download">Get Langria</a>
+        </div>
       </div>
     </header>
 
     <main>
       <section class="hero">
         <div class="wrap">
-          <p class="eyebrow">Chrome · iPhone · Android · Web</p>
-          <h1>Read the whole web in <em>your language</em></h1>
-          <p class="lead">Langria translates web pages, selected text, photos and speech with ChatGPT, Claude or Gemini, and keeps every page looking exactly as it did.</p>
+          <p class="spark-pill">
+            <svg class="spark-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg>
+            $0 subscription · No account · Zero Langria servers
+          </p>
+          <h1>Your favorite AI,<br />translating <em>right where you read.</em></h1>
+          <p class="lead">Bring ChatGPT, Claude, or Gemini directly to Chrome, iPhone, Android, and the web. Stop copy-pasting between tabs—translate whole pages, photos, and speech without breaking the layout.</p>
           <div class="cta">
-            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add to Chrome – it’s free</a>
-            <a class="button secondary" href="app/">Try it in your browser</a>
+            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add to Chrome — Free</a>
+            <a class="button secondary" href="app/">Try Web App now</a>
           </div>
-          <ul class="trust">
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Free to install</li>
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>No Langria account</li>
-            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>Your text never touches our servers</li>
-          </ul>
-          <div class="hero-shot">
-            <img class="on-light" src="images/en-extension-layout-light.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" /><img class="on-dark" src="images/en-3-layout.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" />
-          </div>
-        </div>
-      </section>
 
-      <div class="providers">
-        <div class="wrap">
-          <p>Powered by the AI you choose</p>
-          <strong>ChatGPT</strong><strong>Claude</strong><strong>Gemini</strong>
-        </div>
-      </div>
-
-      <section class="block" id="features">
-        <div class="wrap">
-          <div class="section-head">
-            <span class="kicker">Why Langria</span>
-            <h2>Translation that feels native</h2>
-            <p>Modern AI models translate with context, so you get natural sentences instead of word-by-word output.</p>
-          </div>
-          <div class="benefits">
-            <div class="benefit">
-              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M8 13h8M8 16.5h5"/></svg></div>
-              <h3>Pages keep their look</h3>
-              <p>Only the text changes. Menus, images and layout stay where they are, and one click brings back the original.</p>
+          <div class="hero-dock">
+            <div class="platform-jumps" aria-label="Jump to platform">
+              <a href="#extension">Chrome</a>
+              <a href="#ios">iPhone / iPad / Watch</a>
+              <a href="#android">Android</a>
+              <a href="#web-app">Web app</a>
             </div>
-            <div class="benefit">
-              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg></div>
-              <h3>Private by design</h3>
-              <p>Your text goes straight from your device to the AI service you pick. There is no Langria server, and API keys can be locked with a passkey or Face ID.</p>
-            </div>
-            <div class="benefit">
-              <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></div>
-              <h3>Any language, the right tone</h3>
-              <p>Dozens of languages, or type any other. Pick a style: Faithful, Natural, Business, Casual &amp; social or Technical.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="block alt">
-        <div class="wrap">
-          <div class="feature" id="extension">
-            <div class="feature-media">
-              <img class="on-light" src="images/en-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" /><img class="on-dark" src="images/en-2-selection.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" />
-            </div>
-            <div class="feature-text">
-              <span class="kicker">Chrome extension</span>
-              <h2>A whole page, or just one sentence</h2>
-              <p>Translate the page you are reading with one click, or select a passage and right-click for a quick translation in a bubble.</p>
-              <ul class="checks">
-                <li>What is on screen is translated first; the rest follows as you scroll.</li>
-                <li>Switch back to the original at any time with Alt+Shift+T.</li>
-                <li>Switch between ChatGPT, Claude and Gemini, and pick the model for each.</li>
-              </ul>
-              <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+            <div class="provider-pills" aria-label="Supported AI providers">
+              <span class="provider-pill"><span class="provider-orb orb-openai" aria-hidden="true">◉</span>ChatGPT</span>
+              <span class="provider-pill"><span class="provider-orb orb-anthropic" aria-hidden="true">A</span>Claude</span>
+              <span class="provider-pill"><span class="provider-orb orb-gemini" aria-hidden="true">✦</span>Gemini</span>
             </div>
           </div>
 
-          <div class="feature reverse" id="ios">
-            <div class="feature-media phones">
-              <img class="on-light" src="images/en-ios-translate.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" /><img class="on-dark" src="images/en-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" />
-              <img src="images/en-ios-photo.png" width="1206" height="2622" loading="lazy" alt="Text read from a photo of a sign and translated" />
-              <img class="watch" src="images/en-ios-watch.png" width="422" height="514" loading="lazy" alt="A translation on Apple Watch" />
-            </div>
-            <div class="feature-text">
-              <span class="kicker">iPhone, iPad, Apple Watch and Android</span>
-              <h2>Snap it. Say it. Understand it.</h2>
-              <p>Take a photo of a sign or a menu, speak into your phone, or paste a message. Langria translates it in seconds.</p>
-              <ul class="checks">
-                <li>Text in photos is read on the device; only the text is sent, never the image.</li>
-                <li>Voice input, and the translation read aloud.</li>
-                <li>Translate from other apps with Siri and Shortcuts on iPhone, or the share and text selection menus on Android.</li>
-                <li>Apple Watch translates on its own once you turn it on.</li>
-              </ul>
-              <div class="badges">
-                <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
-                <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
+          <div class="hero-stage">
+            <div class="browser-shell">
+              <div class="browser-bar" aria-hidden="true">
+                <div class="browser-dots"><i></i><i></i><i></i></div>
+                <span class="browser-pill">Zero layout shift · Alt+Shift+T to revert</span>
               </div>
+              <img class="on-light" src="images/en-extension-layout-light.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" /><img class="on-dark" src="images/en-3-layout.png" width="1280" height="800" alt="A Japanese web page and the same page translated into English, with the same layout" />
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="feature" id="web-app">
-            <div class="feature-media">
-              <img class="on-light" src="images/en-web-app-light.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" /><img class="on-dark" src="images/en-web-app-dark.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" />
-            </div>
-            <div class="feature-text">
-              <span class="kicker">Web app</span>
-              <h2>Nothing to install</h2>
-              <p>Type or paste text in any browser. The language is detected automatically and the translation appears as soon as you stop typing.</p>
-              <ul class="checks">
-                <li>The swap button turns a translation into a reply in one tap.</li>
-                <li>Remembers your language pair and switches direction for you.</li>
-                <li>Light and dark mode. Your API key stays in your browser.</li>
-              </ul>
-              <a class="button" href="app/">Open the web app</a>
+      <section class="block tonal" id="demo">
+        <div class="wrap">
+          <div class="section-head center">
+            <span class="kicker">Translation styles</span>
+            <h2>Not word-for-word. The exact tone you need.</h2>
+            <p>Click through Langria’s five translation styles to see how context-aware AI adapts the same Japanese sentence.</p>
+          </div>
+
+          <div class="playground tabs reveal">
+            <div class="playground-grid">
+              <div class="playground-source">
+                <span class="pane-label"><i></i>Original (Japanese)</span>
+                <p class="source-quote" lang="ja">「本日の軽量アップデートにより起動時間が半分になりました。特別な操作は不要です。お好きなタイミングで再読み込みしてください。」</p>
+                <p class="source-hint">Works across dozens of languages—or type any language name you want.</p>
+              </div>
+              <div class="playground-output">
+                <div class="tabs-bar" role="tablist" focusgroup="tablist nomemory" aria-label="Translation styles">
+                  <button type="button" role="tab" id="tab-natural" aria-selected="true" focusgroupstart>Natural</button>
+                  <button type="button" role="tab" id="tab-faithful" aria-selected="false" tabindex="-1">Faithful</button>
+                  <button type="button" role="tab" id="tab-business" aria-selected="false" tabindex="-1">Business</button>
+                  <button type="button" role="tab" id="tab-casual" aria-selected="false" tabindex="-1">Casual &amp; social</button>
+                  <button type="button" role="tab" id="tab-technical" aria-selected="false" tabindex="-1">Technical</button>
+                </div>
+                <div class="tab-panels">
+                  <div role="tabpanel" aria-labelledby="tab-natural" tabindex="0">
+                    <div class="panel-inner">
+                      <p class="translated-quote">“Today’s lightweight update cuts startup time in half. Nothing to configure—just reload whenever you’re ready.”</p>
+                      <div class="panel-meta"><span>Smooth, everyday English for articles and web pages.</span><a href="app/">Try your own text →</a></div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" aria-labelledby="tab-faithful" hidden="until-found">
+                    <div class="panel-inner">
+                      <p class="translated-quote">“Due to today’s lightweight update, startup time has been reduced by half. No special action is required. Please reload at your preferred timing.”</p>
+                      <div class="panel-meta"><span>Stays close to the original wording and structure.</span><a href="app/">Try your own text →</a></div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" aria-labelledby="tab-business" hidden="until-found">
+                    <div class="panel-inner">
+                      <p class="translated-quote">“Following today’s lightweight update, startup times have been reduced by 50%. No action is required on your part—please refresh at your convenience.”</p>
+                      <div class="panel-meta"><span>Polished tone for emails, announcements, and clients.</span><a href="app/">Try your own text →</a></div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" aria-labelledby="tab-casual" hidden="until-found">
+                    <div class="panel-inner">
+                      <p class="translated-quote">“We just dropped a lighter update that cuts startup time in half! Nothing you need to do—just hit refresh whenever you feel like it.”</p>
+                      <div class="panel-meta"><span>Friendly and conversational for posts, chats, and replies.</span><a href="app/">Try your own text →</a></div>
+                    </div>
+                  </div>
+                  <div role="tabpanel" aria-labelledby="tab-technical" hidden="until-found">
+                    <div class="panel-inner">
+                      <p class="translated-quote">“Today’s lightweight update reduces startup latency by 50%. No manual migration is required; reload the session when ready.”</p>
+                      <div class="panel-meta"><span>Precise terminology for docs, changelogs, and specs.</span><a href="app/">Try your own text →</a></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -156,78 +145,180 @@
 
       <section class="block">
         <div class="wrap">
-          <div class="section-head">
-            <span class="kicker">See it in action</span>
-            <h2>Watch a page change language</h2>
+          <div class="section-head center">
+            <span class="kicker">Everywhere you read</span>
+            <h2>One translator across every screen</h2>
+            <p>Install the apps you need. Every version connects directly to your AI provider with the same clean experience.</p>
           </div>
-          <figure class="video">
+
+          <div class="platform-stack">
+            <article class="platform-card reveal" id="extension">
+              <div class="platform-media">
+                <img class="on-light" src="images/en-extension-selection-light.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" /><img class="on-dark" src="images/en-2-selection.png" width="1280" height="800" loading="lazy" alt="Selected Japanese text translated into English in a bubble" />
+              </div>
+              <div class="platform-text">
+                <span class="kicker">Chrome extension</span>
+                <h2>A whole page, or a single sentence</h2>
+                <p>Click once to translate the page in place—menus, images, and layout stay intact. Or highlight any passage and right-click for an instant bubble.</p>
+                <ul class="checks">
+                  <li>Translates what is on screen first, then streams the rest as you scroll.</li>
+                  <li>Flip back to the original anytime with <kbd>Alt+Shift+T</kbd>.</li>
+                  <li>Switch between ChatGPT, Claude, and Gemini, and choose your preferred model for each.</li>
+                </ul>
+                <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
+              </div>
+            </article>
+
+            <article class="platform-card reverse mobile-stage reveal" id="ios">
+              <div class="platform-media phones">
+                <img class="on-light" src="images/en-ios-translate.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" /><img class="on-dark" src="images/en-ios-translate-dark.png" width="1206" height="2622" loading="lazy" alt="The Langria iPhone app translating text" />
+                <img src="images/en-ios-photo.png" width="1206" height="2622" loading="lazy" alt="Text read from a photo of a sign and translated" />
+                <img class="watch" src="images/en-ios-watch.png" width="422" height="514" loading="lazy" alt="A translation on Apple Watch" />
+              </div>
+              <div class="platform-text">
+                <span class="kicker">iPhone · iPad · Apple Watch · Android</span>
+                <h2>Snap a sign. Speak aloud. Glance at your wrist.</h2>
+                <p>Point your camera at a menu, dictate a question, or share text from another app—Langria turns it into natural language in seconds.</p>
+                <ul class="checks">
+                  <li>On-device photo OCR: only recognized text is sent, never your image.</li>
+                  <li>Voice input and spoken playback for natural back-and-forth conversations.</li>
+                  <li>Translate from other apps via Share Sheet, Siri &amp; Shortcuts on iPhone, or Share &amp; text selection on Android.</li>
+                  <li>Standalone Apple Watch app translates directly from your wrist.</li>
+                </ul>
+                <div class="badges">
+                  <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
+                  <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="platform-card reveal" id="web-app">
+              <div class="platform-media">
+                <img class="on-light" src="images/en-web-app-light.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" /><img class="on-dark" src="images/en-web-app-dark.png" width="1280" height="948" loading="lazy" alt="The Langria web app translating Japanese text into English" />
+              </div>
+              <div class="platform-text">
+                <span class="kicker">Web app</span>
+                <h2>Zero install. One tap from reading to replying.</h2>
+                <p>Open Langria in any browser and paste text. Language detection is automatic, and the translation appears the moment you pause typing.</p>
+                <ul class="checks">
+                  <li>Tap the swap button to turn a translated message into your reply.</li>
+                  <li>Remembers your language pair and flips direction automatically.</li>
+                  <li>No backend, no sign-up—your API key stays encrypted in your browser.</li>
+                </ul>
+                <a class="button" href="app/">Open the web app</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block tonal" id="features">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="kicker">Why bring your own key</span>
+            <h2>Zero subscription. Zero middleman servers.</h2>
+            <p>Most AI translators charge a monthly markup to relay your text. Langria connects your device straight to the AI provider you choose.</p>
+          </div>
+
+          <div class="byok-grid">
+            <article class="bento-card bento-span-5 reveal">
+              <div>
+                <div class="stat-hero"><strong>$0</strong><span>/ month to Langria</span></div>
+                <h3>Start free in two minutes</h3>
+                <p>The extension and apps are free to install. A free Gemini API key from <a href="https://aistudio.google.com/apikey">Google AI Studio</a> is enough to get started, and OpenAI or Anthropic keys work too.</p>
+              </div>
+            </article>
+
+            <article class="bento-card bento-span-7 reveal">
+              <div>
+                <h3>Private by architecture, not just policy</h3>
+                <p>Your text travels directly from your browser or phone to the AI service you pick. There is no Langria server, no analytics in the extension or apps, and keys can be locked with a passkey, Face ID, or fingerprint.</p>
+              </div>
+              <div class="privacy-flow" aria-hidden="true">
+                <span class="flow-node">Your device</span>
+                <span class="flow-link"><span class="flow-badge">Direct HTTPS · No Langria server</span><span class="flow-line"></span></span>
+                <span class="flow-node">OpenAI / Claude / Gemini</span>
+              </div>
+            </article>
+
+            <article class="bento-card bento-span-12 reveal" id="get-started">
+              <div>
+                <span class="kicker">How it works</span>
+                <h3>From install to your first translation in under a minute</h3>
+              </div>
+              <ol class="steps-inline">
+                <li>
+                  <h3>Get a free API key</h3>
+                  <p>Grab a free Gemini key at <a href="https://aistudio.google.com/apikey">Google AI Studio</a>, or use an existing OpenAI or Anthropic key.</p>
+                </li>
+                <li>
+                  <h3>Install Langria</h3>
+                  <p>Add the Chrome extension, install the iOS or Android app, or open the web app and paste your key in Settings.</p>
+                </li>
+                <li>
+                  <h3>Read without barriers</h3>
+                  <p>Translate web pages, highlighted text, photos, and speech into any language you choose.</p>
+                </li>
+              </ol>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="wrap">
+          <div class="section-head center">
+            <span class="kicker">See it in action</span>
+            <h2>Watch a full page switch languages</h2>
+          </div>
+          <figure class="video reveal">
             <div class="video-frame"><iframe src="https://www.youtube.com/embed/pljnY8G_Ywo" title="Langria Chrome extension demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
             <figcaption>If the video does not play, <a href="https://www.youtube.com/watch?v=pljnY8G_Ywo">watch it on YouTube</a></figcaption>
           </figure>
         </div>
       </section>
 
-      <section class="block alt" id="get-started">
+      <section class="block tonal" id="download">
         <div class="wrap">
-          <div class="section-head">
-            <span class="kicker">How it works</span>
-            <h2>Up and running in a few minutes</h2>
-            <p>Langria uses your own API key, so you get the AI service directly, with no middleman.</p>
-          </div>
-          <ol class="steps">
-            <li>
-              <h3>Get an API key</h3>
-              <p>A free Gemini API key from <a href="https://aistudio.google.com/apikey">Google AI Studio</a> is enough to start. Keys for OpenAI and Anthropic work too.</p>
-            </li>
-            <li>
-              <h3>Install Langria</h3>
-              <p>Add it to Chrome, get the app for your phone, or open the web app, then paste your key into Settings.</p>
-            </li>
-            <li>
-              <h3>Translate anything</h3>
-              <p>Web pages, selected text, messages, photos and your voice, into the language you choose.</p>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section class="block" id="download">
-        <div class="wrap">
-          <div class="section-head">
+          <div class="section-head center">
             <span class="kicker">Download</span>
-            <h2>Use it everywhere you read</h2>
-            <p>Free on every platform. Pick the ones that fit how you read.</p>
+            <h2>Get Langria free on your devices</h2>
+            <p>Pick your platforms—every version is free to install and ready in minutes.</p>
           </div>
           <div class="downloads">
-            <div class="download" id="install">
+            <div class="download reveal" id="install">
+              <div class="download-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h7.8M9 13.8l-3.9-6.7M15 13.8l-3.9 6.7"/></svg></div>
               <h3>Chrome extension</h3>
-              <p>Translate web pages and selected text in place.</p>
+              <p>Translate entire web pages and selected text without leaving the tab.</p>
               <a class="store-badge" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa"><img class="on-light" src="images/chrome-web-store.png" width="142" height="40" alt="Available in the Chrome Web Store" /><img class="on-dark" src="images/chrome-web-store-border.png" width="142" height="40" alt="Available in the Chrome Web Store" /></a>
             </div>
-            <div class="download">
+            <div class="download reveal">
+              <div class="download-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg></div>
               <h3>iPhone / iPad</h3>
-              <p>Text, voice and photos. iOS 17 or later, with Apple Watch support.</p>
+              <p>Text, voice, camera OCR, and Share Sheet. iOS 17+, includes Apple Watch.</p>
               <a class="store-badge" href="https://apps.apple.com/app/id6828902876"><img class="on-light" src="images/app-store-en-black.svg" width="120" height="40" alt="Download on the App Store" /><img class="on-dark" src="images/app-store-en-white.svg" width="120" height="40" alt="Download on the App Store" /></a>
             </div>
-            <div class="download" id="android">
+            <div class="download reveal" id="android">
+              <div class="download-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="3" width="13" height="18" rx="2.5"/><path d="M9.5 18h5"/></svg></div>
               <h3>Android</h3>
-              <p>Text, voice and photos on phones and tablets. Android 11 or later.</p>
+              <p>Text, voice, photo OCR, and share menu. Android 11 or later.</p>
               <a class="store-badge" href="https://play.google.com/store/apps/details?id=net.langria.app"><img src="images/google-play-en.png" width="134" height="40" alt="Get it on Google Play" /></a>
             </div>
-            <div class="download">
+            <div class="download reveal">
+              <div class="download-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg></div>
               <h3>Web app</h3>
-              <p>Type or paste text in any browser. Nothing to install.</p>
+              <p>Open in any desktop or mobile browser. Nothing to install.</p>
               <a class="button" href="app/">Open the web app</a>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="block alt" id="faq">
+      <section class="block" id="faq" aria-labelledby="faq-heading">
         <div class="wrap">
-          <div class="section-head">
+          <div class="section-head center">
             <span class="kicker">FAQ</span>
-            <h2>Questions and answers</h2>
+            <h2 id="faq-heading">Questions and answers</h2>
           </div>
           <div class="faq">
             <details>
@@ -260,11 +351,14 @@
 
       <section class="closing">
         <div class="wrap">
-          <h2>Start reading in your language</h2>
-          <p>Install Langria for free and translate your first page in under a minute.</p>
-          <div class="cta">
-            <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Add to Chrome</a>
-            <a class="button secondary" href="#download">Get the mobile apps</a>
+          <div class="closing-card reveal">
+            <h2>Ready to read the web without language barriers?</h2>
+            <p>Install Langria for free, paste a free Gemini key, and translate your first page in under a minute.</p>
+            <div class="cta">
+              <a class="button" href="https://chromewebstore.google.com/detail/nkoehfnflmidmigojnlfldmmgjnnkmoa">Add to Chrome — Free</a>
+              <a class="button secondary" href="#download">iOS &amp; Android apps</a>
+              <a class="button secondary" href="app/">Try Web App</a>
+            </div>
           </div>
         </div>
       </section>
